@@ -27,5 +27,7 @@ urlpatterns = [
     path('createcourse/', CreateCourse.as_view()),
     path('accountsettings/', AccountSettings.as_view()),
     path('edituser/', EditUser.as_view()),
-    path('editcourse/', EditCourse.as_view())
+    path('editcourse/', EditCourse.as_view()),
+    path('createlab/', CreateLab.as_view()),
+    path('editlab/', EditLab.as_view()),
 ]

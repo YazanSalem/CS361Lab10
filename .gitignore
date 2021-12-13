@@ -22,3 +22,6 @@ TAScheduler/__pycache__/apps.cpython-310.pyc
 .idea/misc.xml
 db.sqlite3
 db.sqlite3
+CS361Project/__pycache__/__init__.cpython-310.pyc
+*.sqlite3
+*.pyc
