@@ -3,8 +3,7 @@
 # deleteCourse(courseName)
 # populateSearchClass(searchPromp)  should change class to course
 # displayAllCourse()
-from TAScheduler.models import Course
-from TAScheduler.models import UserProfile
+from TAScheduler.models import *
 
 
 class CourseManagement(object):
@@ -110,19 +109,31 @@ class CourseManagement(object):
         return allCourses
 
     @staticmethod
-    def inputErrorChecker(Id, courseName, courseLocation, courseDays, courseHours, courseInstructor, courseTAs,
-                            courseLabs):
+    def inputErrorChecker(Id=0, courseName="", courseLocation="", courseDays="", courseHours="", courseInstructor=None, courseTAs=None,
+                            courseLabs=None):
         if not (isinstance(Id, int)):
             raise TypeError("Id entered is not of type int")
         if not (isinstance(courseName, str)):
-            raise TypeError("Lab Name entered is not of type str")
+            raise TypeError("Course name entered is not of type str")
         if not (isinstance(courseLocation, str)):
-            raise TypeError("Lab Location entered is not of type str")
+            raise TypeError("Course location entered is not of type str")
         if not (isinstance(courseDays, str)):
-            raise TypeError("Lab Hours entered is not of type str")
+            raise TypeError("Course hours entered is not of type str")
         if not (isinstance(courseHours, str)):
-            raise TypeError("Lab Days entered is not of type str")
-        if not (isinstance(courseInstructor, UserProfile)):
-            raise TypeError("Lab Instructor entered is not of type User")
-        if courseInstructor.userType != "INSTRUCTOR":
-            raise TypeError("Lab Instructor's type is not of type INSTRUCTOR")
+            raise TypeError("Course days entered is not of type str")
+        if not(courseInstructor is None):
+            if not (isinstance(courseInstructor, UserProfile)):
+                raise TypeError("Course instructor entered is not of type User")
+            if courseInstructor.userType != "INSTRUCTOR":
+                raise TypeError("Course instructor's type is not of type INSTRUCTOR")
+        if not(courseTAs is None):
+            for TA in courseTAs:
+                if not (isinstance(TA, UserProfile)):
+                    raise TypeError("Course TA entered is not of type User")
+                if TA.userType != "TA":
+                    raise TypeError("Course TA's type is not of type TA")
+        if not(courseLabs is None):
+            for lab in courseLabs:
+                if not(isinstance(lab, Lab)):
+                    raise TypeError("Course lab entered is not of type Lab")
+
