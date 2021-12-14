@@ -7,7 +7,6 @@ from TAScheduler.Management.LabManagement import LabManagement
 from django.utils.datastructures import MultiValueDictKeyError
 
 
-
 # Create your views here.
 # A method to check if a user is allowed to view a certain webpage based on their userType. Included a check for if
 # the user is not logged in
@@ -169,9 +168,23 @@ class EditCourse(View):
         # they will fail the userAllowed test and be redirected back to the login page
         # If the user is allowed then home is rendered like normal
         if userAllowed(request, ["SUPERVISOR"]):
-            return render(request, "editcourse.html")
+            return render(request, "editcourse.html", {"Course_list": Course.objects.all()})
         else:
             return redirect("/../home/")
+
+    def post(self, request):
+        edit = True
+        try:
+            edit_or_submit = request.POST["edit"]
+        except MultiValueDictKeyError:
+            edit_or_submit = request.POST["submit"]
+            edit = False
+
+        if edit:
+            change_course = CourseManagement.findCourse(courseID=edit_or_submit)
+            return render(request, "editcourse.html", {"Course_list": Course.objects.all()}, {"change_course": change_course})
+        else: CourseManagement.editCourse()
+
 
     @staticmethod
     def post(request):

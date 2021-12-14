@@ -58,6 +58,29 @@ class CourseManagement(object):
 
         return "The course was successfully edited"
 
+#Find course method for editing courses
+    @staticmethod
+    def findCourse(courseID):
+        if not (courseID == 0):
+            CourseManagement.__inputErrorCheck(courseID=courseID)
+            try:
+                course = Course.objects.get(courseID=courseID)
+            except Course.DoesNotExist:
+                course = None
+
+            if course is None:
+                raise TypeError("This ID does not exist")
+        elif not (courseID== ""):
+            try:
+                course = Course.objects.get(courseID=courseID)
+            except Course.DoesNotExist:
+                course = None
+
+            if course is None:
+                raise TypeError("This username does not exist")
+        return course
+
+
     # Preconditions: The user has to have been instantiated.
     # The user must be of type administrator
     # Postconditions:Deletes a course
