@@ -46,9 +46,18 @@ class UserManagement(object):
         UserManagement.__inputErrorCheck(user_id, user_type, username, password, name, address, phone, email)
 
         try:
-            UserManagement.findUser(user_id)
+            change_user = UserManagement.findUser(user_id)
         except TypeError:
-            raise TypeError("This user already exists(editUser): ")
+            raise TypeError("This user does not exist (editUser): ")
+        change_user.userID = user_id
+        change_user.userType = user_type
+        change_user.username = username
+        change_user.password = password
+        change_user.name = name
+        change_user.address = address
+        change_user.phone = phone
+        change_user.email = email
+        change_user.save()
 
     # Preconditions: The user has to have been instantiated
     # There are accounts to display

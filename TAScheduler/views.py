@@ -4,6 +4,7 @@ from .models import UserProfile, Course, Lab
 from TAScheduler.Management.UserManagement import UserManagement
 from TAScheduler.Management.CourseManagement import CourseManagement
 from TAScheduler.Management.LabManagement import LabManagement
+from django.utils.datastructures import MultiValueDictKeyError
 
 
 # Create your views here.
@@ -135,13 +136,29 @@ class EditUser(View):
         # they will fail the userAllowed test and be redirected back to the login page
         # If the user is allowed then home is rendered like normal
         if userAllowed(request, ["SUPERVISOR"]):
-            return render(request, "edituser.html")
+            return render(request, "edituser.html", {"object_list": UserProfile.objects.all()})
         else:
             return redirect("/../home/")
 
-    def post(self, request):
-        # TODO: implement post
-        pass
+    @staticmethod
+    def post(request):
+        edit = True
+        try:
+            edit_or_submit = request.POST["edit"]
+        except MultiValueDictKeyError:
+            edit_or_submit = request.POST["submit"]
+            edit = False
+        if edit:
+            change_user = UserManagement.findUser(username=edit_or_submit)
+            return render(request, "edituser.html",
+                          {"object_list": UserProfile.objects.all(), "change_user": change_user})
+        else:
+            UserManagement.editUser(user_id=UserManagement.findUser(username=edit_or_submit).userID,
+                                    user_type=request.POST["type"], username=edit_or_submit,
+                                    password=request.POST["password"], name=request.POST["name"],
+                                    address=request.POST["address"], phone=request.POST["phone"],
+                                    email=request.POST["email"])
+            return render(request, "edituser.html", {"object_list": UserProfile.objects.all()})
 
 
 class EditCourse(View):
