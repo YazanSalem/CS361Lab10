@@ -7,6 +7,7 @@ from TAScheduler.Management.LabManagement import LabManagement
 from django.utils.datastructures import MultiValueDictKeyError
 
 
+
 # Create your views here.
 # A method to check if a user is allowed to view a certain webpage based on their userType. Included a check for if
 # the user is not logged in
