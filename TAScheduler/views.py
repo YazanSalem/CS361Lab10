@@ -139,6 +139,53 @@ class EditCourse(View):
 class ClassSchedules(View):
     pass
 
+class DeleteLab(View):
+    @staticmethod
+    def get(request):
+        # If the user does not have a valid name, I.E. if they try to manually enter /home in the search bar,
+        # they will fail the userAllowed test and be redirected back to the login page
+        # If the user is allowed then home is rendered like normal
+        if userAllowed(request, ["SUPERVISOR"]):
+            return render(request, "deletelab.html")
+        else:
+            return redirect("/../home/")
+
+    @staticmethod
+    def post(request):
+        LabManagement.deleteLab(request, request.POST['labID'])
+        return render(request, "deletelab.html")
+
+class DeleteCourse(View):
+    @staticmethod
+    def get(request):
+        # If the user does not have a valid name, I.E. if they try to manually enter /home in the search bar,
+        # they will fail the userAllowed test and be redirected back to the login page
+        # If the user is allowed then home is rendered like normal
+        if userAllowed(request, ["SUPERVISOR"]):
+            return render(request, "deletecourse.html")
+        else:
+            return redirect("/../home/")
+
+    @staticmethod
+    def post(request):
+        CourseManagement.deleteCourse(request, request.POST['courseID'])
+        return render(request, "deletecourse.html")
+
+class DeleteUser(View):
+    @staticmethod
+    def get(request):
+        # If the user does not have a valid name, I.E. if they try to manually enter /home in the search bar,
+        # they will fail the userAllowed test and be redirected back to the login page
+        # If the user is allowed then home is rendered like normal
+        if userAllowed(request, ["SUPERVISOR"]):
+            return render(request, "deleteuser.html")
+        else:
+            return redirect("/../home/")
+
+    @staticmethod
+    def post(request):
+        UserManagement.deleteCourse(request, request.POST['userID'])
+        return render(request, "deleteuser.html")
 
 class UserManagement(View):
     pass
