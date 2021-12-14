@@ -40,7 +40,7 @@
             </tr>
              {% for UserProfile in object_list %}
              <tr>
-             {% if change_user.username  == UserProfile.username %}
+             {% if change_user.username == UserProfile.username %}
                 <td>
                     <select name="type" id="type">
                         <option value="SUPERVISOR">SUPERVISOR</option>
@@ -55,7 +55,7 @@
                 <td><input type="text" id=address name=address value={{ UserProfile.address }}></td>
                 <td><input type="tel" id=phone name=phone value={{ UserProfile.phone }}></td>
                 <td><input type="email" id=email name=email value={{ UserProfile.email }}></td>
-                <td><button name="submit" type="submit" autofocus="True" value={{ UserProfile.username }}>Submit</button></td>
+                <td><button name="submit" type="submit" value={{ UserProfile.username }}>Submit</button></td>
              {% else %}
                 <td>{{ UserProfile.userType }}</td>
                 <td>{{ UserProfile.id }}</td>
@@ -66,18 +66,12 @@
                 <td>{{ UserProfile.phone }}</td>
                 <td>{{ UserProfile.email }}</td>
                 {% if change_user.username == null %}
-                <td><button name="edit" type="submit" autofocus="False" value={{ UserProfile.username }}>Edit</button></td>
+                <td><button name="edit" type="submit" value={{ UserProfile.username }}>Edit</button></td>
                 {% endif %}
             {% endif %}
              </tr>
              {% endfor%}
          </table>
-     <ul>
-
-       <br>
-
-{#       <button class="btn btn-hero" id="btn">Edit User</button>#}
-     </ul>
      </form>
      </div>
    </main>

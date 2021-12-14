@@ -204,16 +204,24 @@ class EditLab(View):
         # they will fail the userAllowed test and be redirected back to the login page
         # If the user is allowed then home is rendered like normal
         if userAllowed(request, ["SUPERVISOR"]):
-            return render(request, "editlab.html")
+            return render(request, "editlab.html", {"object_list": Lab.objects.all()})
         else:
             return redirect("/../home/")
 
     @staticmethod
     def post(request):
-        LabManagement.editLab(request.POST['labID'], request.POST['labName'],
-                              request.POST['labHours'], request.POST['labLocation'], request.POST['labDays'],
-                              request.POST['labInstructor'], request.POST['labTA'])
-        return render(request, "editlab.html")
+        edit = True
+        try:
+            edit_or_submit = int(request.POST["edit"])
+        except MultiValueDictKeyError:
+            edit_or_submit = int(request.POST["submit"])
+            edit = False
+        if edit:
+            change_lab = Lab.objects.get(labID=edit_or_submit)
+            return render(request, "editlab.html", {"object_list": Lab.objects.all(), "change_lab": change_lab, "UserProfile_list": UserProfile.objects.all()})
+        else:
+            LabManagement.editLab(lab_id=int(Lab.objects.get(labID=edit_or_submit).labID), lab_name=request.POST["name"], lab_location=request.POST["location"], lab_hours=request.POST["hours"], lab_days=request.POST["days"], lab_instructor=UserManagement.findUser(user_id=request.POST["instructor"]), lab_ta=UserManagement.findUser(user_id=request.POST["TA"]))
+            return render(request, "editlab.html", {"object_list": Lab.objects.all()})
 
 
 class ClassSchedules(View):

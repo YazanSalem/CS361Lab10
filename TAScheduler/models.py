@@ -17,6 +17,9 @@ class UserProfile(models.Model):
     phone = models.IntegerField(default=0)
     email = models.EmailField(max_length=30)
 
+    def __str__(self):
+        return self.username
+
 
 # The Lab class keeps track of the information for a particular lab section and references the instructor of the course
 # to keep track of which course it relates to.
@@ -26,7 +29,7 @@ class Lab(models.Model):
     location = models.CharField(max_length=20)
     hours = models.CharField(max_length=20)
     days = models.CharField(max_length=20)
-    instructor = models.ForeignKey(UserProfile, on_delete=models.PROTECT)
+    instructor = models.ForeignKey(UserProfile, on_delete=models.PROTECT, related_name="labs_for_instructor")
     TA = models.ForeignKey(UserProfile, on_delete=models.PROTECT, related_name="TAToLab")
 
 

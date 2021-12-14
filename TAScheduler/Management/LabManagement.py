@@ -55,6 +55,7 @@ class LabManagement(object):
         editedLab.days = lab_days
         editedLab.instructor = lab_instructor
         editedLab.TA = lab_ta
+        editedLab.save()
 
         return "The lab was successfully edited"
 
