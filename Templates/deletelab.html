@@ -35,18 +35,7 @@
                 <th>TA</th>
             </tr>
           {% for Lab in lab_list %}
-            <tr>
-                {% if deleted_lab.labID == Lab.labID %}
-                    <td>{{ Lab.labID }}</td>
-                    <td><label type="text" id="labName" name="labName" value={{ Lab.name }}> </label></td>
-                    <td><label type="text" id="labLocation" name="labLocation" value={{ Lab.location }}></label></td>
-                    <td><label type="text" id="labHours" name="labHours" value={{ Lab.hours }}></label></td>
-                    <td><label type="text" id="labDays" name="labDays" value={{ Lab.days }}></label></td>
-                    <td><label type="text" id="labInstructor" name="labInstructor" value={{ Lab.instructor }}></label></td>
-                    <td><label type="text" id="labTA" name="labTA" value={{ Lab.TA }}></label></td>
-              </td>
-              <td><button name="submit" type="submit" value={{ Lab.labID }}>Submit</button></td>
-          {% else %}
+          <tr>
               <td>{{ Lab.labID }}</td>
               <td>{{ Lab.name }}</td>
               <td>{{ Lab.location }}</td>
@@ -56,9 +45,8 @@
               <td>{{ Lab.TA }}</td>
               {% if deleted_lab.labID == null %}
                   <td><button name="delete" type="submit" value={{ Lab.labID }}>Delete</button></td>
-                  {% endif %}
-                  {% endif %}
-              </tr>
+              {% endif %}
+            </tr>
           {% endfor%}
         </table>
     </form>

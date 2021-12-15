@@ -34,17 +34,7 @@
                 <th>Instructor</th>
             </tr>
           {% for Course in course_list %}
-            <tr>
-                {% if deleted_course.courseID == Course.courseID %}
-                    <td>{{ Course.courseID }}</td>
-                    <td><label type="text" id="coursName" name="coursName" value={{ Course.name }}> </label></td>
-                    <td><label type="text" id="courseLocation" name="courseLocation" value={{ Course.location }}></label></td>
-                    <td><label type="text" id="courseHours" name="courseHours" value={{ Course.hours }}></label></td>
-                    <td><label type="text" id="courseDays" name="courseDays" value={{ Course.days }}></label></td>
-                    <td><label type="text" id="courseInstructor" name="courseInstructor" value={{ Course.instructor }}></label></td>
-              </td>
-              <td><button name="submit" type="submit" value={{ Course.courseID }}>Submit</button></td>
-          {% else %}
+          <tr>
               <td>{{ Course.courseID }}</td>
               <td>{{ Course.name }}</td>
               <td>{{ Course.location }}</td>
@@ -54,8 +44,7 @@
               {% if deleted_course.courseID == null %}
                   <td><button name="delete" type="submit" value={{ Course.courseID }}>Delete</button></td>
                   {% endif %}
-                  {% endif %}
-              </tr>
+            </tr>
           {% endfor%}
         </table>
     </form>

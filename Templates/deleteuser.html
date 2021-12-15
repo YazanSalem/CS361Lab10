@@ -36,16 +36,6 @@
             </tr>
           {% for User in user_list %}
             <tr>
-                {% if deleted_user.userID== User.userID %}
-                    <td>{{ User.userID }}</td>
-                    <td><label type="text" id="userType" name="userType" value={{ User.userType }}> </label></td>
-                    <td><label type="text" id="userName" name="userName" value={{ User.userName }}></label></td>
-                    <td><label type="text" id="userAddress" name="userAddress" value={{ User.userAddress }}></label></td>
-                    <td><label type="text" id="userContact" name="userContact" value={{ User.userContact }}></label></td>
-                    <td><label type="text" id="userEmail" name="userEmail" value={{ User.userEmail }}></label></td>
-              </td>
-              <td><button name="submit" type="submit" value={{ User.userID }}>Submit</button></td>
-          {% else %}
               <td>{{ User.userID}}</td>
               <td>{{ User.userType }}</td>
               <td>{{ User.userName}}</td>
@@ -55,8 +45,7 @@
               {% if deleted_user.userID == null %}
                   <td><button name="delete" type="submit" value={{ User.userID }}>Delete</button></td>
                   {% endif %}
-                  {% endif %}
-              </tr>
+            </tr>
           {% endfor%}
         </table>
       </form>
