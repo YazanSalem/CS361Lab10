@@ -25,30 +25,28 @@
                 <table border="1">
                     <tr>
                         <th>ID</th>
+                        <th>Course</th>
                         <th>Name</th>
                         <th>Location</th>
                         <th>Hours</th>
                         <th>Days</th>
-                        <th>Instructor</th>
                         <th>TA</th>
                     </tr>
                     {% for Lab in object_list %}
                         <tr>
                             {% if change_lab.labID == Lab.labID %}
                                 <td>{{ Lab.labID }}</td>
+                                <td>
+                                    <select name="course" id="course">
+                                        {% for Course in Course_list %}
+                                            <option value={{ Course.courseID }}>{{ Course.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </td>
                                 <td><input type="text" id=name name=name value={{ Lab.name }}></td>
                                 <td><input type="text" id=location name=location value={{ Lab.location }}></td>
                                 <td><input type="text" id=hours name=hours value={{ Lab.hours }}></td>
                                 <td><input type="text" id=days name=days value={{ Lab.days }}></td>
-                                <td>
-                                    <select name="instructor" id="instructor">
-                                        {% for UserProfile in UserProfile_list %}
-                                            {% if UserProfile.userType == "INSTRUCTOR" %}
-                                                <option value={{ UserProfile.userID }}>{{ UserProfile.username }}</option>
-                                            {% endif %}
-                                        {% endfor %}
-                                    </select>
-                                </td>
                                 <td>
                                     <select name="TA" id="TA">
                                         {% for UserProfile in UserProfile_list %}
@@ -61,11 +59,11 @@
                                 <td><button name="submit" type="submit" value={{ Lab.labID }}>Submit</button></td>
                             {% else %}
                                 <td>{{ Lab.labID }}</td>
+                                <td>{{ Lab.course }}</td>
                                 <td>{{ Lab.name }}</td>
                                 <td>{{ Lab.location }}</td>
                                 <td>{{ Lab.hours }}</td>
                                 <td>{{ Lab.days }}</td>
-                                <td>{{ Lab.instructor }}</td>
                                 <td>{{ Lab.TA }}</td>
                                 {% if change_lab.labID == null %}
                                     <td><button name="edit" type="submit" value={{ Lab.labID }}>Edit</button></td>
