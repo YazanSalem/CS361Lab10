@@ -21,7 +21,48 @@
   </nav>
   
   <main>
-
+    <div class="container">
+      <form class="form-control" action="/deletelab/" method="post">
+      {%  csrf_token %}
+        <table border="1">
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Location</th>
+                <th>Hours</th>
+                <th>Days</th>
+                <th>Instructor</th>
+                <th>TA</th>
+            </tr>
+          {% for Lab in lab_list %}
+            <tr>
+                {% if deleted_lab.labID == Lab.labID %}
+                    <td>{{ Lab.labID }}</td>
+                    <td><label type="text" id="labName" name="labName" value={{ Lab.name }}> </label></td>
+                    <td><label type="text" id="labLocation" name="labLocation" value={{ Lab.location }}></label></td>
+                    <td><label type="text" id="labHours" name="labHours" value={{ Lab.hours }}></label></td>
+                    <td><label type="text" id="labDays" name="labDays" value={{ Lab.days }}></label></td>
+                    <td><label type="text" id="labInstructor" name="labInstructor" value={{ Lab.instructor }}></label></td>
+                    <td><label type="text" id="labTA" name="labTA" value={{ Lab.TA }}></label></td>
+              </td>
+              <td><button name="submit" type="submit" value={{ Lab.labID }}>Submit</button></td>
+          {% else %}
+              <td>{{ Lab.labID }}</td>
+              <td>{{ Lab.name }}</td>
+              <td>{{ Lab.location }}</td>
+              <td>{{ Lab.hours }}</td>
+              <td>{{ Lab.days }}</td>
+              <td>{{ Lab.instructor }}</td>
+              <td>{{ Lab.TA }}</td>
+              {% if deleted_lab.labID == null %}
+                  <td><button name="delete" type="submit" value={{ Lab.labID }}>Delete</button></td>
+                  {% endif %}
+                  {% endif %}
+              </tr>
+          {% endfor%}
+        </table>
+    </form>
+  </div>
   </main>
        <div class="container">
         <div class="row">

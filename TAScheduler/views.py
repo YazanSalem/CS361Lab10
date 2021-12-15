@@ -1,9 +1,7 @@
 from django.shortcuts import render, redirect
 from django.views import View
 from .models import UserProfile, Course, Lab
-from TAScheduler.Managment.UserManagement import UserManagement
-
-
+from TAScheduler.Managment import UserManagement,LabManagement,CourseManagement
 # Create your views here.
 # A method to check if a user is allowed to view a certain webpage based on their userType. Included a check for if
 # the user is not logged in
@@ -140,52 +138,76 @@ class ClassSchedules(View):
     pass
 
 class DeleteLab(View):
-    @staticmethod
     def get(request):
         # If the user does not have a valid name, I.E. if they try to manually enter /home in the search bar,
         # they will fail the userAllowed test and be redirected back to the login page
         # If the user is allowed then home is rendered like normal
         if userAllowed(request, ["SUPERVISOR"]):
-            return render(request, "deletelab.html")
+            return render(request, "deletelab.html", {"lab_list":Lab.objects.all()})
         else:
             return redirect("/../home/")
 
-    @staticmethod
     def post(request):
-        LabManagement.deleteLab(request, request.POST['labID'])
-        return render(request, "deletelab.html")
+        delete = True
+        try:
+            delete_or_submit = int(request.POST["delete"])
+        except MultiValueDictKeyError:
+            delete_or_submit = int(request.POST["submit"])
+            delete = False
+        if delete:
+            deleted_lab = Lab.objects.get(labID = delete_or_submit)
+            Lab.objects.delete(labID=delete_or_submit)
+            return render(request, "deletelab.html", {"lab_list":Lab.objects.all(), "deleted_lab": deleted_lab})
+        else:
+            return render(request, "deletelab.html", {"lab_list": Lab.objects.all()})
 
 class DeleteCourse(View):
-    @staticmethod
     def get(request):
         # If the user does not have a valid name, I.E. if they try to manually enter /home in the search bar,
         # they will fail the userAllowed test and be redirected back to the login page
         # If the user is allowed then home is rendered like normal
         if userAllowed(request, ["SUPERVISOR"]):
-            return render(request, "deletecourse.html")
+            return render(request, "deletecourse.html", {"course_list":Course.objects.all()})
         else:
             return redirect("/../home/")
 
-    @staticmethod
     def post(request):
-        CourseManagement.deleteCourse(request, request.POST['courseID'])
-        return render(request, "deletecourse.html")
+        delete = True
+        try:
+            delete_or_submit = int(request.POST["delete"])
+        except MultiValueDictKeyError:
+            delete_or_submit = int(request.POST["submit"])
+            delete = False
+        if delete:
+            deleted_course = Course.objects.get(courseID = delete_or_submit)
+            Course.objects.delete(courseID=delete_or_submit)
+            return render(request, "deletecourse.html", {"course_list":Course.objects.all(), "deleted_course": deleted_course})
+        else:
+            return render(request, "deletecourse.html", {"course_list": Course.objects.all()})
 
 class DeleteUser(View):
-    @staticmethod
     def get(request):
         # If the user does not have a valid name, I.E. if they try to manually enter /home in the search bar,
         # they will fail the userAllowed test and be redirected back to the login page
         # If the user is allowed then home is rendered like normal
         if userAllowed(request, ["SUPERVISOR"]):
-            return render(request, "deleteuser.html")
+            return render(request, "deleteuser.html", {"user_list":UserProfile.objects.all()})
         else:
             return redirect("/../home/")
 
-    @staticmethod
     def post(request):
-        UserManagement.deleteCourse(request, request.POST['userID'])
-        return render(request, "deleteuser.html")
+        delete = True
+        try:
+            delete_or_submit = int(request.POST["delete"])
+        except MultiValueDictKeyError:
+            delete_or_submit = int(request.POST["submit"])
+            delete = False
+        if delete:
+            UserProfile.objects.delete(userID=delete_or_submit)
+            deleted_user= UserProfile.objects.get(courseID = delete_or_submit)
+            return render(request, "deleteuser.html", {"user_list":UserProfile.objects.all(), "deleted_user": deleted_user})
+        else:
+            return render(request, "deleteuser.html", {"user_list": UserProfile.objects.all()})
 
 class UserManagement(View):
     pass

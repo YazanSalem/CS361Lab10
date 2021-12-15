@@ -22,7 +22,45 @@
   </nav>
   
   <main>
-
+    <div class="container">
+      <form class="form-control" action="/deleteuser/" method="post">
+      {%  csrf_token %}
+        <table border="1">
+            <tr>
+                <th>ID</th>
+                <th>Type</th>
+                <th>Name</th>
+                <th>Address</th>
+                <th>Contact</th>
+                <th>Email</th>
+            </tr>
+          {% for User in user_list %}
+            <tr>
+                {% if deleted_user.userID== User.userID %}
+                    <td>{{ User.userID }}</td>
+                    <td><label type="text" id="userType" name="userType" value={{ User.userType }}> </label></td>
+                    <td><label type="text" id="userName" name="userName" value={{ User.userName }}></label></td>
+                    <td><label type="text" id="userAddress" name="userAddress" value={{ User.userAddress }}></label></td>
+                    <td><label type="text" id="userContact" name="userContact" value={{ User.userContact }}></label></td>
+                    <td><label type="text" id="userEmail" name="userEmail" value={{ User.userEmail }}></label></td>
+              </td>
+              <td><button name="submit" type="submit" value={{ User.userID }}>Submit</button></td>
+          {% else %}
+              <td>{{ User.userID}}</td>
+              <td>{{ User.userType }}</td>
+              <td>{{ User.userName}}</td>
+              <td>{{ User.userAddress }}</td>
+              <td>{{ User.userContact }}</td>
+              <td>{{ User.userEmail }}</td>
+              {% if deleted_user.userID == null %}
+                  <td><button name="delete" type="submit" value={{ User.userID }}>Delete</button></td>
+                  {% endif %}
+                  {% endif %}
+              </tr>
+          {% endfor%}
+        </table>
+      </form>
+    </div>
   </main>
        <div class="container">
         <div class="row">
