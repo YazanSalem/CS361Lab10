@@ -10,11 +10,12 @@ class UserProfile(models.Model):
     userID = models.IntegerField(default=0)
     userType = models.CharField(max_length=20,
                                 choices=[('SUPERVISOR', 'Supervisor'), ('INSTRUCTOR', 'Instructor'), ('TA', 'TA')])
-    userPassword = models.CharField(max_length=20)
-    userName = models.CharField(max_length=20)
-    userAddress = models.CharField(max_length=20)
-    userContact = models.IntegerField(default=0)
-    userEmail = models.CharField(max_length=20)
+    username = models.CharField(max_length=20, default="")
+    password = models.CharField(max_length=20)
+    name = models.CharField(max_length=20)
+    address = models.CharField(max_length=20)
+    phone = models.IntegerField(default=0)
+    email = models.EmailField(max_length=30)
 
 
 # The Lab class keeps track of the information for a particular lab section and references the instructor of the course

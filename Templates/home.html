@@ -13,6 +13,18 @@
     <link rel="stylesheet" href ="{% static 'styles.css'%}">
 
     <meta charset="UTF-8">
+    <nav>
+    <div class = "nav-center">
+    <h4>Dashboard</h4>
+      <ul class="nav-links">
+        <li><a href="../accountsettings/">User Management</a></li>
+        {% if user_type == "SUPERVISOR" %}
+        <li><a href="../createcourse/">Course Management</a></li>
+        <li><a href="../createlab/">Lab Management</a></li>
+        {% endif %}
+      </ul>
+    </div>
+  </nav>
 </head>
 
 <body>
@@ -21,15 +33,5 @@
         <h2>Dashboard: <span class="color">Welcome to TA Scheduler</span></h2>
       </div>
     </main>
-  <nav>
-    <div class = "nav-center">
-    <h4>Dashboard</h4>
-      <ul class="nav-links">
-        <li><a href="../accountsettings/">User</a></li>
-        <li><a href="../createcourse/">Courses</a></li>
-        <li><a href="../createlab/">Labs</a></li>
-      </ul>
-    </div>
-  </nav>
 </body>
 </html>

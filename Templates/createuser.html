@@ -28,7 +28,7 @@
      <ul>
        <li>
          <label class="label-control" for="userID">User ID
-          <input type="text" id="userID" name="userID">
+          <input type="number" id="userID" name="userID">
           </label>
        </li>
        <br>
@@ -36,40 +36,48 @@
        <li>
          <label class="label-control" for="userType"> User Type
              <select name="userType" id="userType">
-                 <option value="Supervisor">Supervisor</option>
-                 <option value="Instructor">Instructor</option>
-                 <option value="TA">TA</option>
+                 <option value="SUPERVISOR">Supervisor</option>
+                 <option value="INSTRUCTOR">Instructor</option>
+                 <option value="TA" selected>TA</option>
             </select>
          </label>
        </li>
        <br>
+
        <li>
-       
-         <label class="label-control" for="userName">Full Name <input type="text" id="userName " name="userName">
+
+         <label class="label-control" for="username">Username <input type="text" id="username " name="username">
          </label>
        </li>
        <br>
        
          <li>
-         <label class="label-control" for="userPassword">Password <input type="text" id="userPassword " name="userPassword">
+         <label class="label-control" for="password">Password <input type="password" id="password " name="password">
          </label>
        </li>
        <br>
-       
+
+         <li>
+
+         <label class="label-control" for="name">Full Name <input type="text" id="name " name="name">
+         </label>
+       </li>
+       <br>
+
        <li>
-         <label class="label-control" for="userAddress">Address  <input type="text" id="userAddress " name="userAddress">
+         <label class="label-control" for="address">Address  <input type="text" id="address " name="address">
          </label>
        </li>
        <br>
        
         <li>
-         <label class="label-control" for="userContact">Phone Number <input type="text" id="userContact " name="userContact">
+         <label class="label-control" for="phone">Phone Number <input type="tel" id="phone " name="phone">
          </label>
        </li>
        <br>
        
        <li>
-         <label class="label-control" for="userEmail">E-Mail <input type="text" id="userEmail " name="userEmail">
+         <label class="label-control" for="email">E-Mail <input type="email" id="email " name="email">
          </label>
        </li>
        <br>
