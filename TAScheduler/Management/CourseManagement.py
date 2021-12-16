@@ -143,8 +143,3 @@ class CourseManagement(object):
                     raise TypeError("Course TA entered is not of type User")
                 if TA.userType != "TA":
                     raise TypeError("Course TA's type is not of type TA")
-        if not(courseLabs is None):
-            for lab in courseLabs:
-                if not(isinstance(lab, Lab)):
-                    raise TypeError("Course lab entered is not of type Lab")
-
