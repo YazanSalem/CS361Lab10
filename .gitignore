@@ -36,3 +36,5 @@ db.sqlite3
 CS361Project/__pycache__/urls.cpython-38.pyc
 CS361Project/__pycache__/settings.cpython-38.pyc
 .idea/CS361Project.iml
+*.pyc
+*.sqlite3

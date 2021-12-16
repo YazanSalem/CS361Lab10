@@ -28,6 +28,21 @@ class LabManagement(object):
         Lab.objects.create(labID=lab_id, name=lab_name, location=lab_location, hours=lab_hours, days=lab_days, course=course, TA=ta)
 
         return "Lab was created"
+    
+    # Preconditions: Both the lab and the TA must exist in the database
+    # Postconditions: The TA for the lab is updated to the given TA
+    # Lab id(in) - ID of the lab
+    # Lab ta(in) - Profile of the TA to be assigned to the lab
+    @staticmethod
+    def addTA(lab_id, lab_ta):
+        LabManagement.__inputErrorCheck(lab_id,"", "", "", "", None, lab_ta)
+        if not (Lab.objects.filter(labID=lab_id).exists()):
+            raise TypeError("This Lab does not exist")
+
+        lab = Lab.objects.get(labID=lab_id)
+        lab.TA = lab_ta
+
+        return "TA was assigned to the lab"
 
     # Preconditions: The user has to have been instantiated.
     # Postconditions: The lab is now edited
