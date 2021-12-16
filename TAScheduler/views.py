@@ -17,7 +17,7 @@ def userAllowed(request, valid_types):
     try:
         if not (UserManagement.findUser(username=request.session["username"]).userType in valid_types):
             isValid = False
-    except KeyError:
+    except TypeError:
         isValid = False
     return isValid
 
@@ -25,6 +25,8 @@ def userAllowed(request, valid_types):
 class Login(View):
     @staticmethod
     def get(request):
+        request.session["username"] = ""
+        request.session["user_type"] = ""
         return render(request, "login.html")
 
     @staticmethod
@@ -65,7 +67,7 @@ class Home(View):
         # they will fail the userAllowed test and be redirected back to the login page
         # If the user is allowed then home is rendered like normal
         if userAllowed(request, ["SUPERVISOR", "INSTRUCTOR", "TA"]):
-            return render(request, "home.html")
+            return render(request, "home.html", {"request.session.username": request.session["username"]})
         else:
             return redirect("/../")
 
@@ -96,22 +98,22 @@ class CreateCourse(View):
         # If the user does not have a valid name or if they are not of the type SUPERVISOR, they will fail
         # userAllowed and be redirected to home
         if userAllowed(request, ['SUPERVISOR']):
-            return render(request, "createcourse.html", {})
+            return render(request, "createcourse.html", {"UserProfile_list": UserProfile.objects.all()})
         else:
             return redirect("/../home/")
 
     @staticmethod
     def post(request):
         # Takes user input of all parameters and creates a new course.
-        # Need to replace this line with CourseManagement.createCourse once that is implemented.
-        newCourse = Course(courseID=request.POST['ID'], name=request.POST['name'], location=request.POST['location'],
-                           hours=request.POST['hours'], days=request.POST['days'],
-                           instructor=UserProfile.objects.get(username=request.POST['instructor']))
-        newCourse.save()
-        newCourse.TAs.add(UserProfile.objects.get(username=request.POST['TAs']))
-        newCourse.labs.add(Lab.objects.get(name=request.POST['labs']))
-        newCourse.save()
-        return render(request, "createcourse.html")
+        gottenTAs = request.POST.getlist("TAs")
+        for i in range(len(gottenTAs)):
+            gottenTAs[i] = int(gottenTAs[i])
+            gottenTAs[i] = UserProfile.objects.get(userID=gottenTAs[i])
+        CourseManagement.createCourse(course_id=int(request.POST['ID']), name=request.POST['name'],
+                                      location=request.POST['location'], hours=request.POST['hours'],
+                                      days=request.POST['days'],
+                                      instructor=UserProfile.objects.get(userID=int(request.POST['instructor'])), tas=gottenTAs)
+        return render(request, "createcourse.html", {"UserProfile_list": UserProfile.objects.all()})
 
 
 class AccountSettings(View):
@@ -186,16 +188,19 @@ class CreateLab(View):
         # they will fail the userAllowed test and be redirected back to the login page
         # If the user is allowed then home is rendered like normal
         if userAllowed(request, ["SUPERVISOR"]):
-            return render(request, "createlab.html")
+            return render(request, "createlab.html",
+                          {"Course_list": Course.objects.all(), "UserProfile_list": UserProfile.objects.all()})
         else:
             return redirect("/../home/")
 
     @staticmethod
     def post(request):
-        LabManagement.createLab(request.POST['labID'], request.POST['labName'],
+        LabManagement.createLab(int(request.POST['labID']), request.POST['labName'],
                                 request.POST['labHours'], request.POST['labLocation'], request.POST['labDays'],
-                                request.POST['labInstructor'], request.POST['labTA'])
-        return render(request, "createlab.html")
+                                Course.objects.get(courseID=request.POST['course']),
+                                UserProfile.objects.get(userID=request.POST['labTA']))
+        return render(request, "createlab.html",
+                      {"Course_list": Course.objects.all(), "UserProfile_list": UserProfile.objects.all()})
 
 
 class EditLab(View):
@@ -205,16 +210,30 @@ class EditLab(View):
         # they will fail the userAllowed test and be redirected back to the login page
         # If the user is allowed then home is rendered like normal
         if userAllowed(request, ["SUPERVISOR"]):
-            return render(request, "editlab.html")
+            return render(request, "editlab.html", {"object_list": Lab.objects.all()})
         else:
             return redirect("/../home/")
 
     @staticmethod
     def post(request):
-        LabManagement.editLab(request.POST['labID'], request.POST['labName'],
-                              request.POST['labHours'], request.POST['labLocation'], request.POST['labDays'],
-                              request.POST['labInstructor'], request.POST['labTA'])
-        return render(request, "editlab.html")
+        edit = True
+        try:
+            edit_or_submit = int(request.POST["edit"])
+        except MultiValueDictKeyError:
+            edit_or_submit = int(request.POST["submit"])
+            edit = False
+        if edit:
+            change_lab = Lab.objects.get(labID=edit_or_submit)
+            return render(request, "editlab.html",
+                          {"object_list": Lab.objects.all(), "Course_list": Course.objects.all(),
+                           "UserProfile_list": UserProfile.objects.all(), "change_lab": change_lab})
+        else:
+            LabManagement.editLab(lab_id=int(Lab.objects.get(labID=edit_or_submit).labID),
+                                  lab_name=request.POST["name"], lab_location=request.POST["location"],
+                                  lab_hours=request.POST["hours"], lab_days=request.POST["days"],
+                                  course=Course.objects.get(courseID=request.POST["course"]),
+                                  ta=UserManagement.findUser(user_id=request.POST["TA"]))
+            return render(request, "editlab.html", {"object_list": Lab.objects.all()})
 
 
 class ClassSchedules(View):

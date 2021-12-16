@@ -1,10 +1,9 @@
-# createCourse(courseName, courseTime, courseDays, courseHours, courseInstructor, courseTA)
-# editCourse(courseName, courseTime, courseDays, courseHours, courseInstructor, courseTa)
-# deleteCourse(courseName)
+# createCourse(name, courseTime, days, hours, instructor, courseTA)
+# editCourse(name, courseTime, days, hours, instructor, courseTa)
+# deleteCourse(name)
 # populateSearchClass(searchPromp)  should change class to course
 # displayAllCourse()
-from TAScheduler.models import Course
-from TAScheduler.models import UserProfile
+from TAScheduler.models import *
 
 
 class CourseManagement(object):
@@ -76,12 +75,18 @@ class CourseManagement(object):
     def deleteCourse(course_id):
         if not (isinstance(course_id, int)):
             raise TypeError("Id entered is not of type int")
-
         retMsg = "Course has been successfully deleted"
         if not (Course.objects.filter(courseID=course_id).exists()):
             retMsg = "This Course being deleted does not exist"
         else:
             Course.objects.filter(courseID=course_id).delete()
+            raise TypeError("course_id entered is not of type int")
+
+        retMsg = "Course has been successfully deleted"
+        if not (Course.objects.filter(courseId=course_id).exists()):
+            retMsg = "This Course being deleted does not exist"
+        else:
+            Course.objects.filter(courseId=course_id).delete()
         return retMsg
 
     # Preconditions: The user has to have been instantiated
@@ -138,3 +143,8 @@ class CourseManagement(object):
                     raise TypeError("Course TA entered is not of type User")
                 if TA.userType != "TA":
                     raise TypeError("Course TA's type is not of type TA")
+        if not(courseLabs is None):
+            for lab in courseLabs:
+                if not(isinstance(lab, Lab)):
+                    raise TypeError("Course lab entered is not of type Lab")
+
