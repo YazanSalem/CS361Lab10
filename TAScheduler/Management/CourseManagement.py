@@ -67,6 +67,18 @@ class CourseManagement(object):
         editedCourse.save()
         return "The course was successfully edited"
 
+#Find course method for editing courses
+    @staticmethod
+    def findCourse(courseID):
+        if not (courseID == 0):
+            CourseManagement.inputErrorChecker(course_id=courseID)
+            try:
+                course = Course.objects.get(courseID=courseID)
+            except Course.DoesNotExist:
+                raise TypeError("This ID does not exisdt")
+        return course
+
+
     # Preconditions: The user has to have been instantiated.
     # The user must be of type administrator
     # Postconditions:Deletes a course
