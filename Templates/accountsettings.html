@@ -14,8 +14,8 @@
         <ul class="nav-links">
             <li><a href="../home/">Dashboard</a></li>
             {% if request.session.user_type == "SUPERVISOR" %}
-            <li><a href="../createuser/">Create User</a></li>
-            <li><a href="../edituser/">Edit User</a></li>
+                <li><a href="../createuser/">Create User</a></li>
+                <li><a href="../edituser/">Edit User</a></li>
             {% endif %}
         </ul>
     </div>
@@ -23,86 +23,85 @@
 
 
 <main>
-     <div class="container">
-     <form class="form-control" action="/createuser/" method="post">
-       {%  csrf_token %}
-     <ul>
-       <li>
-         <label class="label-control" for="userID">User ID
-          <input type="text" id="userID" name="userID">
-          </label>
-       </li>
-       <br>
+    <div class="container">
+        <form class="form-control" action="/accountsettings/" method="post">
+            {% csrf_token %}
+            <table border="1">
+                <tr>
+                    <th>Type</th>
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th>Password</th>
+                    <th>Name</th>
+                    <th>Address</th>
+                    <th>Phone</th>
+                    <th>Email</th>
+                </tr>
+                {% for UserProfile in user_object %}
+                    <tr>
+                        {% if change_user.username  == UserProfile.username %}
+                            <td>
+                                <select name="type" id="type">
+                                    <option value="SUPERVISOR">SUPERVISOR</option>
+                                    <option value="INSTRUCTOR">INSTRUCTOR</option>
+                                    <option value="TA" selected>TA</option>
+                                </select>
+                            </td>
+                            <td>{{ UserProfile.userID }}</td>
+                            <td>{{ UserProfile.username }}</td>
+                            <td><input type="password" id=password name=password value={{ UserProfile.password }}></td>
+                            <td><input type="text" id=name name=name value={{ UserProfile.name }}></td>
+                            <td><input type="text" id=address name=address value={{ UserProfile.address }}></td>
+                            <td><input type="tel" id=phone name=phone value={{ UserProfile.phone }}></td>
+                            <td><input type="email" id=email name=email value={{ UserProfile.email }}></td>
+                            <td>
+                                <button name="submit" type="submit" autofocus="True" value={{ UserProfile.username }}>
+                                    Submit
+                                </button>
+                            </td>
+                        {% else %}
+                            <td>{{ UserProfile.userType }}</td>
+                            <td>{{ UserProfile.id }}</td>
+                            <td>{{ UserProfile.username }}</td>
+                            <td>{{ UserProfile.password }}</td>
+                            <td>{{ UserProfile.name }}</td>
+                            <td>{{ UserProfile.address }}</td>
+                            <td>{{ UserProfile.phone }}</td>
+                            <td>{{ UserProfile.email }}</td>
+                            {% if change_user.username == null %}
+                                <td>
+                                    <button name="edit" type="submit" autofocus="False"
+                                            value={{ UserProfile.username }}>Edit
+                                    </button>
+                                </td>
+                            {% endif %}
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+            </table>
+            <ul>
 
-       <li>
-         <label class="label-control" for="userType"> User Type
-             <select name="userType" id="userType">
-                 <option value="Supervisor">Supervisor</option>
-                 <option value="Instructor">Instructor</option>
-                 <option value="TA">TA</option>
-            </select>
-         </label>
-       </li>
-       <br>
+                <br>
 
-         <li>
-
-         <label class="label-control" for="username">Username <input type="text" id="username " name="username">
-         </label>
-       </li>
-       <br>
-
-         <li>
-         <label class="label-control" for="userPassword">Password <input type="text" id="userPassword " name="userPassword">
-         </label>
-       </li>
-       <br>
-
-         <li>
-
-         <label class="label-control" for="name">Full Name <input type="text" id="name " name="name">
-         </label>
-       </li>
-       <br>
-
-       <li>
-         <label class="label-control" for="userAddress">Address  <input type="text" id="userAddress " name="userAddress">
-         </label>
-       </li>
-       <br>
-
-        <li>
-         <label class="label-control" for="userContact">Phone Number <input type="text" id="userContact " name="userContact">
-         </label>
-       </li>
-       <br>
-
-       <li>
-         <label class="label-control" for="userEmail">E-Mail <input type="text" id="userEmail " name="userEmail">
-         </label>
-       </li>
-       <br>
-
-
-       <button class="btn btn-hero" id="btn">Save Edits</button>
-     </ul>
-     </form>
-     </div>
-   </main>
-       <div class="container">
-        <div class="row">
-            <div class="column">
+                {#       <button class="btn btn-hero" id="btn">Edit User</button>#}
+            </ul>
+        </form>
+    </div>
+</main>
+<div class="container">
+    <div class="row">
+        <div class="column">
             <!--Context variables if there was an unsuccessful login, the 'error' & 'success' variable needs to be used in the CreateCourse.post() method-->
-                {% if success %}
+            {% if success %}
                 {{ success }}
-                {% endif %}
+            {% endif %}
 
-                {% if error %}
+            {% if error %}
                 {{ error }}
-                {% endif %}
-            </div>
+            {% endif %}
         </div>
     </div>
+</div>
 </body>
 
 

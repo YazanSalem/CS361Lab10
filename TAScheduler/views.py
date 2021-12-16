@@ -123,13 +123,29 @@ class AccountSettings(View):
         # they will fail the userAllowed test and be redirected back to the login page
         # If the user is allowed then home is rendered like normal
         if userAllowed(request, ["SUPERVISOR", "INSTRUCTOR", "TA"]):
-            return render(request, "accountsettings.html")
+            return render(request, "accountsettings.html", {"user_object": UserProfile.objects.all()})
         else:
             return redirect("/../home")
 
+    @staticmethod
     def post(self, request):
-        # TODO: implement post
-        pass
+        edit = True
+        try:
+            edit_or_submit = request.POST["edit"]
+        except MultiValueDictKeyError:
+            edit_or_submit = request.POST["submit"]
+            edit = False
+        if edit:
+            change_user = UserManagement.findUser(username=edit_or_submit)
+            return render(request, "accountsettings.html.html",
+                          {"user_object": UserProfile.objects.all(), "change_user": change_user})
+        else:
+            UserManagement.editUser(user_id=UserManagement.findUser(username=edit_or_submit).userID,
+                                    user_type=request.POST["type"], username=edit_or_submit,
+                                    password=request.POST["password"], name=request.POST["name"],
+                                    address=request.POST["address"], phone=request.POST["phone"],
+                                    email=request.POST["email"])
+            return render(request, "accountsettings.html.html", {"user_object": UserProfile.objects.all()})
 
 
 class EditUser(View):
@@ -234,6 +250,26 @@ class EditLab(View):
                                   course=Course.objects.get(courseID=request.POST["course"]),
                                   ta=UserManagement.findUser(user_id=request.POST["TA"]))
             return render(request, "editlab.html", {"object_list": Lab.objects.all()})
+
+
+class AssignTa(View):
+    @staticmethod
+    def get(request):
+        # If the user does not have a valid name, I.E. if they try to manually enter /home in the search bar,
+        # they will fail the userAllowed test and be redirected back to the login page
+        # If the user is allowed then home is rendered like normal
+        if userAllowed(request, ["SUPERVISOR"]):
+            return render(request, "assignTA.html")
+        else:
+            return redirect("/../home/")
+
+    @staticmethod
+    def post(request):
+        Course.editCourse(request.POST['courseTA'])
+        Course.TAs.add(UserProfile.objects.get(username=request.POST['TAs']))
+        Course.labs.add(Lab.objects.get(name=request.POST['labs']))
+        Course.save()
+        return render(request, "assignTA.html")
 
 
 class ClassSchedules(View):
