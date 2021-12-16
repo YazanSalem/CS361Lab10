@@ -80,13 +80,6 @@ class CourseManagement(object):
             retMsg = "This Course being deleted does not exist"
         else:
             Course.objects.filter(courseID=course_id).delete()
-            raise TypeError("course_id entered is not of type int")
-
-        retMsg = "Course has been successfully deleted"
-        if not (Course.objects.filter(courseId=course_id).exists()):
-            retMsg = "This Course being deleted does not exist"
-        else:
-            Course.objects.filter(courseId=course_id).delete()
         return retMsg
 
     # Preconditions: The user has to have been instantiated
