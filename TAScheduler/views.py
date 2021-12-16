@@ -189,18 +189,8 @@ class DeleteLab(View):
             return redirect("/../home/")
 
     def post(request):
-        delete = True
-        try:
-            delete_or_submit = int(request.POST["delete"])
-        except MultiValueDictKeyError:
-            delete_or_submit = int(request.POST["submit"])
-            delete = False
-        if delete:
-            deleted_lab = Lab.objects.get(labID = delete_or_submit)
-            Lab.objects.delete(labID=delete_or_submit)
-            return render(request, "deletelab.html", {"lab_list":Lab.objects.all(), "deleted_lab": deleted_lab})
-        else:
-            return render(request, "deletelab.html", {"lab_list": Lab.objects.all()})
+        LabManagement.deleteLab(user_id=request.POST("delete"))
+        return render(request, "deletelab.html", {"lab_list": Lab.objects.all()})
 
 class DeleteCourse(View):
     def get(request):
@@ -213,18 +203,8 @@ class DeleteCourse(View):
             return redirect("/../home/")
 
     def post(request):
-        delete = True
-        try:
-            delete_or_submit = int(request.POST["delete"])
-        except MultiValueDictKeyError:
-            delete_or_submit = int(request.POST["submit"])
-            delete = False
-        if delete:
-            deleted_course = Course.objects.get(courseID = delete_or_submit)
-            Course.objects.delete(courseID=delete_or_submit)
-            return render(request, "deletecourse.html", {"course_list":Course.objects.all(), "deleted_course": deleted_course})
-        else:
-            return render(request, "deletecourse.html", {"course_list": Course.objects.all()})
+        CourseManagement.deleteCourse(user_id=request.POST("delete"))
+        return render(request, "deletecourse.html", {"course_list": Course.objects.all()})
 
 class DeleteUser(View):
     def get(request):
@@ -237,18 +217,8 @@ class DeleteUser(View):
             return redirect("/../home/")
 
     def post(request):
-        delete = True
-        try:
-            delete_or_submit = int(request.POST["delete"])
-        except MultiValueDictKeyError:
-            delete_or_submit = int(request.POST["submit"])
-            delete = False
-        if delete:
-            UserProfile.objects.delete(userID=delete_or_submit)
-            deleted_user= UserProfile.objects.get(courseID = delete_or_submit)
-            return render(request, "deleteuser.html", {"user_list":UserProfile.objects.all(), "deleted_user": deleted_user})
-        else:
-            return render(request, "deleteuser.html", {"user_list": UserProfile.objects.all()})
+        UserManagement.deleteUser(user_id=request.POST("delete"))
+        return render(request, "deleteuser.html", {"user_list": UserProfile.objects.all()})
 
 class CreateLab(View):
     @staticmethod
