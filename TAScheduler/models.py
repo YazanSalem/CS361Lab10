@@ -17,17 +17,8 @@ class UserProfile(models.Model):
     phone = models.IntegerField(default=0)
     email = models.EmailField(max_length=30)
 
-
-# The Lab class keeps track of the information for a particular lab section and references the instructor of the course
-# to keep track of which course it relates to.
-class Lab(models.Model):
-    labID = models.IntegerField(default=0)
-    name = models.CharField(max_length=20)
-    location = models.CharField(max_length=20)
-    hours = models.CharField(max_length=20)
-    days = models.CharField(max_length=20)
-    instructor = models.ForeignKey(UserProfile, on_delete=models.PROTECT)
-    TA = models.ForeignKey(UserProfile, on_delete=models.PROTECT, related_name="TAToLab")
+    def __str__(self):
+        return self.username
 
 
 # The Course class keeps track of lecture sections and stores the TAs, instructors, and labs associated with it.
@@ -35,14 +26,31 @@ class Course(models.Model):
     courseID = models.IntegerField()
     name = models.CharField(max_length=20)
     location = models.CharField(max_length=20)
-    hours = models.TimeField()
+    hours = models.CharField(max_length=20)
     days = models.CharField(max_length=20)
     instructor = models.ForeignKey(UserProfile, on_delete=models.PROTECT)
     TAs = models.ManyToManyField(UserProfile, related_name="TAToCourse")
-    labs = models.ManyToManyField(Lab)
+
+    def __str__(self):
+        return self.name
 
     # class Meta:
     #     db_table = "CourseList"
+
+
+# The Lab class keeps track of the information for a particular lab section and references the instructor of the
+# course to keep track of which course it relates to.
+class Lab(models.Model):
+    labID = models.IntegerField(default=0)
+    name = models.CharField(max_length=20)
+    location = models.CharField(max_length=20)
+    hours = models.CharField(max_length=20)
+    days = models.CharField(max_length=20)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    TA = models.ForeignKey(UserProfile, on_delete=models.PROTECT, related_name="TAToLab")
+
+    def __str__(self):
+        return self.name
 
 
 # Schedule is a tool to be used by users to display the events they have going on in a week, be that Labs or courses.

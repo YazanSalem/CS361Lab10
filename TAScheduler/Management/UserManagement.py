@@ -83,6 +83,9 @@ class UserManagement(object):
 
             if profile is None:
                 raise TypeError("This username does not exist")
+        else:
+            raise TypeError("Unknown error")
+            profile = None
         return profile
 
     # Preconditions: The user has to have been instantiated
