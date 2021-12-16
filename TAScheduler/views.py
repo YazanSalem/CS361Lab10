@@ -236,7 +236,7 @@ class DeleteLab(View):
 
     @staticmethod
     def post(request):
-        LabManagement.deleteLab(user_id=request.POST("delete"))
+        LabManagement.deleteLab(lab_id = int(request.POST["delete"]))
         return render(request, "deletelab.html", {"lab_list": Lab.objects.all()})
 
 class DeleteCourse(View):
@@ -252,7 +252,7 @@ class DeleteCourse(View):
 
     @staticmethod
     def post(request):
-        CourseManagement.deleteCourse(user_id=request.POST("delete"))
+        CourseManagement.deleteCourse(course_id = int(request.POST["delete"]))
         return render(request, "deletecourse.html", {"course_list": Course.objects.all()})
 
 class DeleteUser(View):
@@ -268,7 +268,7 @@ class DeleteUser(View):
 
     @staticmethod
     def post(request):
-        UserManagement.deleteUser(user_id=request.POST("delete"))
+        UserManagement.deleteUser(user_id=int(request.POST["delete"]))
         return render(request, "deleteuser.html", {"user_list": UserProfile.objects.all()})
 
 class CreateLab(View):
