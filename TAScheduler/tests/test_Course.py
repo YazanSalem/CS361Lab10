@@ -28,13 +28,34 @@ class TestCreateCourse(TestCase):
     def test_courseID(self):
         self.assertEqual(1000, self.testCourse.courseID, "Course ID was not set correctly when creating course.")
 
+    def test_courseIDInvalidType(self):
+        with self.assertRaises(TypeError,
+                               msg="An exception was not raised when createCourse was passed a courseID with an "
+                                   "invalid type"):
+            CourseManagement.createCourse(course_id="String", name="Reading", location="EMS E240", days="M, W, F",
+                                          hours="12:00 PM - 12:50 PM", instructor=self.instructor, tas=[self.TA])
+
     def test_courseName(self):
         self.assertEqual("Computer Programming", self.testCourse.name,
                          "Course name was not set correctly when creating course.")
 
+    def test_courseNameInvalidType(self):
+        with self.assertRaises(TypeError,
+                               msg="An exception was not raised when createCourse was passed a name with an invalid "
+                                   "type"):
+            CourseManagement.createCourse(course_id=20, name=80, location="EMS E240", days="M, W, F",
+                                          hours="12:00 PM - 12:50 PM", instructor=self.instructor, tas=[self.TA])
+
     def test_courseLocation(self):
         self.assertEqual("EMS E240", self.testCourse.location,
                          "Course location was not set correctly when creating course.")
+
+    def test_courseLocationInvalidType(self):
+        with self.assertRaises(TypeError,
+                               msg="An exception was not raised when createCourse was passed a location with an "
+                                   "invalid type"):
+            CourseManagement.createCourse(course_id=30, name="Physics", location=765, days="M, W, F",
+                                          hours="12:00 PM - 12:50 PM", instructor=self.instructor, tas=[self.TA])
 
     def test_courseDays(self):
         self.assertEqual("M, W, F", self.testCourse.days, "Course days were not set correctly when creating course.")
@@ -136,11 +157,11 @@ class TestEditCourse(TestCase):
 
     def test_editInstructor(self):
         CourseManagement.editCourse(course_id=10, instructor=self.instructor2)
-        self.assertEqual(self.instructor2, Course.objects.get(courseID=10).instructor, "Instructor was not edited correctly.")
+        self.assertEqual(self.instructor2, Course.objects.get(courseID=10).instructor,
+                         "Instructor was not edited correctly.")
 
     def test_editTA(self):
         CourseManagement.editCourse(course_id=10, tas=[self.TA2])
-        print(Course.objects.get(courseID=10).TAs.all())
         self.assertEqual(self.TA2, Course.objects.get(courseID=10).TAs.all()[0], "TA was not edited correctly.")
 
 
@@ -154,7 +175,6 @@ class TestDeleteCourse(TestCase):
                               days="M, W, F", instructor=self.instructor)
 
     def test_delete(self):
-        CourseManagement.deleteCourse(course_id=10)
-        with self.assertRaises(Course.DoesNotExist, msg="An exception was not raised when createCourse was passed an "
-                                                        "invalid TA."):
-            Course.objects.get(courseID=10)
+        with self.assertRaises(ValueError, msg="An exception was not raised when delete was passed a course_id that "
+                                               "does not exist"):
+            CourseManagement.deleteCourse(course_id=11)

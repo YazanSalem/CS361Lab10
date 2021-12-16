@@ -20,10 +20,10 @@ class CourseManagement(object):
     # Course TA(in) -TA of the course
     @staticmethod
     def createCourse(course_id, name, location, days, hours, instructor, tas=None):
+        CourseManagement.inputErrorChecker(course_id, name, location, days, hours, instructor, tas)
         try:
             Course.objects.get(courseID=course_id)
         except Course.DoesNotExist:
-            CourseManagement.inputErrorChecker(course_id, name, location, days, hours, instructor, tas)
             Course.objects.create(courseID=course_id, name=name, location=location, hours=hours, days=days,
                                   instructor=instructor)
             course = Course.objects.get(courseID=course_id)
@@ -31,6 +31,7 @@ class CourseManagement(object):
                 for ta in tas:
                     course.TAs.add(ta)
             return "Course was created"
+        raise ValueError("The course_id entered already exists")
 
     # Preconditions: The user has to have been instantiated.
     # The user must be of type administrator
@@ -73,14 +74,11 @@ class CourseManagement(object):
     # Course Name(in) - Name of the course
     @staticmethod
     def deleteCourse(course_id):
-        if not (isinstance(course_id, int)):
-            raise TypeError("Id entered is not of type int")
-        retMsg = "Course has been successfully deleted"
-        if not (Course.objects.filter(courseID=course_id).exists()):
-            retMsg = "This Course being deleted does not exist"
-        else:
-            Course.objects.filter(courseID=course_id).delete()
-        return retMsg
+        CourseManagement.inputErrorChecker(course_id=course_id)
+        try:
+            Course.objects.get(courseID=course_id).delete()
+        except Course.DoesNotExist:
+            raise ValueError("The course_id provided does not exist")
 
     # Preconditions: The user has to have been instantiated
     # The searchPrompt is an existing course assignment name
