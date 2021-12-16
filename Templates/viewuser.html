@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+        h4 {text-align: center;}
+        </style>
+    <title>View Users</title>
+    {% load static %}
+    <link rel="stylesheet" href = "{% static 'styles.css'%}">
+
+    <meta charset="UTF-8">
+</head>
+
+<body>
+  <nav>
+    <div class = "nav-center">
+    <h4>View Users</h4>
+      <ul class="nav-links">
+        <li><a href="../home/">Dashboard</a></li>
+        <li><a href="../accountsettings/">Account Settings</a></li>
+        {% if request.session.user_type == "SUPERVISOR" %}
+        <li><a href="../createuser/">Create</a></li>
+        <li><a href="../deleteuser/">Delete</a></li>
+        <li><a href="../edituser/">Edit</a></li>
+        {% endif %}
+      </ul>
+    </div>
+  </nav>
+
+  <main>
+     <div class="container">
+       {%  csrf_token %}
+         <table border="1">
+            <tr>
+                <th>Type</th>
+                <th>Username</th>
+                <th>Name</th>
+                <th>Address</th>
+                <th>Phone</th>
+                <th>Email</th>
+            </tr>
+             {% for UserProfile in user_list %}
+             <tr>
+                    <td>{{ UserProfile.userType }}</td>
+                    <td>{{ UserProfile.username }}</td>
+                    <td>{{ UserProfile.name }}</td>
+                    <td>{{ UserProfile.address }}</td>
+                    <td>{{ UserProfile.phone }}</td>
+                    <td>{{ UserProfile.email }}</td>
+             </tr>
+             {% endfor%}
+         </table>
+     </div>
+   </main>
+       <div class="container">
+        <div class="row">
+            <div class="column">
+            <!--Context variables if there was an unsuccesful login, the 'error' & 'success' variable needs to be used in the CreateCourse.post() method-->
+                {% if success %}
+                {{ success }}
+                {% endif %}
+
+                {% if error %}
+                {{ error }}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

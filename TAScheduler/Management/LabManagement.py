@@ -25,17 +25,20 @@ class LabManagement(object):
     @staticmethod
     def createLab(lab_id, lab_name, lab_location, lab_hours, lab_days, course, ta):
         LabManagement.__inputErrorCheck(lab_id, lab_name, lab_hours, lab_location, lab_days, course, ta)
-        Lab.objects.create(labID=lab_id, name=lab_name, location=lab_location, hours=lab_hours, days=lab_days, course=course, TA=ta)
+        if Lab.objects.filter(labID=lab_id).exists():
+            raise TypeError("That labID is already in use")
+        Lab.objects.create(labID=lab_id, name=lab_name, location=lab_location, hours=lab_hours, days=lab_days,
+                           course=course, TA=ta)
 
         return "Lab was created"
-    
+
     # Preconditions: Both the lab and the TA must exist in the database
     # Postconditions: The TA for the lab is updated to the given TA
     # Lab id(in) - ID of the lab
     # Lab ta(in) - Profile of the TA to be assigned to the lab
     @staticmethod
     def addTA(lab_id, lab_ta):
-        LabManagement.__inputErrorCheck(lab_id,"", "", "", "", None, lab_ta)
+        LabManagement.__inputErrorCheck(lab_id=lab_id, ta=lab_ta)
         if not (Lab.objects.filter(labID=lab_id).exists()):
             raise TypeError("This Lab does not exist")
 
@@ -55,19 +58,24 @@ class LabManagement(object):
     # course(in) - course of the lab
     # ta(in) -TA of the lab
     @staticmethod
-    def editLab(lab_id, lab_name, lab_hours, lab_location, lab_days, course, ta):
+    def editLab(lab_id, lab_name="", lab_hours="", lab_location="", lab_days="", course=None, ta=None):
         LabManagement.__inputErrorCheck(lab_id, lab_name, lab_hours, lab_location, lab_days, course, ta)
         if not (Lab.objects.filter(labID=lab_id).exists()):
             raise TypeError("This Lab does not exist")
 
         editedLab = Lab.objects.get(labID=lab_id)
-
-        editedLab.name = lab_name
-        editedLab.location = lab_location
-        editedLab.hours = lab_hours
-        editedLab.days = lab_days
-        editedLab.course = course
-        editedLab.TA = ta
+        if not (lab_name == ""):
+            editedLab.name = lab_name
+        if not (lab_location == ""):
+            editedLab.location = lab_location
+        if not (lab_hours == ""):
+            editedLab.hours = lab_hours
+        if not (lab_days == ""):
+            editedLab.days = lab_days
+        if not (course is None):
+            editedLab.course = course
+        if not (ta is None):
+            editedLab.TA = ta
         editedLab.save()
 
         return "The lab was successfully edited"
@@ -79,16 +87,11 @@ class LabManagement(object):
     # Lab Name(in) - Name of the course
     @staticmethod
     def deleteLab(lab_id):
-        if not (isinstance(lab_id, int)):
-            raise TypeError("lab_id entered is not of type int")
-
-        retMsg = "Lab has been successfully deleted"
-        if not (Lab.objects.filter(labID=lab_id).exists()):
-            retMsg = "This lab being deleted does not exist"
-        else:
+        LabManagement.__inputErrorCheck(lab_id=lab_id)
+        try:
             Lab.objects.get(labID=lab_id).delete()
-
-        return retMsg
+        except Lab.DoesNotExist:
+            raise ValueError("The course_id provided does not exist")
 
     # Preconditions: The user has to have been instantiated
     # The LabID is an existing lab_id 
@@ -129,9 +132,10 @@ class LabManagement(object):
             raise TypeError("Lab Hours entered is not of type str")
         if not (isinstance(lab_days, str)):
             raise TypeError("Lab Days entered is not of type str")
-        if not(isinstance(course, Course)):
-            raise TypeError("Course entered is not of type course")
-        if not(ta is None):
+        if not (course is None):
+            if not (isinstance(course, Course)):
+                raise TypeError("Course entered is not of type course")
+        if not (ta is None):
             if not (isinstance(ta, UserProfile)):
                 raise TypeError("Lab TA entered is not of type User")
             if ta.userType != "TA":
