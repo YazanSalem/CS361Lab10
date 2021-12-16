@@ -31,5 +31,6 @@ urlpatterns = [
     path('editcourse/', EditCourse.as_view()),
     path('deletecourse/', DeleteCourse.as_view()),
     path('editlab/', EditLab.as_view()),
-    path('deletelab/', DeleteLab.as_view())
+    path('deletelab/', DeleteLab.as_view()),
+    path('viewuser/', ViewUser.as_view())
 ]
