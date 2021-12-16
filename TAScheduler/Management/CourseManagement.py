@@ -31,7 +31,7 @@ class CourseManagement(object):
                 for ta in tas:
                     course.TAs.add(ta)
             return "Course was created"
-        raise ValueError("The course_id entered already exists")
+        raise TypeError("The course_id entered already exists")
 
     # Preconditions: The user has to have been instantiated.
     # The user must be of type administrator

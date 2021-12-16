@@ -22,7 +22,8 @@ class TestCreateCourse(TestCase):
 
         CourseManagement.createCourse(course_id=1000, name="Computer Programming", location="EMS E240", days="M, W, F",
                                       hours="12:00 PM - 12:50 PM", instructor=self.instructor, tas=[self.TA])
-
+        Course.objects.create(courseID=1001, name="System Programming", location="EMS 180", days="T, Th",
+                              hours="10:00 AM - 10:50 AM", instructor=self.instructor)
         self.testCourse = Course.objects.get(courseID=1000)
 
     def test_courseID(self):
@@ -34,6 +35,14 @@ class TestCreateCourse(TestCase):
                                    "invalid type"):
             CourseManagement.createCourse(course_id="String", name="Reading", location="EMS E240", days="M, W, F",
                                           hours="12:00 PM - 12:50 PM", instructor=self.instructor, tas=[self.TA])
+
+    def test_courseIDPreexisting(self):
+        with self.assertRaises(TypeError,
+                               msg="An exception was not raised when createCourse was passed a courseID that already "
+                                   "exists in the database"):
+            CourseManagement.createCourse(course_id=1001, name="Computer Programming", location="EMS E240",
+                                          days="M, W, F", hours="12:00 PM - 12:50 PM", instructor=self.instructor,
+                                          tas=[self.TA])
 
     def test_courseName(self):
         self.assertEqual("Computer Programming", self.testCourse.name,
@@ -125,7 +134,6 @@ class TestCreateCourse(TestCase):
 
 
 class TestEditCourse(TestCase):
-
     def setUp(self):
         UserProfile(userID=1, userType="INSTRUCTOR", username="instructor", password="password",
                     name="Professor Layton", address="3400 N Maryland Ave", phone="6085555432",
@@ -147,9 +155,24 @@ class TestEditCourse(TestCase):
         Course.objects.get(courseID=10).TAs.add(self.TA1)
         self.testCourse = Course.objects.get(courseID=10)
 
+    def test_invalidID(self):
+        with self.assertRaises(TypeError,
+                               msg="editCourse does not raise an error when passed a courseID that doesn't correspond "
+                                   "to a course"):
+            CourseManagement.editCourse(course_id=787, name="Chemistry", location="Location",
+                                        hours="12:00 PM - 12:50 PM", days="M, W, F", instructor=self.instructor)
+
     def test_editName(self):
         CourseManagement.editCourse(course_id=self.testCourse.courseID, name="Trigonometry")
         self.assertEqual("Trigonometry", Course.objects.get(courseID=10).name, "Name was not edited correctly.")
+
+    def test_editLocation(self):
+        CourseManagement.editCourse(course_id=self.testCourse.courseID, location="Physics 120")
+        self.assertEqual("Physics 120", Course.objects.get(courseID=10).location, "Location was not edited correctly.")
+
+    def test_editHours(self):
+        CourseManagement.editCourse(course_id=self.testCourse.courseID, hours="7:00 PM - 8:00 PM")
+        self.assertEqual("7:00 PM - 8:00 PM", Course.objects.get(courseID=10).hours, "Hours were not edited correctly.")
 
     def test_editDays(self):
         CourseManagement.editCourse(course_id=self.testCourse.courseID, days="T, Th")
@@ -175,6 +198,10 @@ class TestDeleteCourse(TestCase):
                               days="M, W, F", instructor=self.instructor)
 
     def test_delete(self):
+        CourseManagement.deleteCourse(course_id=10)
+        self.assertFalse(Course.objects.filter(courseID=10).exists())
+
+    def test_deleteInvalid(self):
         with self.assertRaises(ValueError, msg="An exception was not raised when delete was passed a course_id that "
                                                "does not exist"):
             CourseManagement.deleteCourse(course_id=11)
