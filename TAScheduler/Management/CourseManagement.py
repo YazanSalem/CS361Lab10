@@ -71,7 +71,7 @@ class CourseManagement(object):
     @staticmethod
     def findCourse(courseID):
         if not (courseID == 0):
-            CourseManagement.__inputErrorCheck(courseID=courseID)
+            CourseManagement.inputErrorChecker(course_id=courseID)
             try:
                 course = Course.objects.get(courseID=courseID)
             except Course.DoesNotExist:

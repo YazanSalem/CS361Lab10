@@ -185,20 +185,16 @@ class EditCourse(View):
             edit = False
 
         if edit:
-            change_course = CourseManagement.findCourse(courseID=edit_or_submit)
-            return render(request, "editcourse.html", {"Course_list": Course.objects.all()}, {"change_course": change_course})
+            change_course = CourseManagement.findCourse(int(edit_or_submit))
+            return render(request, "editcourse.html", {"Course_list": Course.objects.all(), "change_course": change_course, "UserProfile_list": UserProfile.objects.all()})
         else:
 
             change_course = CourseManagement.findCourse(courseID=edit_or_submit)
-            CourseManagement.editCourse(change_course.courseID, name=request.POST["name"], location=request.POST["location"], days=request.POST["days"],
-                                        hours=request.POST["hours"], TAs=request.POST["TAs"], courseLabs=request.POST["labs"])
+            CourseManagement.editCourse(int(change_course.courseID), name=request.POST["name"], location=request.POST["location"], days=request.POST["days"],
+                                        hours=request.POST["hours"], instructor=request.POST["INSTRUCTOR"], TAs=request.POST["TAs"])
+
             return render(request,"editcourse.html", {"Course_list": Course.objects.all()})
 
-
-    @staticmethod
-    def post(request):
-        # TODO: implement post
-        pass
 
 class DeleteLab(View):
     def get(request):
