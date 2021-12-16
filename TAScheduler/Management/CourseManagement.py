@@ -66,18 +66,7 @@ class CourseManagement(object):
             try:
                 course = Course.objects.get(courseID=courseID)
             except Course.DoesNotExist:
-                course = None
-
-            if course is None:
-                raise TypeError("This ID does not exist")
-        elif not (courseID== ""):
-            try:
-                course = Course.objects.get(courseID=courseID)
-            except Course.DoesNotExist:
-                course = None
-
-            if course is None:
-                raise TypeError("This username does not exist")
+                raise TypeError("This ID does not exisdt")
         return course
 
 

@@ -178,12 +178,18 @@ class EditCourse(View):
             edit_or_submit = request.POST["edit"]
         except MultiValueDictKeyError:
             edit_or_submit = request.POST["submit"]
+
             edit = False
 
         if edit:
             change_course = CourseManagement.findCourse(courseID=edit_or_submit)
             return render(request, "editcourse.html", {"Course_list": Course.objects.all()}, {"change_course": change_course})
-        else: CourseManagement.editCourse()
+        else:
+
+            change_course = CourseManagement.findCourse(courseID=edit_or_submit)
+            CourseManagement.editCourse(change_course.courseID, name=request.POST["name"], location=request.POST["location"], days=request.POST["days"],
+                                        hours=request.POST["hours"], TAs=request.POST["TAs"], courseLabs=request.POST["labs"])
+            return render(request,"editcourse.html", {"Course_list": Course.objects.all()})
 
 
     @staticmethod

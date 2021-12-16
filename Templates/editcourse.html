@@ -40,16 +40,24 @@
             </tr>
              {% for Course in Course_list %}
                  {% if change_course.courseID  == Course.courseID %}
-                     <td><input type="text" id= name=id value={{ Course.courseID }}></td>
+                     <td><input type="number" id= name=id value={{ Course.courseID }}></td>
                      <td><input type="text" id=name name=name value={{ Course.name }}></td>
                      <td><input type="text" id=location name=location value={{ Course.location }}></td>
                      <td><input type="text" id=hours name=hours value={{ Course.hours }}></td>
                      <td><input type="text" id=days name=days value={{ Course.days }}></td>
-{#                     <td><input type="text" id=instructor name=instructor value={{ Course.instructor }}></td>#}
-{#                     <td><input type="" id=TAs name=TAs value={{ Course.TAs }}></td>#}
-{#                     <td><input type="" id=labs name=labs value={{ Course.labs }}></td>#}
+                     <td>
+                     <select name="instructor" id="instructor">
+                         {% for UserProfile in UserProfile_list %}
+                             {% if UserProfile.userType == "INSTRUCTOR" %}
+                                 <option value ={{ UserProfile.userID }}> {{ UserProfile.username }} </option>
+                             {% endif %}
+                         {{% endfor %}
+                     </select>
+                     </td>
+                     <td><input type="text" id=TAs name=TAs value={{ Course.TAs }}></td>
+                     <td><input type="text" id=labs name=labs value={{ Course.labs }}></td>
                  {% else %}
-             <tr>
+                     <tr>
                     <td>{{ Course.courseID }}</td>
                     <td>{{ Course.name }}</td>
                     <td>{{ Course.location }}</td>
