@@ -1,7 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title> Delete User</title>
+    <style>
+        h4 {text-align: center;}
+        </style>
+    <title>View Users</title>
     {% load static %}
     <link rel="stylesheet" href = "{% static 'styles.css'%}">
 
@@ -11,49 +14,42 @@
 <body>
   <nav>
     <div class = "nav-center">
-    <h4>Delete User</h4>
+    <h4>View Users</h4>
       <ul class="nav-links">
         <li><a href="../home/">Dashboard</a></li>
         <li><a href="../accountsettings/">Account Settings</a></li>
-        <li><a href="../viewuser/">View Users</a></li>
         <li><a href="../createuser/">Create</a></li>
+        <li><a href="../deleteuser/">Delete</a></li>
         <li><a href="../edituser/">Edit</a></li>
       </ul>
     </div>
   </nav>
-  
+
   <main>
-    <div class="container">
-      <form class="form-control" action="/deleteuser/" method="post">
-      {%  csrf_token %}
-        <table border="1">
+     <div class="container">
+       {%  csrf_token %}
+         <table border="1">
             <tr>
-                <th>ID</th>
                 <th>Type</th>
-                <th>User Name</th>
+                <th>Username</th>
                 <th>Name</th>
                 <th>Address</th>
-                <th>Contact</th>
+                <th>Phone</th>
                 <th>Email</th>
             </tr>
-          {% for User in user_list %}
-            <tr>
-              <td>{{ User.userID}}</td>
-              <td>{{ User.userType }}</td>
-              <td>{{ User.username}}</td>
-              <td>{{ User.name}}</td>
-              <td>{{ User.address }}</td>
-              <td>{{ User.phone }}</td>
-              <td>{{ User.email }}</td>
-              {% if deleted_user.userID == null %}
-                  <td><button name="delete" type="submit" value={{ User.userID }}>Delete</button></td>
-                  {% endif %}
-            </tr>
-          {% endfor%}
-        </table>
-      </form>
-    </div>
-  </main>
+             {% for UserProfile in user_list %}
+             <tr>
+                    <td>{{ UserProfile.userType }}</td>
+                    <td>{{ UserProfile.username }}</td>
+                    <td>{{ UserProfile.name }}</td>
+                    <td>{{ UserProfile.address }}</td>
+                    <td>{{ UserProfile.phone }}</td>
+                    <td>{{ UserProfile.email }}</td>
+             </tr>
+             {% endfor%}
+         </table>
+     </div>
+   </main>
        <div class="container">
         <div class="row">
             <div class="column">
