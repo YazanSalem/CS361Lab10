@@ -175,7 +175,8 @@ class EditCourse(View):
         else:
             return redirect("/../home/")
 
-    def post(self, request):
+    @staticmethod
+    def post(request):
         edit = True
         try:
             edit_or_submit = request.POST["edit"]
@@ -188,15 +189,20 @@ class EditCourse(View):
             change_course = CourseManagement.findCourse(int(edit_or_submit))
             return render(request, "editcourse.html", {"Course_list": Course.objects.all(), "change_course": change_course, "UserProfile_list": UserProfile.objects.all()})
         else:
+            gottenTAs = request.POST.getlist("TAs")
+            for i in range(len(gottenTAs)):
+                gottenTAs[i] = int(gottenTAs[i])
+                gottenTAs[i] = UserProfile.objects.get(userID=gottenTAs[i])
 
-            change_course = CourseManagement.findCourse(courseID=edit_or_submit)
+            change_course = CourseManagement.findCourse(courseID=int(edit_or_submit))
             CourseManagement.editCourse(int(change_course.courseID), name=request.POST["name"], location=request.POST["location"], days=request.POST["days"],
-                                        hours=request.POST["hours"], instructor=request.POST["INSTRUCTOR"], TAs=request.POST["TAs"])
+                                        hours=request.POST["hours"], instructor=UserProfile.objects.get(userID=int(request.POST["instructor"])), tas=gottenTAs)
 
             return render(request,"editcourse.html", {"Course_list": Course.objects.all()})
 
 
 class DeleteLab(View):
+    @staticmethod
     def get(request):
         # If the user does not have a valid name, I.E. if they try to manually enter /home in the search bar,
         # they will fail the userAllowed test and be redirected back to the login page
@@ -206,11 +212,13 @@ class DeleteLab(View):
         else:
             return redirect("/../home/")
 
+    @staticmethod
     def post(request):
         LabManagement.deleteLab(user_id=request.POST("delete"))
         return render(request, "deletelab.html", {"lab_list": Lab.objects.all()})
 
 class DeleteCourse(View):
+    @staticmethod
     def get(request):
         # If the user does not have a valid name, I.E. if they try to manually enter /home in the search bar,
         # they will fail the userAllowed test and be redirected back to the login page
@@ -220,11 +228,13 @@ class DeleteCourse(View):
         else:
             return redirect("/../home/")
 
+    @staticmethod
     def post(request):
         CourseManagement.deleteCourse(user_id=request.POST("delete"))
         return render(request, "deletecourse.html", {"course_list": Course.objects.all()})
 
 class DeleteUser(View):
+    @staticmethod
     def get(request):
         # If the user does not have a valid name, I.E. if they try to manually enter /home in the search bar,
         # they will fail the userAllowed test and be redirected back to the login page
@@ -234,6 +244,7 @@ class DeleteUser(View):
         else:
             return redirect("/../home/")
 
+    @staticmethod
     def post(request):
         UserManagement.deleteUser(user_id=request.POST("delete"))
         return render(request, "deleteuser.html", {"user_list": UserProfile.objects.all()})

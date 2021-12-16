@@ -37,9 +37,9 @@
                 <th>Course Days</th>
                 <th>Instructor Name</th>
                 <th>TA Name</th>
-                <th>Labs</th>
             </tr>
              {% for Course in Course_list %}
+                 <tr>
                  {% if change_course.courseID  == Course.courseID %}
                      <td><input type="number" id= name=id value={{ Course.courseID }}></td>
                      <td><input type="text" id=name name=name value={{ Course.name }}></td>
@@ -55,18 +55,30 @@
                          {{% endfor %}
                      </select>
                      </td>
-                     <td><input type="text" id=TAs name=TAs value={{ Course.TAs }}></td>
-                     <td><input type="text" id=labs name=labs value={{ Course.labs }}></td>
+                     <td>
+                        <select multiple name="TAs" id="TAs">
+                            {% for UserProfile in UserProfile_list %}
+                                {% if UserProfile.userType == "TA" %}
+                                    <option value={{ UserProfile.userID }}>{{ UserProfile.username }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                     </td>
+                     <td><button name="submit" type="submit" value={{ Course.courseID }}>Submit</button></td>
+
                  {% else %}
-                     <tr>
+
                     <td>{{ Course.courseID }}</td>
                     <td>{{ Course.name }}</td>
                     <td>{{ Course.location }}</td>
                     <td>{{ Course.hours }}</td>
                     <td>{{ Course.days }}</td>
                     <td>{{ Course.instructor }}</td>
-                    <td>{{ Course.TAs}}</td>
-                    <td>{{ Course.labs }}</td>
+                    <td>
+                    {% for i in Course.TAs.all %}
+                        {{ i }}
+                    {% endfor %}
+                    </td>
                 {% if change_course == null %}
                 <td><button name="edit" type="submit" autofocus="False" value={{ Course.courseID }}>Edit</button></td>
                 {% endif %}
