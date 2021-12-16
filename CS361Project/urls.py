@@ -23,6 +23,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', Login.as_view()),
     path('home/', Home.as_view()),
+    path('sendmsg/', SendMsg.as_view()),
     path('createuser/', CreateUser.as_view()),
     path('createcourse/', CreateCourse.as_view()),
     path('createlab/', CreateLab.as_view()),
