@@ -1,49 +1,62 @@
-from TAScheduler.models import Lab
-from TAScheduler.models import UserProfile
+from TAScheduler.models import *
 
 
 class LabManagement(object):
 
     # class Lab(models.Model):
-    #    labID = models.IntegerField(default=0)
+    #    labID = models.IntegerField()
     #    name = models.CharField(max_length=20)
     #    location = models.CharField(max_length=20)
     #    hours = models.CharField(max_length=20)
     #    days = models.CharField(max_length=20)
-    #    instructor = models.ForeignKey(UserProfile, on_delete=models.PROTECT)
+    #    course = models.ForeignKey(Course, on_delete=models.CASCADE
     #    TA = models.ForeignKey(UserProfile, on_delete=models.PROTECT, related_name="TAToLab")
 
     # Preconditions: The user has to have been instantiated.
     # Postconditions: The lab is now created
     # Side-effects: Lab is created and added inside the database
-    # Lab ID(in) - Id of the lab
-    # Lab Name(in) - Name of the lab
-    # Lab Hours(in) - Hours of the lab
-    # Lab Location(in) - Location of the lab
-    # Lab Days(in) - Days of the lab
-    # Lab Instructor(in) - Instructor of the lab
-    # Lab TA(in) -TA of the lab
+    # lab_id(in) - Id of the lab
+    # lab_name(in) - Name of the lab
+    # lab_location(in) - Location of the lab
+    # lab_hours(in) - Hours of the lab
+    # lab_days(in) - Days of the lab
+    # course(in) - Instructor of the lab
+    # ta(in) -TA of the lab
     @staticmethod
-    def createLab(lab_id, lab_name, lab_location, lab_hours, lab_days, lab_instructor, lab_ta):
-        LabManagement.__inputErrorCheck(lab_id, lab_name, lab_hours, lab_location, lab_days, lab_instructor, lab_ta)
-        Lab.objects.create(labID=lab_id, name=lab_name, location=lab_location,
-                           hours=lab_hours, days=lab_days, instructor=lab_instructor, TA=lab_ta)
+    def createLab(lab_id, lab_name, lab_location, lab_hours, lab_days, course, ta):
+        LabManagement.__inputErrorCheck(lab_id, lab_name, lab_hours, lab_location, lab_days, course, ta)
+        Lab.objects.create(labID=lab_id, name=lab_name, location=lab_location, hours=lab_hours, days=lab_days, course=course, TA=ta)
 
         return "Lab was created"
+    
+    # Preconditions: Both the lab and the TA must exist in the database
+    # Postconditions: The TA for the lab is updated to the given TA
+    # Lab id(in) - ID of the lab
+    # Lab ta(in) - Profile of the TA to be assigned to the lab
+    @staticmethod
+    def addTA(lab_id, lab_ta):
+        LabManagement.__inputErrorCheck(lab_id,"", "", "", "", None, lab_ta)
+        if not (Lab.objects.filter(labID=lab_id).exists()):
+            raise TypeError("This Lab does not exist")
+
+        lab = Lab.objects.get(labID=lab_id)
+        lab.TA = lab_ta
+
+        return "TA was assigned to the lab"
 
     # Preconditions: The user has to have been instantiated.
     # Postconditions: The lab is now edited
     # Side-effects: Lab is edited inside the database
-    # Lab ID(in) - Id of the lab
-    # Lab Name(in) - Name of the lab
-    # Lab Hours(in) - Hours of the lab
-    # Lab Location(in) - Location of the lab
-    # Lab Days(in) - Days of the lab
-    # Lab Instructor(in) - Instructor of the lab
-    # Lab TA(in) -TA of the lab
+    # lab_id(in) - Id of the lab
+    # lab_name(in) - Name of the lab
+    # lab_hours(in) - Hours of the lab
+    # lab_location(in) - Location of the lab
+    # lab_days(in) - Days of the lab
+    # course(in) - course of the lab
+    # ta(in) -TA of the lab
     @staticmethod
-    def editLab(lab_id, lab_name, lab_hours, lab_location, lab_days, lab_instructor, lab_ta):
-        LabManagement.__inputErrorCheck(lab_id, lab_name, lab_hours, lab_location, lab_days, lab_instructor, lab_ta)
+    def editLab(lab_id, lab_name, lab_hours, lab_location, lab_days, course, ta):
+        LabManagement.__inputErrorCheck(lab_id, lab_name, lab_hours, lab_location, lab_days, course, ta)
         if not (Lab.objects.filter(labID=lab_id).exists()):
             raise TypeError("This Lab does not exist")
 
@@ -53,8 +66,9 @@ class LabManagement(object):
         editedLab.location = lab_location
         editedLab.hours = lab_hours
         editedLab.days = lab_days
-        editedLab.instructor = lab_instructor
-        editedLab.TA = lab_ta
+        editedLab.course = course
+        editedLab.TA = ta
+        editedLab.save()
 
         return "The lab was successfully edited"
 
@@ -72,7 +86,7 @@ class LabManagement(object):
         if not (Lab.objects.filter(labID=lab_id).exists()):
             retMsg = "This lab being deleted does not exist"
         else:
-            Lab.objects.filter(labID=lab_id).delete()
+            Lab.objects.get(labID=lab_id).delete()
 
         return retMsg
 
@@ -104,8 +118,7 @@ class LabManagement(object):
         return Lab.objects.all()
 
     @staticmethod
-    def __inputErrorCheck(lab_id=0, lab_name="", lab_location="", lab_hours="", lab_days="", lab_instructor=None,
-                          lab_ta=None):
+    def __inputErrorCheck(lab_id=0, lab_name="", lab_location="", lab_hours="", lab_days="", course=None, ta=None):
         if not (isinstance(lab_id, int)):
             raise TypeError("lab_id entered is not of type int")
         if not (isinstance(lab_name, str)):
@@ -116,11 +129,10 @@ class LabManagement(object):
             raise TypeError("Lab Hours entered is not of type str")
         if not (isinstance(lab_days, str)):
             raise TypeError("Lab Days entered is not of type str")
-        if not (isinstance(lab_instructor, UserProfile)):
-            raise TypeError("Lab Instructor entered is not of type User")
-        if lab_instructor.userType != "INSTRUCTOR":
-            raise TypeError("Lab Instructor's type is not of type INSTRUCTOR")
-        if not (isinstance(lab_ta, UserProfile)):
-            raise TypeError("Lab TA entered is not of type User")
-        if lab_ta.userType != "TA":
-            raise TypeError("Lab TA's type is not of type TA")
+        if not(isinstance(course, Course)):
+            raise TypeError("Course entered is not of type course")
+        if not(ta is None):
+            if not (isinstance(ta, UserProfile)):
+                raise TypeError("Lab TA entered is not of type User")
+            if ta.userType != "TA":
+                raise TypeError("Lab TA's type is not of type TA")

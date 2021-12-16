@@ -4,7 +4,6 @@
     <title> Edit Lab</title>
     {% load static %}
     <link rel="stylesheet" href = "{% static 'styles.css'%}">
-
     <meta charset="UTF-8">
 </head>
 
@@ -19,67 +18,73 @@
     </div>
   </nav>
   
-  <main>
-     <div class="container">
-     <form class="form-control" action="/createuser/" method="post">
-       {%  csrf_token %}
-     <ul>
-       <li>
-         <label class="label-control" for="labName">Lab Name
-          <input type="text" id="labName" name="labName">
-          </label>
-       </li>
-       <br>
-       
-       <li>
-       
-         <label class="label-control" for="labLocation">Lab Location
-              <input type="text" id="labLocation" name="labLocation">
-         </label>
-       </li>
-       <br>
-       
-         <li>
-         <label class="label-control" for="labHours">Lab Hours 
-             <input type="text" id="labHours " name="labHours">
-         </label>
-       </li>
-       <br>
-       
-       <li>
-         <label class="label-control" for="labDays">Lab Days<input type="text" id="labDays" name="labDays">
-         </label>
-       </li>
-       <br>
-       
-        <li>
-         <label class="label-control" for="labInstructor">Lab Instructor<input type="text" id="labInstructor" name="labInstructor">
-         </label>
-       </li>
-       <br>
-       
-       <li>
-         <label class="label-control" for="labTA">Lab TA<input type="text" id="labTA" name="labTA">
-         </label>
-       </li>
-       <br>
-       
-       
-       <button class="btn btn-hero" id="btn">Create Lab</button>
-     </ul>
-     </form>
-     </div>
-   </main>
-       <div class="container">
+    <main>
+        <div class="container">
+            <form class="form-control" action="/editlab/" method="post">
+                {%  csrf_token %}
+                <table border="1">
+                    <tr>
+                        <th>ID</th>
+                        <th>Course</th>
+                        <th>Name</th>
+                        <th>Location</th>
+                        <th>Hours</th>
+                        <th>Days</th>
+                        <th>TA</th>
+                    </tr>
+                    {% for Lab in object_list %}
+                        <tr>
+                            {% if change_lab.labID == Lab.labID %}
+                                <td>{{ Lab.labID }}</td>
+                                <td>
+                                    <select name="course" id="course">
+                                        {% for Course in Course_list %}
+                                            <option value={{ Course.courseID }}>{{ Course.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                                <td><input type="text" id=name name=name value={{ Lab.name }}></td>
+                                <td><input type="text" id=location name=location value={{ Lab.location }}></td>
+                                <td><input type="text" id=hours name=hours value={{ Lab.hours }}></td>
+                                <td><input type="text" id=days name=days value={{ Lab.days }}></td>
+                                <td>
+                                    <select name="TA" id="TA">
+                                        {% for UserProfile in UserProfile_list %}
+                                            {% if UserProfile.userType == "TA" %}
+                                                <option value={{ UserProfile.userID }}>{{ UserProfile.username }}</option>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                                <td><button name="submit" type="submit" value={{ Lab.labID }}>Submit</button></td>
+                            {% else %}
+                                <td>{{ Lab.labID }}</td>
+                                <td>{{ Lab.course }}</td>
+                                <td>{{ Lab.name }}</td>
+                                <td>{{ Lab.location }}</td>
+                                <td>{{ Lab.hours }}</td>
+                                <td>{{ Lab.days }}</td>
+                                <td>{{ Lab.TA }}</td>
+                                {% if change_lab.labID == null %}
+                                    <td><button name="edit" type="submit" value={{ Lab.labID }}>Edit</button></td>
+                                {% endif %}
+                            {% endif %}
+                        </tr>
+                    {% endfor%}
+                </table>
+            </form>
+        </div>
+    </main>
+    <div class="container">
         <div class="row">
             <div class="column">
-            <!--Context variables if there was an unsuccesful login, the 'error' & 'success' variable needs to be used in the CreateCourse.post() method-->
+                <!--Context variables if there was an unsuccessful login, the 'error' & 'success' variable needs to be used in the CreateCourse.post() method-->
                 {% if success %}
-                {{ success }}
+                    {{ success }}
                 {% endif %}
 
                 {% if error %}
-                {{ error }}
+                {   { error }}
                 {% endif %}
             </div>
         </div>
