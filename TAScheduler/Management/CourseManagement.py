@@ -20,16 +20,18 @@ class CourseManagement(object):
     # Course TA(in) -TA of the course
     @staticmethod
     def createCourse(course_id, name, location, days, hours, instructor, tas=None):
+        CourseManagement.inputErrorChecker(course_id, name, location, days, hours, instructor, tas)
         try:
             Course.objects.get(courseID=course_id)
         except Course.DoesNotExist:
-            CourseManagement.inputErrorChecker(course_id, name, location, days, hours, instructor, tas)
-            Course.objects.create(courseID=course_id, name=name, location=location, hours=hours, days=days, instructor=instructor)
+            Course.objects.create(courseID=course_id, name=name, location=location, hours=hours, days=days,
+                                  instructor=instructor)
             course = Course.objects.get(courseID=course_id)
-            if not(tas is None):
+            if not (tas is None):
                 for ta in tas:
                     course.TAs.add(ta)
             return "Course was created"
+        raise ValueError("The course_id entered already exists")
 
     # Preconditions: The user has to have been instantiated.
     # The user must be of type administrator
@@ -42,20 +44,27 @@ class CourseManagement(object):
     # Course Instructor(in) - Instructor of the course
     # Course TA(in) -TA of the course
     @staticmethod
-    def editCourse(course_id, name, location, days, hours, instructor, tas):
-        CourseManagement.inputErrorChecker(course_id, name, location, days, hours, instructor, tas=None)
-        if not (Course.objects.filter(courseId=course_id).exists()):
+    def editCourse(course_id, name="", location="", days="", hours="", instructor=None, tas=None):
+        CourseManagement.inputErrorChecker(course_id, name, location, days, hours, instructor, tas)
+        if not (Course.objects.filter(courseID=course_id).exists()):
             raise TypeError("This course does not exist")
 
-        editedCourse = Course.objects.get(courseId=course_id)
-        editedCourse.name = name
-        editedCourse.location = location
-        editedCourse.hours = hours
-        editedCourse.days = days
-        editedCourse.instructor = instructor
-        if not(tas is None):
-            editedCourse.TAs = tas
-
+        editedCourse = Course.objects.get(courseID=course_id)
+        if not (name == ""):
+            editedCourse.name = name
+        if not (location == ""):
+            editedCourse.location = location
+        if not (hours == ""):
+            editedCourse.hours = hours
+        if not (days == ""):
+            editedCourse.days = days
+        if not (instructor is None):
+            editedCourse.instructor = instructor
+        if not (tas is None):
+            editedCourse.TAs.clear()
+            for i in tas:
+                editedCourse.TAs.add(i)
+        editedCourse.save()
         return "The course was successfully edited"
 
 #Find course method for editing courses
@@ -77,16 +86,11 @@ class CourseManagement(object):
     # Course Name(in) - Name of the course
     @staticmethod
     def deleteCourse(course_id):
-        if not (isinstance(course_id, int)):
-            raise TypeError("course_id entered is not of type int")
-
-        retMsg = "Course has been successfully deleted"
-        if not (Course.objects.filter(courseId=course_id).exists()):
-            retMsg = "This Course being deleted does not exist"
-        else:
-            Course.objects.filter(courseId=course_id).delete()
-
-        return retMsg
+        CourseManagement.inputErrorChecker(course_id=course_id)
+        try:
+            Course.objects.get(courseID=course_id).delete()
+        except Course.DoesNotExist:
+            raise ValueError("The course_id provided does not exist")
 
     # Preconditions: The user has to have been instantiated
     # The searchPrompt is an existing course assignment name
@@ -95,14 +99,12 @@ class CourseManagement(object):
     # Search Prompt(in): Course Name you are searching for
     @staticmethod
     def populateSearchClass(course_id):
-        if not (isinstance(course_id, int)):
-            raise TypeError("course_id entered is not of type int")
-
-        if not (Course.objects.filter(courseId=course_id).exists()):
+        CourseManagement.inputErrorChecker(course_id=course_id)
+        if not (Course.objects.filter(courseID=course_id).exists()):
             retMsg = "This course being deleted does not exist"
         else:
             retMsg = {
-                'Found Course': Course.objects.get(courseId=course_id)
+                'Found Course': Course.objects.get(courseID=course_id)
             }
 
         return retMsg
@@ -122,8 +124,7 @@ class CourseManagement(object):
         return allCourses
 
     @staticmethod
-    def inputErrorChecker(course_id=0, name="", location="", days="", hours="", instructor=None, tas=None,
-                            courseLabs=None):
+    def inputErrorChecker(course_id=0, name="", location="", days="", hours="", instructor=None, tas=None):
         if not (isinstance(course_id, int)):
             raise TypeError("course_id entered is not of type int")
         if not (isinstance(name, str)):
@@ -134,19 +135,14 @@ class CourseManagement(object):
             raise TypeError("Course hours entered is not of type str")
         if not (isinstance(hours, str)):
             raise TypeError("Course days entered is not of type str")
-        if not(instructor is None):
+        if not (instructor is None):
             if not (isinstance(instructor, UserProfile)):
                 raise TypeError("Course instructor entered is not of type User")
             if instructor.userType != "INSTRUCTOR":
                 raise TypeError("Course instructor's type is not of type INSTRUCTOR")
-        if not(tas is None):
+        if not (tas is None):
             for TA in tas:
                 if not (isinstance(TA, UserProfile)):
                     raise TypeError("Course TA entered is not of type User")
                 if TA.userType != "TA":
                     raise TypeError("Course TA's type is not of type TA")
-        if not(courseLabs is None):
-            for lab in courseLabs:
-                if not(isinstance(lab, Lab)):
-                    raise TypeError("Course lab entered is not of type Lab")
-
