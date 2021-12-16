@@ -13,7 +13,7 @@
         <h4>Account Settings</h4>
         <ul class="nav-links">
             <li><a href="../home/">Dashboard</a></li>
-            {% if user_type == "SUPERVISOR" %}
+            {% if request.session.user_type == "SUPERVISOR" %}
             <li><a href="../createuser/">Create User</a></li>
             <li><a href="../edituser/">Edit User</a></li>
             {% endif %}
