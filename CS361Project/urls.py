@@ -35,5 +35,6 @@ urlpatterns = [
     path('editlab/', EditLab.as_view()),
     path('deletelab/', DeleteLab.as_view()),
     path('viewuser/', ViewUser.as_view()),
-    path('schedule/', ViewSchedule.as_view())
+    path('schedule/', ViewSchedule.as_view()),
+    path('editlabasinstructor/', EditLabForInstructors.as_view())
 ]

@@ -27,6 +27,7 @@ class Login(View):
     def get(request):
         request.session["username"] = ""
         request.session["user_type"] = ""
+        request.session["user_id"] = None
         return render(request, "login.html")
 
     @staticmethod
@@ -57,6 +58,7 @@ class Login(View):
             # username of the user
             request.session["username"] = checkUser.username
             request.session["user_type"] = checkUser.userType
+            request.session["user_id"] = checkUser.userID
             return redirect("/home/")
 
 
@@ -71,6 +73,7 @@ class Home(View):
         else:
             return redirect("/../")
 
+
 class ViewSchedule(View):
     @staticmethod
     def get(request):
@@ -81,6 +84,7 @@ class ViewSchedule(View):
             return render(request, "schedule.html", {"request.session.username": request.session["username"]})
         else:
             return redirect("/../")
+
 
 class SendMsg(View):
     @staticmethod
@@ -134,7 +138,8 @@ class CreateCourse(View):
         CourseManagement.createCourse(course_id=int(request.POST['ID']), name=request.POST['name'],
                                       location=request.POST['location'], hours=request.POST['hours'],
                                       days=request.POST['days'],
-                                      instructor=UserProfile.objects.get(userID=int(request.POST['instructor'])), tas=gottenTAs)
+                                      instructor=UserProfile.objects.get(userID=int(request.POST['instructor'])),
+                                      tas=gottenTAs)
         return render(request, "createcourse.html", {"UserProfile_list": UserProfile.objects.all()})
 
 
@@ -209,7 +214,9 @@ class EditCourse(View):
 
         if edit:
             change_course = CourseManagement.findCourse(int(edit_or_submit))
-            return render(request, "editcourse.html", {"Course_list": Course.objects.all(), "change_course": change_course, "UserProfile_list": UserProfile.objects.all()})
+            return render(request, "editcourse.html",
+                          {"Course_list": Course.objects.all(), "change_course": change_course,
+                           "UserProfile_list": UserProfile.objects.all()})
         else:
             gottenTAs = request.POST.getlist("TAs")
             for i in range(len(gottenTAs)):
@@ -217,10 +224,13 @@ class EditCourse(View):
                 gottenTAs[i] = UserProfile.objects.get(userID=gottenTAs[i])
 
             change_course = CourseManagement.findCourse(courseID=int(edit_or_submit))
-            CourseManagement.editCourse(int(change_course.courseID), name=request.POST["name"], location=request.POST["location"], days=request.POST["days"],
-                                        hours=request.POST["hours"], instructor=UserProfile.objects.get(userID=int(request.POST["instructor"])), tas=gottenTAs)
+            CourseManagement.editCourse(int(change_course.courseID), name=request.POST["name"],
+                                        location=request.POST["location"], days=request.POST["days"],
+                                        hours=request.POST["hours"],
+                                        instructor=UserProfile.objects.get(userID=int(request.POST["instructor"])),
+                                        tas=gottenTAs)
 
-            return render(request,"editcourse.html", {"Course_list": Course.objects.all()})
+            return render(request, "editcourse.html", {"Course_list": Course.objects.all()})
 
 
 class DeleteLab(View):
@@ -230,14 +240,15 @@ class DeleteLab(View):
         # they will fail the userAllowed test and be redirected back to the login page
         # If the user is allowed then home is rendered like normal
         if userAllowed(request, ["SUPERVISOR"]):
-            return render(request, "deletelab.html", {"lab_list":Lab.objects.all()})
+            return render(request, "deletelab.html", {"lab_list": Lab.objects.all()})
         else:
             return redirect("/../home/")
 
     @staticmethod
     def post(request):
-        LabManagement.deleteLab(lab_id = int(request.POST["delete"]))
+        LabManagement.deleteLab(lab_id=int(request.POST["delete"]))
         return render(request, "deletelab.html", {"lab_list": Lab.objects.all()})
+
 
 class DeleteCourse(View):
     @staticmethod
@@ -246,14 +257,15 @@ class DeleteCourse(View):
         # they will fail the userAllowed test and be redirected back to the login page
         # If the user is allowed then home is rendered like normal
         if userAllowed(request, ["SUPERVISOR"]):
-            return render(request, "deletecourse.html", {"course_list":Course.objects.all()})
+            return render(request, "deletecourse.html", {"course_list": Course.objects.all()})
         else:
             return redirect("/../home/")
 
     @staticmethod
     def post(request):
-        CourseManagement.deleteCourse(course_id = int(request.POST["delete"]))
+        CourseManagement.deleteCourse(course_id=int(request.POST["delete"]))
         return render(request, "deletecourse.html", {"course_list": Course.objects.all()})
+
 
 class DeleteUser(View):
     @staticmethod
@@ -262,7 +274,7 @@ class DeleteUser(View):
         # they will fail the userAllowed test and be redirected back to the login page
         # If the user is allowed then home is rendered like normal
         if userAllowed(request, ["SUPERVISOR"]):
-            return render(request, "deleteuser.html", {"user_list":UserProfile.objects.all()})
+            return render(request, "deleteuser.html", {"user_list": UserProfile.objects.all()})
         else:
             return redirect("/../home/")
 
@@ -270,6 +282,7 @@ class DeleteUser(View):
     def post(request):
         UserManagement.deleteUser(user_id=int(request.POST["delete"]))
         return render(request, "deleteuser.html", {"user_list": UserProfile.objects.all()})
+
 
 class CreateLab(View):
     @staticmethod
@@ -324,6 +337,43 @@ class EditLab(View):
                                   course=Course.objects.get(courseID=request.POST["course"]),
                                   ta=UserManagement.findUser(user_id=request.POST["TA"]))
             return render(request, "editlab.html", {"object_list": Lab.objects.all()})
+
+
+class EditLabForInstructors(View):
+    @staticmethod
+    def get(request):
+        if userAllowed(request, ["INSTRUCTOR"]):
+            instructor_labs = []
+            for lab in Lab.objects.all():
+                if lab.course.instructor.userID == int(request.session["user_id"]):
+                    instructor_labs.append(lab)
+            return render(request, "editlab_forinstructors.html", {"object_list": instructor_labs})
+        else:
+            return redirect("/../home")
+
+    @staticmethod
+    def post(request):
+        instructor_labs = []
+        instructor_tas = []
+        for lab in Lab.objects.all():
+            if lab.course.instructor.userID == int(request.session["user_id"]):
+                instructor_labs.append(lab)
+        for user in UserProfile.objects.all():
+            for course in user.TAToCourse.all():
+                if course.instructor.userID == request.session["user_id"]:
+                    instructor_tas.append(user)
+                    break
+        try:
+            this_lab_id = int(request.POST["edit"])
+        except MultiValueDictKeyError:
+            this_lab_id = int(request.POST["submit"])
+            LabManagement.editLab(lab_id=this_lab_id, ta=UserManagement.findUser(user_id=int(request.POST["TA"])))
+            return render(request, "editlab_forinstructors.html", {"object_list": instructor_labs})
+        change_lab = Lab.objects.get(labID=this_lab_id)
+        return render(request, "editlab_forinstructors.html", {"object_list": instructor_labs, "UserProfile_list": instructor_tas, "change_lab": change_lab})
+
+
+
 
 class ViewUser(View):
     @staticmethod

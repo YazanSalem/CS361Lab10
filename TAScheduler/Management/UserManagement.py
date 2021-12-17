@@ -1,6 +1,7 @@
 from TAScheduler.models import UserProfile
 
-#test
+
+# test
 class UserManagement(object):
 
     # Preconditions: The user has to have been instantiated.
@@ -85,7 +86,6 @@ class UserManagement(object):
                 raise TypeError("This username does not exist")
         else:
             raise TypeError("Unknown error")
-            profile = None
         return profile
 
     # Preconditions: The user has to have been instantiated
