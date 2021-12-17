@@ -17,6 +17,16 @@
     <div class = "nav-center">
     <h4>Dashboard</h4>
       <ul class="nav-links">
+<<<<<<< Updated upstream
+=======
+        {% if request.session.user_type == "INSTRUCTOR" %}
+        <li><a href="../schedule/">Schedule</a></li>
+        {% endif %}
+        {% if request.session.user_type == "TA" %}
+        <li><a href="../schedule/">Schedule</a></li>
+        {% endif %}
+        <li><a href="../sendmsg/">Send Message</a></li>
+>>>>>>> Stashed changes
         <li><a href="../accountsettings/">User</a></li>
         {% if request.session.user_type == "SUPERVISOR" %}
         <li><a href="../createcourse/">Course</a></li>

@@ -56,5 +56,7 @@ class Lab(models.Model):
 # Schedule is a tool to be used by users to display the events they have going on in a week, be that Labs or courses.
 class Schedule(models.Model):
     user = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
-    courses = models.ManyToManyField(Course)
-    labs = models.ManyToManyField(Lab)
+    name = models.CharField(max_length=20)
+    days = models.CharField(max_length=20)
+    hours = models.CharField(max_length=20)
+    location = models.CharField(max_length=20)

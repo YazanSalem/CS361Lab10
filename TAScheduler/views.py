@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect
 from django.views import View
-from .models import UserProfile, Course, Lab
+
+from TAScheduler.Management.ScheduleManagement import ScheduleManagement
+from .models import Schedule, UserProfile, Course, Lab
 from TAScheduler.Management.UserManagement import UserManagement
 from TAScheduler.Management.CourseManagement import CourseManagement
 from TAScheduler.Management.LabManagement import LabManagement
@@ -71,6 +73,33 @@ class Home(View):
         else:
             return redirect("/../")
 
+<<<<<<< Updated upstream
+=======
+class ViewSchedule(View):
+    @staticmethod
+    def get(request):
+        # If the user does not have a valid name, I.E. if they try to manually enter /home in the search bar,
+        # they will fail the userAllowed test and be redirected back to the login page
+        # If the user is allowed then home is rendered like normal
+        if userAllowed(request, ["INSTRUCTOR", "TA"]):
+            schedule = ScheduleManagement(request.session["username"])
+            schedule.getSchedule()
+            return render(request, "schedule.html", {"schedule_list": Schedule.objects.all()})
+        else:
+            return redirect("/../")
+
+class SendMsg(View):
+    @staticmethod
+    def get(request):
+        # If the user does not have a valid name, I.E. if they try to manually enter /home in the search bar,
+        # they will fail the userAllowed test and be redirected back to the login page
+        # If the user is allowed then home is rendered like normal
+        if userAllowed(request, ["SUPERVISOR", "INSTRUCTOR", "TA"]):
+            return render(request, "sendmsg.html", {"request.session.username": request.session["username"]})
+        else:
+            return redirect("/../")
+
+>>>>>>> Stashed changes
 
 class CreateUser(View):
     @staticmethod
