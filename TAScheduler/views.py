@@ -71,6 +71,28 @@ class Home(View):
         else:
             return redirect("/../")
 
+class ViewSchedule(View):
+    @staticmethod
+    def get(request):
+        # If the user does not have a valid name, I.E. if they try to manually enter /home in the search bar,
+        # they will fail the userAllowed test and be redirected back to the login page
+        # If the user is allowed then home is rendered like normal
+        if userAllowed(request, ["SUPERVISOR", "INSTRUCTOR", "TA"]):
+            return render(request, "schedule.html", {"request.session.username": request.session["username"]})
+        else:
+            return redirect("/../")
+
+class SendMsg(View):
+    @staticmethod
+    def get(request):
+        # If the user does not have a valid name, I.E. if they try to manually enter /home in the search bar,
+        # they will fail the userAllowed test and be redirected back to the login page
+        # If the user is allowed then home is rendered like normal
+        if userAllowed(request, ["SUPERVISOR", "INSTRUCTOR", "TA"]):
+            return render(request, "sendmsg.html", {"request.session.username": request.session["username"]})
+        else:
+            return redirect("/../")
+
 
 class CreateUser(View):
     @staticmethod
@@ -214,7 +236,7 @@ class DeleteLab(View):
 
     @staticmethod
     def post(request):
-        LabManagement.deleteLab(user_id=request.POST("delete"))
+        LabManagement.deleteLab(lab_id = int(request.POST["delete"]))
         return render(request, "deletelab.html", {"lab_list": Lab.objects.all()})
 
 class DeleteCourse(View):
@@ -230,7 +252,7 @@ class DeleteCourse(View):
 
     @staticmethod
     def post(request):
-        CourseManagement.deleteCourse(user_id=request.POST("delete"))
+        CourseManagement.deleteCourse(course_id = int(request.POST["delete"]))
         return render(request, "deletecourse.html", {"course_list": Course.objects.all()})
 
 class DeleteUser(View):
@@ -246,7 +268,7 @@ class DeleteUser(View):
 
     @staticmethod
     def post(request):
-        UserManagement.deleteUser(user_id=request.POST("delete"))
+        UserManagement.deleteUser(user_id=int(request.POST["delete"]))
         return render(request, "deleteuser.html", {"user_list": UserProfile.objects.all()})
 
 class CreateLab(View):

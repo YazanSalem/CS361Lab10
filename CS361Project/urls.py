@@ -23,6 +23,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', Login.as_view()),
     path('home/', Home.as_view()),
+    path('sendmsg/', SendMsg.as_view()),
     path('createuser/', CreateUser.as_view()),
     path('createcourse/', CreateCourse.as_view()),
     path('createlab/', CreateLab.as_view()),
@@ -33,5 +34,6 @@ urlpatterns = [
     path('deleteuser/', DeleteUser.as_view()),
     path('editlab/', EditLab.as_view()),
     path('deletelab/', DeleteLab.as_view()),
-    path('viewuser/', ViewUser.as_view())
+    path('viewuser/', ViewUser.as_view()),
+    path('schedule/', ViewSchedule.as_view())
 ]

@@ -18,9 +18,11 @@
       <ul class="nav-links">
         <li><a href="../home/">Dashboard</a></li>
         <li><a href="../accountsettings/">Account Settings</a></li>
+        {% if request.session.user_type == "SUPERVISOR" %}
         <li><a href="../createuser/">Create</a></li>
         <li><a href="../deleteuser/">Delete</a></li>
         <li><a href="../edituser/">Edit</a></li>
+        {% endif %}
       </ul>
     </div>
   </nav>
