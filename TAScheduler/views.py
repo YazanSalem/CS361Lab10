@@ -80,12 +80,12 @@ class ViewSchedule(View):
         # If the user does not have a valid name, I.E. if they try to manually enter /home in the search bar,
         # they will fail the userAllowed test and be redirected back to the login page
         # If the user is allowed then home is rendered like normal
-        if userAllowed(request, ["INSTRUCTOR"]):
+        if userAllowed(request, ["INSTRUCTOR", "TA"]):
 
             return render(request, "schedule.html", {"object_list": UserProfile.objects.get(userID=request.session["user_id"]).getCourseLabList()})
 
         else:
-            return redirect("/../")
+            return redirect("/../home")
 
 
 class SendMsg(View):
