@@ -402,13 +402,15 @@ class EditLab(View):
     @staticmethod
     def post(request):
         currentUser = UserManagement.findUser(user_id=int(request.session["user_id"]))
+        ta_choices = []
+        course_choices = []
         if currentUser.userType == "INSTRUCTOR":
-            ta_choices = []
-            course_choices = []
+
             for course in UserManagement.findUser(user_id=int(request.session["user_id"])).course_set.all():
                 course_choices.append(course)
                 for ta in course.TAs.all():
-                    ta_choices.append(ta)
+                    if not (ta in ta_choices):
+                        ta_choices.append(ta)
         try:
             edit = True
             try:
@@ -440,38 +442,16 @@ class EditLab(View):
                                       ta=UserManagement.findUser(user_id=int(request.POST["TA"])))
                 if currentUser.userType == "SUPERVISOR":
                     return render(request, "edit_lab.html", {"object_list": Lab.objects.all()})
-                if currentUser.userType == "Instructor":
+                elif currentUser.userType == "INSTRUCTOR":
                     return render(request, "edit_lab.html", {
                         "object_list": currentUser.getLabList()})
         except (TypeError, ValueError) as e:
             if currentUser.userType == "SUPERVISOR":
                 return render(request, "edit_lab.html",
                               {"object_list": Lab.objects.all(), "error": "Lab section was not changed. " + str(e)})
-            if currentUser.userType == "INSTRUCTOR":
+            elif currentUser.userType == "INSTRUCTOR":
                 return render(request, "edit_lab.html", {
                     "object_list": currentUser.getLabList(), "error": "Lab section was not changed. " + str(e)})
-
-    @staticmethod
-    def post(request):
-        instructor_labs = []
-        instructor_tas = []
-        for lab in Lab.objects.all():
-            if lab.course.instructor.userID == int(request.session["user_id"]):
-                instructor_labs.append(lab)
-        for user in UserProfile.objects.all():
-            for course in user.TAToCourse.all():
-                if course.instructor.userID == request.session["user_id"]:
-                    instructor_tas.append(user)
-                    break
-        try:
-            this_lab_id = int(request.POST["edit"])
-        except MultiValueDictKeyError:
-            this_lab_id = int(request.POST["submit"])
-            LabManagement.editLab(lab_id=this_lab_id, ta=UserManagement.findUser(user_id=int(request.POST["TA"])))
-            return render(request, "editlab_forinstructors.html", {"object_list": instructor_labs})
-        change_lab = Lab.objects.get(labID=this_lab_id)
-        return render(request, "editlab_forinstructors.html",
-                      {"object_list": instructor_labs, "UserProfile_list": instructor_tas, "change_lab": change_lab})
 
 
 class ViewUsers(View):
