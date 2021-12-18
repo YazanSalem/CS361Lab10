@@ -45,19 +45,19 @@ class CourseManagement(object):
     # Course Instructor(in) - Instructor of the course
     # Course TA(in) -TA of the course
     @staticmethod
-    def editCourse(course_id, name="", location="", days="", hours="", instructor=None, tas=None):
+    def editCourse(course_id, name=None, location=None, days=None, hours=None, instructor=None, tas=None):
         CourseManagement.inputErrorChecker(course_id, name, location, days, hours, instructor, tas)
         if not (Course.objects.filter(courseID=course_id).exists()):
             raise TypeError("This course does not exist")
 
         editedCourse = Course.objects.get(courseID=course_id)
-        if not (name == ""):
+        if not (name is None):
             editedCourse.name = name
-        if not (location == ""):
+        if not (location is None):
             editedCourse.location = location
-        if not (hours == ""):
+        if not (hours is None):
             editedCourse.hours = hours
-        if not (days == ""):
+        if not (days is None):
             editedCourse.days = days
         if not (instructor is None):
             editedCourse.instructor = instructor
@@ -143,12 +143,16 @@ class CourseManagement(object):
                 raise TypeError("Course hours entered is not of type str")
             if not (len(days) > 0):
                 raise ValueError("At least one day must be selected")
+            if not (bool(re.match("[MTW(Th)F],*", days))):
+                raise ValueError("Wrong format for days. Format should be first letters of days separated by commas "
+                                 "with Th for Thursday")
         if not (hours is None):
             if not (isinstance(hours, str)):
                 raise TypeError("Course days entered is not of type str")
             if not (len(hours) > 0):
                 raise ValueError("Hours should not be left blank")
-            if not(bool(re.match("([1][0-2]|[0][1-9]):([0-5][0-9]) ([AP])M - ([1][0-2]|[0][1-9]):([0-5][0-9]) ([AP])M", hours))):
+            if not (bool(re.match("([1][0-2]|[0][1-9]):([0-5][0-9]) ([AP])M - ([1][0-2]|[0][1-9]):([0-5][0-9]) ([AP])M",
+                                  hours))):
                 raise ValueError("Wrong format for hours. Format should be HH:MM AM/PM - HH:MM AM/PM")
         if not (instructor is None):
             if not (isinstance(instructor, UserProfile)):
@@ -161,4 +165,3 @@ class CourseManagement(object):
                     raise TypeError("Course TA entered is not of type User")
                 if TA.userType != "TA":
                     raise TypeError("Course TA's type is not of type TA")
-

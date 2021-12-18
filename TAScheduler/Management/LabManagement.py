@@ -148,7 +148,9 @@ class LabManagement(object):
                 raise TypeError("Lab Days entered is not of type str")
             if not (len(days) > 0):
                 raise ValueError("At least one day must be selected")
-
+            if not (bool(re.match("[MTW(Th)F],*", days))):
+                raise ValueError("Wrong format for days. Format should be first letters of days separated by commas "
+                                 "with Th for Thursday")
         if not (course is None):
             if not (isinstance(course, Course)):
                 raise TypeError("Course entered is not of type course")
@@ -157,5 +159,6 @@ class LabManagement(object):
                 raise TypeError("Lab TA entered is not of type User")
             if ta.userType != "TA":
                 raise TypeError("Lab TA's type is not of type TA")
-            if not (course in ta.TAToCourse.all()):
-                raise ValueError("TAs cannot be assigned to labs for courses they are not assigned to")
+            if not (course is None):
+                if not (course in ta.TAToCourse.all()):
+                    raise ValueError("TAs cannot be assigned to labs for courses they are not assigned to")
