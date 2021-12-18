@@ -97,7 +97,7 @@ class Lab(models.Model):
     TA = models.ForeignKey(UserProfile, on_delete=models.PROTECT, related_name="TAToLab")
 
     def __str__(self):
-        return self.name
+        return self.course.name + ": " + self.name
 
     @property
     def getDays(self):
