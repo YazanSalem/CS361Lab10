@@ -3,106 +3,109 @@
 <head>
     <title> Create User</title>
     {% load static %}
-    <link rel="stylesheet" href = "{% static 'styles.css'%}">
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
 
     <meta charset="UTF-8">
 </head>
 
 <body>
-  <nav>
-    <div class = "nav-center">
-    <h4>Create User</h4>
-      <ul class="nav-links">
-        <li><a href="../home/">Dashboard</a></li>
-        <li><a href="../accountsettings/">Account Settings</a></li>
-        <li><a href="../viewuser/">View Users</a></li>
-        <li><a href="../edituser/">Edit</a></li>
-        <li><a href="../deleteuser/">Delete</a></li>
-      </ul>
+<nav>
+    <div class="nav-center">
+        <h4>Create User</h4>
+        <ul class="nav-links">
+            <li><a href="../home/">Dashboard</a></li>
+            <li><a href="../accountsettings/">Account Settings</a></li>
+            <li><a href="../viewuser/">View Users</a></li>
+            <li><a href="../edituser/">Edit</a></li>
+            <li><a href="../deleteuser/">Delete</a></li>
+            <li><a href="../login/">Log Out</a></li>
+        </ul>
     </div>
-  </nav>
-  
-  <main>
-     <div class="container">
-     <form class="form-control" action="/createuser/" method="post">
-       {%  csrf_token %}
-     <ul>
-       <li>
-         <label class="label-control" for="userID">User ID
-          <input type="number" id="userID" name="userID">
-          </label>
-       </li>
-       <br>
-       
-       <li>
-         <label class="label-control" for="userType"> User Type
-             <select name="userType" id="userType">
-                 <option value="SUPERVISOR">Supervisor</option>
-                 <option value="INSTRUCTOR">Instructor</option>
-                 <option value="TA" selected>TA</option>
-            </select>
-         </label>
-       </li>
-       <br>
+</nav>
 
-       <li>
+<main>
+    <div class="container">
+        <form class="form-control" action="/createuser/" method="post">
+            {% csrf_token %}
+            <ul>
+                <li>
+                    <label class="label-control" for="userID">User ID
+                        <input type="number" id="userID" name="userID">
+                    </label>
+                </li>
+                <br>
 
-         <label class="label-control" for="username">Username <input type="text" id="username " name="username">
-         </label>
-       </li>
-       <br>
-       
-         <li>
-         <label class="label-control" for="password">Password <input type="password" id="password " name="password">
-         </label>
-       </li>
-       <br>
+                <li>
+                    <label class="label-control" for="userType"> User Type
+                        <select name="userType" id="userType">
+                            <option value="SUPERVISOR">Supervisor</option>
+                            <option value="INSTRUCTOR">Instructor</option>
+                            <option value="TA" selected>TA</option>
+                        </select>
+                    </label>
+                </li>
+                <br>
 
-         <li>
+                <li>
 
-         <label class="label-control" for="name">Full Name <input type="text" id="name " name="name">
-         </label>
-       </li>
-       <br>
+                    <label class="label-control" for="username">Username <input type="text" id="username "
+                                                                                name="username">
+                    </label>
+                </li>
+                <br>
 
-       <li>
-         <label class="label-control" for="address">Address  <input type="text" id="address " name="address">
-         </label>
-       </li>
-       <br>
-       
-        <li>
-         <label class="label-control" for="phone">Phone Number <input type="tel" id="phone " name="phone">
-         </label>
-       </li>
-       <br>
-       
-       <li>
-         <label class="label-control" for="email">E-Mail <input type="email" id="email " name="email">
-         </label>
-       </li>
-       <br>
-       
-       
-       <button class="btn btn-hero" id="btn">Create User</button>
-     </ul>
-     </form>
-     </div>
-   </main>
-       <div class="container">
-        <div class="row">
-            <div class="column">
+                <li>
+                    <label class="label-control" for="password">Password <input type="password" id="password "
+                                                                                name="password">
+                    </label>
+                </li>
+                <br>
+
+                <li>
+
+                    <label class="label-control" for="name">Full Name <input type="text" id="name " name="name">
+                    </label>
+                </li>
+                <br>
+
+                <li>
+                    <label class="label-control" for="address">Address <input type="text" id="address " name="address">
+                    </label>
+                </li>
+                <br>
+
+                <li>
+                    <label class="label-control" for="phone">Phone Number <input type="tel" id="phone " name="phone">
+                    </label>
+                </li>
+                <br>
+
+                <li>
+                    <label class="label-control" for="email">E-Mail <input type="email" id="email " name="email">
+                    </label>
+                </li>
+                <br>
+
+
+                <button class="btn btn-hero" id="btn">Create User</button>
+            </ul>
+        </form>
+    </div>
+</main>
+<div class="container">
+    <div class="row">
+        <div class="column">
             <!--Context variables if there was an unsuccesful login, the 'error' & 'success' variable needs to be used in the CreateCourse.post() method-->
-                {% if success %}
+            {% if success %}
                 {{ success }}
-                {% endif %}
+            {% endif %}
 
-                {% if error %}
+            {% if error %}
                 {{ error }}
-                {% endif %}
-            </div>
+            {% endif %}
         </div>
     </div>
+</div>
 </body>
 
 </html>
