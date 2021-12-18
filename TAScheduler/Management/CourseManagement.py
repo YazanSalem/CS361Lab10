@@ -4,6 +4,7 @@
 # populateSearchClass(searchPromp)  should change class to course
 # displayAllCourse()
 from TAScheduler.models import *
+import re
 
 
 class CourseManagement(object):
@@ -67,17 +68,16 @@ class CourseManagement(object):
         editedCourse.save()
         return "The course was successfully edited"
 
-#Find course method for editing courses
+    # Find course method for editing courses
     @staticmethod
-    def findCourse(courseID):
-        if not (courseID == 0):
-            CourseManagement.inputErrorChecker(course_id=courseID)
+    def findCourse(course_id):
+        if not (course_id == 0):
+            CourseManagement.inputErrorChecker(course_id=course_id)
             try:
-                course = Course.objects.get(courseID=courseID)
+                course = Course.objects.get(courseID=course_id)
             except Course.DoesNotExist:
-                raise TypeError("This ID does not exisdt")
+                raise TypeError("This ID does not exist")
         return course
-
 
     # Preconditions: The user has to have been instantiated.
     # The user must be of type administrator
@@ -124,17 +124,32 @@ class CourseManagement(object):
         return allCourses
 
     @staticmethod
-    def inputErrorChecker(course_id=0, name="", location="", days="", hours="", instructor=None, tas=None):
-        if not (isinstance(course_id, int)):
-            raise TypeError("course_id entered is not of type int")
-        if not (isinstance(name, str)):
-            raise TypeError("Course name entered is not of type str")
-        if not (isinstance(location, str)):
-            raise TypeError("Course location entered is not of type str")
-        if not (isinstance(days, str)):
-            raise TypeError("Course hours entered is not of type str")
-        if not (isinstance(hours, str)):
-            raise TypeError("Course days entered is not of type str")
+    def inputErrorChecker(course_id=None, name=None, location=None, days=None, hours=None, instructor=None, tas=None):
+        if not (course_id is None):
+            if not (isinstance(course_id, int)):
+                raise TypeError("course_id entered is not of type int")
+        if not (name is None):
+            if not (isinstance(name, str)):
+                raise TypeError("Course name entered is not of type str")
+            if not (len(name) > 0):
+                raise ValueError("Name should not be left blank")
+        if not (location is None):
+            if not (isinstance(location, str)):
+                raise TypeError("Course location entered is not of type str")
+            if not (len(location) > 0):
+                raise ValueError("Location should not be left blank")
+        if not (days is None):
+            if not (isinstance(days, str)):
+                raise TypeError("Course hours entered is not of type str")
+            if not (len(days) > 0):
+                raise ValueError("At least one day must be selected")
+        if not (hours is None):
+            if not (isinstance(hours, str)):
+                raise TypeError("Course days entered is not of type str")
+            if not (len(hours) > 0):
+                raise ValueError("Hours should not be left blank")
+            if not(bool(re.match("([1][0-2]|[0][1-9]):([0-5][0-9]) ([AP])M - ([1][0-2]|[0][1-9]):([0-5][0-9]) ([AP])M", hours))):
+                raise ValueError("Wrong format for hours. Format should be HH:MM AM/PM - HH:MM AM/PM")
         if not (instructor is None):
             if not (isinstance(instructor, UserProfile)):
                 raise TypeError("Course instructor entered is not of type User")
@@ -146,3 +161,4 @@ class CourseManagement(object):
                     raise TypeError("Course TA entered is not of type User")
                 if TA.userType != "TA":
                     raise TypeError("Course TA's type is not of type TA")
+

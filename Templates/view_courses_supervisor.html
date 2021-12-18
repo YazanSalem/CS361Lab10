@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+    <head>
+        <style>
+            h4 {
+                text-align: center;
+            }
+        </style>
+        <title>View Courses</title>
+        {% load static %}
+        <link rel="stylesheet" href="{% static 'styles.css' %}">
+        <meta charset="UTF-8">
+    </head>
+
+    <body>
+        <nav>
+            <div class="nav-center">
+                <h4>View Courses</h4>
+                <ul class="nav-links">
+                    <li><a href="/create_course/">Create Course</a></li>
+                    <li><a href="/edit_course/">Edit Course</a></li>
+                    <li><a href="/delete_course/">Delete Course</a></li>
+                    <li><a href="/account_settings/">Account Settings</a></li>
+                    <li><a href="/home/">Dashboard</a></li>
+                    <li><a href="/">Log Out</a></li>
+                </ul>
+            </div>
+        </nav>
+
+        <main>
+            <div class="container">
+                {% csrf_token %}
+                {% for course in course_list %}
+                    <b>{{ course.name }}</b>
+                    <table border>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Location</th>
+                            <th>Hours</th>
+                            <th>Days</th>
+                            <th>Instructor</th>
+                            <th>TAs</th>
+                            <th>Lab Sections</th>
+                        </tr>
+                        <tr>
+                            <td>{{ course.courseID }}</td>
+                            <td>{{ course.name }}</td>
+                            <td>{{ course.location }}</td>
+                            <td>{{ course.hours }}</td>
+                            <td>{{ course.days }}</td>
+                            <td>{{ course.instructor }}</td>
+                            <td>
+                                {% for ta in course.TAs.all %}
+                                    {{ ta.username }}
+                                {% endfor %}
+                            </td>
+                            <td>
+                                {% for lab in course.lab_set.all %}
+                                    {{ lab.name }}
+                                {% endfor %}
+                            </td>
+                        </tr>
+                    </table>
+                    <br>
+                {% endfor %}
+            </div>
+        </main>
+    </body>
+</html>

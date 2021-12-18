@@ -1,4 +1,5 @@
 from TAScheduler.models import *
+import re
 
 
 class LabManagement(object):
@@ -24,7 +25,7 @@ class LabManagement(object):
     # ta(in) -TA of the lab
     @staticmethod
     def createLab(lab_id, lab_name, lab_location, lab_hours, lab_days, course, ta):
-        LabManagement.__inputErrorCheck(lab_id, lab_name, lab_hours, lab_location, lab_days, course, ta)
+        LabManagement.__inputErrorCheck(lab_id, lab_name, lab_location, lab_hours, lab_days, course, ta)
         if Lab.objects.filter(labID=lab_id).exists():
             raise TypeError("That labID is already in use")
         Lab.objects.create(labID=lab_id, name=lab_name, location=lab_location, hours=lab_hours, days=lab_days,
@@ -58,19 +59,19 @@ class LabManagement(object):
     # course(in) - course of the lab
     # ta(in) -TA of the lab
     @staticmethod
-    def editLab(lab_id, lab_name="", lab_hours="", lab_location="", lab_days="", course=None, ta=None):
-        LabManagement.__inputErrorCheck(lab_id, lab_name, lab_hours, lab_location, lab_days, course, ta)
+    def editLab(lab_id=None, lab_name=None, lab_location=None, lab_hours=None, lab_days=None, course=None, ta=None):
+        LabManagement.__inputErrorCheck(lab_id=lab_id, name=lab_name, hours=lab_hours, location=lab_location, days=lab_days, course=course, ta=ta)
         if not (Lab.objects.filter(labID=lab_id).exists()):
             raise TypeError("This Lab does not exist")
 
         editedLab = Lab.objects.get(labID=lab_id)
-        if not (lab_name == ""):
+        if not (lab_name is None):
             editedLab.name = lab_name
-        if not (lab_location == ""):
+        if not (lab_location is None):
             editedLab.location = lab_location
-        if not (lab_hours == ""):
+        if not (lab_hours is None):
             editedLab.hours = lab_hours
-        if not (lab_days == ""):
+        if not (lab_days is None):
             editedLab.days = lab_days
         if not (course is None):
             editedLab.course = course
@@ -121,17 +122,33 @@ class LabManagement(object):
         return Lab.objects.all()
 
     @staticmethod
-    def __inputErrorCheck(lab_id=0, lab_name="", lab_location="", lab_hours="", lab_days="", course=None, ta=None):
-        if not (isinstance(lab_id, int)):
-            raise TypeError("lab_id entered is not of type int")
-        if not (isinstance(lab_name, str)):
-            raise TypeError("Lab Name entered is not of type str")
-        if not (isinstance(lab_location, str)):
-            raise TypeError("Lab Location entered is not of type str")
-        if not (isinstance(lab_hours, str)):
-            raise TypeError("Lab Hours entered is not of type str")
-        if not (isinstance(lab_days, str)):
-            raise TypeError("Lab Days entered is not of type str")
+    def __inputErrorCheck(lab_id=None, name=None, location=None, hours=None, days=None, course=None, ta=None):
+        if not (lab_id is None):
+            if not (isinstance(lab_id, int)):
+                raise TypeError("lab_id entered is not of type int")
+        if not (name is None):
+            if not (isinstance(name, str)):
+                raise TypeError("Lab Name entered is not of type str")
+            if not (len(name) > 0):
+                raise ValueError("Name should not be left blank")
+        if not (location is None):
+            if not (isinstance(location, str)):
+                raise TypeError("Lab Location entered is not of type str")
+            if not (len(location) > 0):
+                raise ValueError("Location should not be left blank")
+        if not (hours is None):
+            if not (isinstance(hours, str)):
+                raise TypeError("Lab Hours entered is not of type str")
+            if not (len(hours) > 0):
+                raise ValueError("Hours should not be left blank")
+            if not (bool(re.match("([1][0-2]|[0][1-9]):([0-5][0-9]) ([AP])M - ([1][0-2]|[0][1-9]):([0-5][0-9]) ([AP])M", hours))):
+                raise ValueError("Wrong format for hours. Format should be HH:MM AM/PM - HH:MM AM/PM")
+        if not (days is None):
+            if not (isinstance(days, str)):
+                raise TypeError("Lab Days entered is not of type str")
+            if not (len(days) > 0):
+                raise ValueError("At least one day must be selected")
+
         if not (course is None):
             if not (isinstance(course, Course)):
                 raise TypeError("Course entered is not of type course")
@@ -140,3 +157,5 @@ class LabManagement(object):
                 raise TypeError("Lab TA entered is not of type User")
             if ta.userType != "TA":
                 raise TypeError("Lab TA's type is not of type TA")
+            if not (course in ta.TAToCourse.all()):
+                raise ValueError("TAs cannot be assigned to labs for courses they are not assigned to")
