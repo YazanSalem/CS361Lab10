@@ -47,7 +47,16 @@
                                 <td><input type="text" id=name name=name value={{ Lab.name }}></td>
                                 <td><input type="text" id=location name=location value={{ Lab.location }}></td>
                                 <td><input type="text" id=hours name=hours value={{ Lab.hours }}></td>
-                                <td><input type="text" id=days name=days value={{ Lab.days }}></td>
+                                <td>
+                                    <label for="days"></label>
+                                    <select multiple name="days", id="days">
+                                        <option value="M">Monday</option>
+                                        <option value="T">Tuesday</option>
+                                        <option value="W">Wednesday</option>
+                                        <option value="Th">Thursday</option>
+                                        <option value="F">Friday</option>
+                                    </select>
+                                </td>
                                 <td>
                                     <select name="TA" id="TA">
                                         {% for UserProfile in UserProfile_list %}
