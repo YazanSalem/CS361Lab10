@@ -5,6 +5,7 @@ from TAScheduler.Management.UserManagement import UserManagement
 from TAScheduler.Management.CourseManagement import CourseManagement
 from TAScheduler.Management.LabManagement import LabManagement
 from django.utils.datastructures import MultiValueDictKeyError
+from django.db.models import ProtectedError
 
 
 # Create your views here.
@@ -14,10 +15,7 @@ from django.utils.datastructures import MultiValueDictKeyError
 # valid_types: A list of all the types allowed to access the page. Should be all caps.
 def userAllowed(request, valid_types):
     isValid = True
-    try:
-        if not (UserManagement.findUser(username=request.session["username"]).userType in valid_types):
-            isValid = False
-    except TypeError:
+    if not (request.session["user_type"] in valid_types):
         isValid = False
     return isValid
 
@@ -25,8 +23,8 @@ def userAllowed(request, valid_types):
 class Login(View):
     @staticmethod
     def get(request):
-        request.session["username"] = ""
-        request.session["user_type"] = ""
+        request.session["username"] = None
+        request.session["user_type"] = None
         request.session["user_id"] = None
         return render(request, "login.html")
 
@@ -47,12 +45,12 @@ class Login(View):
             # if the username does not yet exist, the user is returned to the login page.
             # a message field would be a good thing to implement so the reason login was not completed is explained
             # to the user
-            return render(request, "login.html")
+            return render(request, "login.html", {"error": "User does not exist"})
         elif incorrectPassword:
             # if the password is incorrect for the given name, the user is returned to the login page
             # a message field would be a good thing to implement so the reason login was not completed is explained
             # to the user
-            return render(request, "login.html")
+            return render(request, "login.html", {"error": "Incorrect Password"})
         else:
             # if no issues are found, the user is redirected and the request.session["username"] field is set to the
             # username of the user
@@ -68,34 +66,22 @@ class Home(View):
         # If the user does not have a valid name, I.E. if they try to manually enter /home in the search bar,
         # they will fail the userAllowed test and be redirected back to the login page
         # If the user is allowed then home is rendered like normal
-        if userAllowed(request, ["SUPERVISOR", "INSTRUCTOR", "TA"]):
-            return render(request, "home.html", {"request.session.username": request.session["username"]})
+        if userAllowed(request, ["SUPERVISOR", "INSTRUCTOR"]):
+            return render(request, "home_supervisor&instructor.html")
+        elif userAllowed(request, ["TA"]):
+            return render(request, "view_users_instructor&TA.html", {"user_list": UserProfile.objects.all()})
         else:
-            return redirect("/../")
+            return redirect("/")
 
 
-class ViewSchedule(View):
-    @staticmethod
-    def get(request):
-        # If the user does not have a valid name, I.E. if they try to manually enter /home in the search bar,
-        # they will fail the userAllowed test and be redirected back to the login page
-        # If the user is allowed then home is rendered like normal
-        if userAllowed(request, ["INSTRUCTOR", "TA"]):
-
-            return render(request, "schedule.html", {"object_list": UserProfile.objects.get(userID=request.session["user_id"]).getCourseLabList()})
-
-        else:
-            return redirect("/../home")
-
-
-class SendMsg(View):
+class SendNotification(View):
     @staticmethod
     def get(request):
         # If the user does not have a valid name, I.E. if they try to manually enter /home in the search bar,
         # they will fail the userAllowed test and be redirected back to the login page
         # If the user is allowed then home is rendered like normal
         if userAllowed(request, ["SUPERVISOR", "INSTRUCTOR", "TA"]):
-            return render(request, "sendmsg.html", {"request.session.username": request.session["username"]})
+            return render(request, "send_notification.html", {"request.session.username": request.session["username"]})
         else:
             return redirect("/../")
 
@@ -106,18 +92,22 @@ class CreateUser(View):
         # If the user does not have a valid name or if they are not of the type SUPERVISOR, they will fail
         # userAllowed and will be redirected to home
         if userAllowed(request, ["SUPERVISOR"]):
-            return render(request, "createuser.html", {})
+            return render(request, "create_user.html", {})
         else:
-            return redirect("/../home/")
+            return redirect("/home/")
 
     @staticmethod
     def post(request):
         # Takes user input of all parameters and creates a new user.
-        UserManagement.createUser(user_id=request.POST["userID"], user_type=request.POST["userType"],
-                                  username=request.POST["username"], password=request.POST["password"],
-                                  name=request.POST["name"], address=request.POST["address"],
-                                  phone=request.POST["phone"], email=request.POST["email"])
-        return render(request, "createuser.html")
+        try:
+            UserManagement.createUser(user_id=int(request.POST["userID"]), user_type=request.POST["userType"],
+                                      username=request.POST["username"], password=request.POST["password"],
+                                      name=request.POST["name"], address=request.POST["address"],
+                                      phone=int(request.POST["phone"]), email=request.POST["email"])
+            return render(request, "create_user.html")
+        except (TypeError, ValueError) as e:
+            return render(request, "create_user.html",
+                          {"error": "User was not created. " + str(e)})
 
 
 class CreateCourse(View):
@@ -126,31 +116,34 @@ class CreateCourse(View):
         # If the user does not have a valid name or if they are not of the type SUPERVISOR, they will fail
         # userAllowed and be redirected to home
         if userAllowed(request, ['SUPERVISOR']):
-            return render(request, "createcourse.html", {"UserProfile_list": UserProfile.objects.all()})
+            return render(request, "create_course.html", {"UserProfile_list": UserProfile.objects.all()})
         else:
-            return redirect("/../home/")
+            return redirect("/home/")
 
     @staticmethod
     def post(request):
         # Takes user input of all parameters and creates a new course.
-        gottenTAs = request.POST.getlist("TAs")
-
-        for i in range(len(gottenTAs)):
-            gottenTAs[i] = int(gottenTAs[i])
-            gottenTAs[i] = UserProfile.objects.get(userID=gottenTAs[i])
-        gottenDays = request.POST.getlist("days")
-        days = ""
-        for i in range(len(gottenDays)):
-            if i < len(gottenDays) - 1:
-                days = days + gottenDays[i] + ', '
-            else:
-                days = days + gottenDays[i]
-        CourseManagement.createCourse(course_id=int(request.POST['ID']), name=request.POST['name'],
-                                      location=request.POST['location'], hours=request.POST['hours'],
-                                      days=days,
-                                      instructor=UserProfile.objects.get(userID=int(request.POST['instructor'])),
-                                      tas=gottenTAs)
-        return render(request, "createcourse.html", {"UserProfile_list": UserProfile.objects.all()})
+        try:
+            gottenTAs = request.POST.getlist("TAs")
+            for i in range(len(gottenTAs)):
+                gottenTAs[i] = UserProfile.objects.get(userID=int(gottenTAs[i]))
+            gottenDays = request.POST.getlist("days")
+            days = ""
+            for i in range(len(gottenDays)):
+                if i < len(gottenDays) - 1:
+                    days = days + gottenDays[i] + ', '
+                else:
+                    days = days + gottenDays[i]
+            print(days)
+            CourseManagement.createCourse(course_id=int(request.POST['ID']), name=request.POST['name'],
+                                          location=request.POST['location'], hours=request.POST['hours'],
+                                          days=days,
+                                          instructor=UserManagement.findUser(user_id=int(request.POST['instructor'])),
+                                          tas=gottenTAs)
+            return render(request, "create_course.html", {"UserProfile_list": UserProfile.objects.all()})
+        except (TypeError, ValueError) as e:
+            return render(request, "create_course.html", {"UserProfile_list": UserProfile.objects.all(),
+                                                          "error": "Course was not created. " + str(e)})
 
 
 class AccountSettings(View):
@@ -160,33 +153,30 @@ class AccountSettings(View):
         # they will fail the userAllowed test and be redirected back to the login page
         # If the user is allowed then home is rendered like normal
         if userAllowed(request, ["SUPERVISOR", "INSTRUCTOR", "TA"]):
-            return render(request, "accountsettings.html",
-                          {"user": UserProfile.objects.get(username=request.session["username"])})
+            return render(request, "account_settings.html",
+                          {"user": UserManagement.findUser(user_id=request.session["user_id"])})
         else:
-            return redirect("/../home")
+            return redirect("/home")
 
     @staticmethod
     def post(request):
-        edit = True
         try:
-            edit_or_submit = request.POST["edit"]
-        except MultiValueDictKeyError:
-            edit_or_submit = request.POST["submit"]
-            edit = False
-        if edit:
-            change_user = UserManagement.findUser(username=edit_or_submit)
-            return render(request, "accountsettings.html",
-                          {"user": UserProfile.objects.get(username=request.session["username"]),
-                           "change_user": change_user})
-        else:
-            UserManagement.editUser(user_id=UserManagement.findUser(username=edit_or_submit).userID,
-                                    user_type=request.POST["userType"],
-                                    username=edit_or_submit,
-                                    password=request.POST["password"], name=request.POST["name"],
-                                    address=request.POST["address"], phone=request.POST["phone"],
-                                    email=request.POST["email"])
-            return render(request, "accountsettings.html",
-                          {"user": UserProfile.objects.get(username=request.session["username"])})
+            edit = bool(request.POST["edit"])
+            print(edit)
+            if edit:
+                return render(request, "account_settings.html",
+                              {"user": UserManagement.findUser(user_id=request.session["user_id"]), "edit": edit})
+            else:
+                UserManagement.editUser(user_id=int(request.POST["userID"]), username=request.POST["username"],
+                                        password=request.POST["password"], name=request.POST["name"],
+                                        address=request.POST["address"], phone=request.POST["phone"],
+                                        email=request.POST["email"])
+                return render(request, "account_settings.html",
+                              {"user": UserProfile.objects.get(userID=request.session["user_id"]), "edit": edit})
+        except (TypeError, ValueError) as e:
+            return render(request, "account_settings.html",
+                          {"user": UserManagement.findUser(user_id=int(request.session["user_id"])), "edit": False,
+                           "error": "User was not changed. " + str(e)})
 
 
 class EditUser(View):
@@ -196,29 +186,32 @@ class EditUser(View):
         # they will fail the userAllowed test and be redirected back to the login page
         # If the user is allowed then home is rendered like normal
         if userAllowed(request, ["SUPERVISOR"]):
-            return render(request, "edituser.html", {"object_list": UserProfile.objects.all()})
+            return render(request, "edit_user.html", {"object_list": UserProfile.objects.all()})
         else:
-            return redirect("/../home/")
+            return redirect("/home/")
 
     @staticmethod
     def post(request):
-        edit = True
         try:
-            edit_or_submit = request.POST["edit"]
-        except MultiValueDictKeyError:
-            edit_or_submit = request.POST["submit"]
-            edit = False
-        if edit:
-            change_user = UserManagement.findUser(username=edit_or_submit)
-            return render(request, "edituser.html",
-                          {"object_list": UserProfile.objects.all(), "change_user": change_user})
-        else:
-            UserManagement.editUser(user_id=UserManagement.findUser(username=edit_or_submit).userID,
-                                    user_type=request.POST["type"], username=edit_or_submit,
-                                    password=request.POST["password"], name=request.POST["name"],
-                                    address=request.POST["address"], phone=request.POST["phone"],
-                                    email=request.POST["email"])
-            return render(request, "edituser.html", {"object_list": UserProfile.objects.all()})
+            edit = True
+            try:
+                user_id = int(request.POST["edit"])
+            except MultiValueDictKeyError:
+                user_id = int(request.POST["submit"])
+                edit = False
+            if edit:
+                change_user = UserManagement.findUser(user_id=user_id)
+                return render(request, "edit_user.html",
+                              {"object_list": UserProfile.objects.all(), "change_user": change_user})
+            else:
+                UserManagement.editUser(user_id=user_id, user_type=request.POST["type"],
+                                        username=request.POST["username"],
+                                        name=request.POST["name"], address=request.POST["address"],
+                                        phone=int(request.POST["phone"]), email=request.POST["email"])
+                return render(request, "edit_user.html", {"object_list": UserProfile.objects.all()})
+        except (TypeError, ValueError) as e:
+            return render(request, "edit_user.html",
+                          {"object_list": UserProfile.objects.all(), "error": "User was not changed. " + str(e)})
 
 
 class EditCourse(View):
@@ -228,45 +221,45 @@ class EditCourse(View):
         # they will fail the userAllowed test and be redirected back to the login page
         # If the user is allowed then home is rendered like normal
         if userAllowed(request, ["SUPERVISOR"]):
-            return render(request, "editcourse.html", {"Course_list": Course.objects.all()})
+            return render(request, "edit_course.html", {"Course_list": Course.objects.all()})
         else:
-            return redirect("/../home/")
+            return redirect("/home/")
 
     @staticmethod
     def post(request):
         edit = True
         try:
-            edit_or_submit = request.POST["edit"]
-        except MultiValueDictKeyError:
-            edit_or_submit = request.POST["submit"]
-
-            edit = False
-
-        if edit:
-            change_course = CourseManagement.findCourse(int(edit_or_submit))
-            return render(request, "editcourse.html",
-                          {"Course_list": Course.objects.all(), "change_course": change_course,
-                           "UserProfile_list": UserProfile.objects.all()})
-        else:
-            gottenTAs = request.POST.getlist("TAs")
-            for i in range(len(gottenTAs)):
-                gottenTAs[i] = int(gottenTAs[i])
-                gottenTAs[i] = UserProfile.objects.get(userID=gottenTAs[i])
-            gottenDays = request.POST.getlist("days")
-            days = ""
-            for i in range(len(gottenDays)):
-                if i < len(gottenDays) - 1:
-                    days = days + gottenDays[i] + ', '
-                else:
-                    days = days + gottenDays[i]
-            change_course = CourseManagement.findCourse(courseID=int(edit_or_submit))
-            CourseManagement.editCourse(int(change_course.courseID), name=request.POST["name"],
-                                        location=request.POST["location"], days=days,
-                                        hours=request.POST["hours"],
-                                        instructor=UserProfile.objects.get(userID=int(request.POST["instructor"])),
-                                        tas=gottenTAs)
-
-            return render(request, "editcourse.html", {"Course_list": Course.objects.all()})
+            try:
+                course_id = request.POST["edit"]
+            except MultiValueDictKeyError:
+                course_id = request.POST["submit"]
+                edit = False
+            if edit:
+                change_course = CourseManagement.findCourse(int(course_id))
+                return render(request, "edit_course.html",
+                              {"Course_list": Course.objects.all(), "change_course": change_course,
+                               "UserProfile_list": UserProfile.objects.all()})
+            else:
+                gottenTAs = request.POST.getlist("TAs")
+                for i in range(len(gottenTAs)):
+                    gottenTAs[i] = UserProfile.objects.get(userID=int(gottenTAs[i]))
+                gottenDays = request.POST.getlist("days")
+                days = ""
+                for i in range(len(gottenDays)):
+                    if i < len(gottenDays) - 1:
+                        days = days + gottenDays[i] + ', '
+                    else:
+                        days = days + gottenDays[i]
+                change_course = CourseManagement.findCourse(course_id=int(course_id))
+                CourseManagement.editCourse(int(change_course.courseID), name=request.POST["name"],
+                                            location=request.POST["location"], days=days,
+                                            hours=request.POST["hours"],
+                                            instructor=UserProfile.objects.get(userID=int(request.POST["instructor"])),
+                                            tas=gottenTAs)
+                return render(request, "edit_course.html", {"Course_list": Course.objects.all()})
+        except (TypeError, ValueError) as e:
+            return render(request, "edit_course.html",
+                          {"Course_list": Course.objects.all(), "error": "Course was not edited. " + str(e)})
 
 
 class DeleteLab(View):
@@ -276,14 +269,21 @@ class DeleteLab(View):
         # they will fail the userAllowed test and be redirected back to the login page
         # If the user is allowed then home is rendered like normal
         if userAllowed(request, ["SUPERVISOR"]):
-            return render(request, "deletelab.html", {"lab_list": Lab.objects.all()})
+            return render(request, "delete_lab.html", {"lab_list": Lab.objects.all()})
+        elif userAllowed(request, ["INSTRUCTOR"]):
+            return render(request, "delete_lab.html",
+                          {"lab_list": UserManagement.findUser(user_id=int(request.session["user_id"])).getLabList()})
         else:
-            return redirect("/../home/")
+            return redirect("/home/")
 
     @staticmethod
     def post(request):
         LabManagement.deleteLab(lab_id=int(request.POST["delete"]))
-        return render(request, "deletelab.html", {"lab_list": Lab.objects.all()})
+        currentUser = UserManagement.findUser(user_id=int(request.session["user_id"]))
+        if currentUser.userType == "SUPERVISOR":
+            return render(request, "delete_lab.html", {"lab_list": Lab.objects.all()})
+        elif currentUser.userType == "INSTRUCTOR":
+            return render(request, "delete_lab.html", {"lab_list": currentUser.getLabList()})
 
 
 class DeleteCourse(View):
@@ -293,14 +293,14 @@ class DeleteCourse(View):
         # they will fail the userAllowed test and be redirected back to the login page
         # If the user is allowed then home is rendered like normal
         if userAllowed(request, ["SUPERVISOR"]):
-            return render(request, "deletecourse.html", {"course_list": Course.objects.all()})
+            return render(request, "delete_course.html", {"course_list": Course.objects.all()})
         else:
-            return redirect("/../home/")
+            return redirect("/home/")
 
     @staticmethod
     def post(request):
         CourseManagement.deleteCourse(course_id=int(request.POST["delete"]))
-        return render(request, "deletecourse.html", {"course_list": Course.objects.all()})
+        return render(request, "delete_course.html", {"course_list": Course.objects.all()})
 
 
 class DeleteUser(View):
@@ -310,14 +310,20 @@ class DeleteUser(View):
         # they will fail the userAllowed test and be redirected back to the login page
         # If the user is allowed then home is rendered like normal
         if userAllowed(request, ["SUPERVISOR"]):
-            return render(request, "deleteuser.html", {"user_list": UserProfile.objects.all()})
+            return render(request, "delete_user.html", {"user_list": UserProfile.objects.all()})
         else:
-            return redirect("/../home/")
+            return redirect("/home/")
 
     @staticmethod
     def post(request):
-        UserManagement.deleteUser(user_id=int(request.POST["delete"]))
-        return render(request, "deleteuser.html", {"user_list": UserProfile.objects.all()})
+        try:
+            UserManagement.deleteUser(user_id=int(request.POST["delete"]))
+            return render(request, "delete_user.html", {"user_list": UserProfile.objects.all()})
+        except ProtectedError:
+            return render(request, "delete_user.html", {"user_list": UserProfile.objects.all(),
+                                                        "error": "User was not deleted. Cannot delete an instructor "
+                                                                 "that is still assigned to a course or a TA that is "
+                                                                 "assigned to a particular lab section"})
 
 
 class CreateLab(View):
@@ -327,26 +333,56 @@ class CreateLab(View):
         # they will fail the userAllowed test and be redirected back to the login page
         # If the user is allowed then home is rendered like normal
         if userAllowed(request, ["SUPERVISOR"]):
-            return render(request, "createlab.html",
+            return render(request, "create_lab.html",
                           {"Course_list": Course.objects.all(), "UserProfile_list": UserProfile.objects.all()})
+        elif userAllowed(request, ["INSTRUCTOR"]):
+            ta_choices = []
+            course_choices = []
+            for course in UserManagement.findUser(user_id=int(request.session["user_id"])).course_set.all():
+                course_choices.append(course)
+                for ta in course.TAs.all():
+                    ta_choices.append(ta)
+            return render(request, "create_lab.html", {"Course_list": course_choices, "UserProfile_list": ta_choices})
         else:
-            return redirect("/../home/")
+            return redirect("/home/")
 
     @staticmethod
     def post(request):
-        gottenDays = request.POST.getlist("labDays")
-        days = ""
-        for i in range(len(gottenDays)):
-            if i < len(gottenDays) - 1:
-                days = days + gottenDays[i] + ', '
-            else:
-                days = days + gottenDays[i]
-        LabManagement.createLab(int(request.POST['labID']), request.POST['labName'],
-                                request.POST['labHours'], request.POST['labLocation'], days,
-                                Course.objects.get(courseID=request.POST['course']),
-                                UserProfile.objects.get(userID=request.POST['labTA']))
-        return render(request, "createlab.html",
-                      {"Course_list": Course.objects.all(), "UserProfile_list": UserProfile.objects.all()})
+        currentUser = UserProfile.objects.get(userID=int(request.session["user_id"]))
+        if currentUser.userType == "INSTRUCTOR":
+            ta_choices = []
+            course_choices = []
+            for course in UserManagement.findUser(user_id=int(request.session["user_id"])).course_set.all():
+                course_choices.append(course)
+                for ta in course.TAs.all():
+                    ta_choices.append(ta)
+        try:
+            gottenDays = request.POST.getlist("labDays")
+            days = ""
+            for i in range(len(gottenDays)):
+                if i < len(gottenDays) - 1:
+                    days = days + gottenDays[i] + ', '
+                else:
+                    days = days + gottenDays[i]
+            LabManagement.createLab(lab_id=int(request.POST['labID']), lab_name=request.POST['labName'],
+                                    lab_hours=request.POST['labHours'], lab_location=request.POST['labLocation'],
+                                    lab_days=days, course=Course.objects.get(courseID=int(request.POST['course'])),
+                                    ta=UserProfile.objects.get(userID=int(request.POST['labTA'])))
+            if currentUser.userType == "SUPERVISOR":
+                return render(request, "create_lab.html",
+                              {"Course_list": Course.objects.all(), "UserProfile_list": UserProfile.objects.all()})
+            elif currentUser.userType == "INSTRUCTOR":
+                return render(request, "create_lab.html",
+                              {"Course_list": course_choices, "UserProfile_list": ta_choices})
+        except (TypeError, ValueError) as e:
+            if currentUser.userType == "SUPERVISOR":
+                return render(request, "create_lab.html",
+                              {"Course_list": Course.objects.all(), "UserProfile_list": UserProfile.objects.all(),
+                               "error": "Lab section was not created. " + str(e)})
+            elif currentUser.userType == "INSTRUCTOR":
+                return render(request, "create_lab.html",
+                              {"Course_list": course_choices, "UserProfile_list": ta_choices,
+                               "error": "Lab section was not created " + str(e)})
 
 
 class EditLab(View):
@@ -356,50 +392,64 @@ class EditLab(View):
         # they will fail the userAllowed test and be redirected back to the login page
         # If the user is allowed then home is rendered like normal
         if userAllowed(request, ["SUPERVISOR"]):
-            return render(request, "editlab.html", {"object_list": Lab.objects.all()})
+            return render(request, "edit_lab.html", {"object_list": Lab.objects.all()})
+        if userAllowed(request, ["INSTRUCTOR"]):
+            return render(request, "edit_lab.html", {
+                "object_list": UserManagement.findUser(user_id=int(request.session["user_id"])).getLabList()})
         else:
-            return redirect("/../home/")
+            return redirect("/home/")
 
     @staticmethod
     def post(request):
-        edit = True
+        currentUser = UserManagement.findUser(user_id=int(request.session["user_id"]))
+        if currentUser.userType == "INSTRUCTOR":
+            ta_choices = []
+            course_choices = []
+            for course in UserManagement.findUser(user_id=int(request.session["user_id"])).course_set.all():
+                course_choices.append(course)
+                for ta in course.TAs.all():
+                    ta_choices.append(ta)
         try:
-            edit_or_submit = int(request.POST["edit"])
-        except MultiValueDictKeyError:
-            edit_or_submit = int(request.POST["submit"])
-            edit = False
-        if edit:
-            change_lab = Lab.objects.get(labID=edit_or_submit)
-            return render(request, "editlab.html",
-                          {"object_list": Lab.objects.all(), "Course_list": Course.objects.all(),
-                           "UserProfile_list": UserProfile.objects.all(), "change_lab": change_lab})
-        else:
-            gottenDays = request.POST.getlist("days")
-            days = ""
-            for i in range(len(gottenDays)):
-                if i < len(gottenDays) - 1:
-                    days = days + gottenDays[i] + ', '
-                else:
-                    days = days + gottenDays[i]
-            LabManagement.editLab(lab_id=int(Lab.objects.get(labID=edit_or_submit).labID),
-                                  lab_name=request.POST["name"], lab_location=request.POST["location"],
-                                  lab_hours=request.POST["hours"], lab_days=days,
-                                  course=Course.objects.get(courseID=request.POST["course"]),
-                                  ta=UserManagement.findUser(user_id=request.POST["TA"]))
-            return render(request, "editlab.html", {"object_list": Lab.objects.all()})
-
-
-class EditLabForInstructors(View):
-    @staticmethod
-    def get(request):
-        if userAllowed(request, ["INSTRUCTOR"]):
-            instructor_labs = []
-            for lab in Lab.objects.all():
-                if lab.course.instructor.userID == int(request.session["user_id"]):
-                    instructor_labs.append(lab)
-            return render(request, "editlab_forinstructors.html", {"object_list": instructor_labs})
-        else:
-            return redirect("/../home")
+            edit = True
+            try:
+                lab_id = int(request.POST["edit"])
+            except MultiValueDictKeyError:
+                lab_id = int(request.POST["submit"])
+                edit = False
+            if edit:
+                change_lab = Lab.objects.get(labID=lab_id)
+                if currentUser.userType == "SUPERVISOR":
+                    return render(request, "edit_lab.html",
+                                  {"object_list": Lab.objects.all(), "Course_list": Course.objects.all(),
+                                   "UserProfile_list": UserProfile.objects.all(), "change_lab": change_lab})
+                elif currentUser.userType == "INSTRUCTOR":
+                    return render(request, "edit_lab.html",
+                                  {"object_list": currentUser.getLabList(), "Course_list": course_choices,
+                                   "UserProfile_list": ta_choices, "change_lab": change_lab})
+            else:
+                gottenDays = request.POST.getlist("days")
+                days = ""
+                for i in range(len(gottenDays)):
+                    if i < len(gottenDays) - 1:
+                        days = days + gottenDays[i] + ', '
+                    else:
+                        days = days + gottenDays[i]
+                LabManagement.editLab(lab_id=lab_id, lab_name=request.POST["name"],
+                                      lab_location=request.POST["location"], lab_hours=request.POST["hours"],
+                                      lab_days=days, course=Course.objects.get(courseID=int(request.POST["course"])),
+                                      ta=UserManagement.findUser(user_id=int(request.POST["TA"])))
+                if currentUser.userType == "SUPERVISOR":
+                    return render(request, "edit_lab.html", {"object_list": Lab.objects.all()})
+                if currentUser.userType == "Instructor":
+                    return render(request, "edit_lab.html", {
+                        "object_list": currentUser.getLabList()})
+        except (TypeError, ValueError) as e:
+            if currentUser.userType == "SUPERVISOR":
+                return render(request, "edit_lab.html",
+                              {"object_list": Lab.objects.all(), "error": "Lab section was not changed. " + str(e)})
+            if currentUser.userType == "INSTRUCTOR":
+                return render(request, "edit_lab.html", {
+                    "object_list": currentUser.getLabList(), "error": "Lab section was not changed. " + str(e)})
 
     @staticmethod
     def post(request):
@@ -424,65 +474,41 @@ class EditLabForInstructors(View):
                       {"object_list": instructor_labs, "UserProfile_list": instructor_tas, "change_lab": change_lab})
 
 
-class ViewUser(View):
+class ViewUsers(View):
     @staticmethod
     def get(request):
         # If the user does not have a valid name, I.E. if they try to manually enter /home in the search bar,
         # they will fail the userAllowed test and be redirected back to the login page
         # If the user is allowed then home is rendered like normal
-        if userAllowed(request, ["SUPERVISOR", "INSTRUCTOR", "TA"]):
-            return render(request, "viewuser.html", {"user_list": UserProfile.objects.all()})
+        if userAllowed(request, ["SUPERVISOR"]):
+            return render(request, "view_users_supervisor.html", {"user_list": UserProfile.objects.all()})
+        elif userAllowed(request, ["INSTRUCTOR", "TA"]):
+            return render(request, "view_users_instructor&TA.html", {"user_list": UserProfile.objects.all()})
         else:
-            return redirect("/../")
+            return redirect("/home")
 
 
-class AssignTa(View):
+class ViewCourses(View):
     @staticmethod
     def get(request):
         # If the user does not have a valid name, I.E. if they try to manually enter /home in the search bar,
         # they will fail the userAllowed test and be redirected back to the login page
         # If the user is allowed then home is rendered like normal
-        if userAllowed(request, ["SUPERVISOR", "INSTRUCTOR", "TA"]):
-            return render(request, "assignTA.html", {"object_list": Lab.objects.all(), "Course_list": Course.objects.all()})
+        if userAllowed(request, ["SUPERVISOR"]):
+            return render(request, "view_courses_supervisor.html", {"course_list": Course.objects.all()})
+        elif userAllowed(request, ["INSTRUCTOR"]):
+            return render(request, "view_courses_instructor.html", {"course_list": Course.objects.all()})
         else:
-            return redirect("/../home/")
+            return redirect("/home")
 
 
-class ClassSchedules(View):
-    pass
-
-
-class ClassLabManagement(View):
-    pass
-
-
-class CourseTAAssignments(View):
-    pass
-
-
-class UserList(View):
-    pass
-
-
-class AccountCreation(View):
-    pass
-
-
-class ClassList(View):
-    pass
-
-
-class CourseCreation(View):
-    pass
-
-
-class LabList(View):
-    pass
-
-
-class CourseAssignments(View):
-    pass
-
-
-class TAList(View):
-    pass
+class ViewLabs(View):
+    @staticmethod
+    def get(request):
+        # If the user does not have a valid name, I.E. if they try to manually enter /home in the search bar,
+        # they will fail the userAllowed test and be redirected back to the login page
+        # If the user is allowed then home is rendered like normal
+        if userAllowed(request, ["SUPERVISOR", "INSTRUCTOR"]):
+            return render(request, "view_labs_supervisor&instructor.html", {"lab_list": Lab.objects.all()})
+        else:
+            return redirect("/home")
