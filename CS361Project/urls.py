@@ -21,6 +21,7 @@ from TAScheduler.views import *
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('login/', Login.as_view()),
     path('', Login.as_view()),
     path('home/', Home.as_view()),
     path('sendmsg/', SendMsg.as_view()),
@@ -35,5 +36,6 @@ urlpatterns = [
     path('editlab/', EditLab.as_view()),
     path('deletelab/', DeleteLab.as_view()),
     path('viewuser/', ViewUser.as_view()),
-    path('schedule/', ViewSchedule.as_view())
+    path('schedule/', ViewSchedule.as_view()),
+    path('assignTA/', AssignTa.as_view()),
 ]
