@@ -15,9 +15,9 @@
             <li><a href="../home/">Dashboard</a></li>
             <li><a href="../viewuser/">View Users</a></li>
             {% if request.session.user_type == "SUPERVISOR" %}
-            <li><a href="../createuser/">Create</a></li>
-            <li><a href="../edituser/">Edit</a></li>
-            <li><a href="../deleteuser/">Delete</a></li>
+                <li><a href="../createuser/">Create</a></li>
+                <li><a href="../edituser/">Edit</a></li>
+                <li><a href="../deleteuser/">Delete</a></li>
             {% endif %}
         </ul>
     </div>
@@ -25,86 +25,183 @@
 
 
 <main>
-     <div class="container">
-     <form class="form-control" action="/createuser/" method="post">
-       {%  csrf_token %}
-     <ul>
-       <li>
-         <label class="label-control" for="userID">User ID
-          <input type="text" id="userID" name="userID">
-          </label>
-       </li>
-       <br>
+    <div class="container">
+        <form class="form-control" action="/accountsettings/" method="post">
+            {% csrf_token %}
+            <ul>
+                <tr>
+                    {% if change_user.username == user.username %}
+                        <li>
+                            <label class="label-control" for="userID">User ID
+                                <input type="number" id="userID" name="userID"
+                                       value={{ user.userID }}>
+                            </label>
+                        </li>
+                        <br>
 
-       <li>
-         <label class="label-control" for="userType"> User Type
-             <select name="userType" id="userType">
-                 <option value="Supervisor">Supervisor</option>
-                 <option value="Instructor">Instructor</option>
-                 <option value="TA">TA</option>
-            </select>
-         </label>
-       </li>
-       <br>
+                        <li>
+                            <label class="label-control" for="userType"> User Type
+                                <select name="userType" id="userType">
+                                    {%if request.session.user_type == "SUPERVISOR" %}
+                                    <option value="SUPERVISOR"selected>Supervisor</option>
+                                    <option value="INSTRUCTOR">Instructor</option>
+                                    <option value="TA" >TA</option>
+                                    {%endif %}
+                                    {% if request.session.user_type == "INSTRUCTOR" %}
+                                    <option value="SUPERVISOR">Supervisor</option>
+                                    <option value="INSTRUCTOR"selected>Instructor</option>
+                                    <option value="TA" >TA</option>
+                                    {%endif %}
+                                    {% if request.session.user_type == "TA" %}
+                                    <option value="SUPERVISOR">Supervisor</option>
+                                    <option value="INSTRUCTOR">Instructor</option>
+                                    <option value="TA" selected>TA</option>
+                                    {%endif %}
+                                </select>
+                            </label>
+                        </li>
+                        <br>
+                        <li>
 
-         <li>
+                            <label class="label-control" for="username">Username <input type="text" id="username "
+                                                                                        name="username"
+                                                                                        value={{ user.username }}>
+                            </label>
+                        </li>
+                        <br>
 
-         <label class="label-control" for="username">Username <input type="text" id="username " name="username">
-         </label>
-       </li>
-       <br>
+                        <li>
+                            <label class="label-control" for="password">Password <input type="password" id="password "
+                                                                                        name="password"
+                                                                                        value={{ user.password }}>
+                            </label>
+                        </li>
+                        <br>
 
-         <li>
-         <label class="label-control" for="userPassword">Password <input type="text" id="userPassword " name="userPassword">
-         </label>
-       </li>
-       <br>
+                        <li>
 
-         <li>
+                            <label class="label-control" for="name">Full Name <input type="text" id="name " name="name"
+                                                                                     value={{ user.name }}>
+                            </label>
+                        </li>
+                        <br>
 
-         <label class="label-control" for="name">Full Name <input type="text" id="name " name="name">
-         </label>
-       </li>
-       <br>
+                        <li>
+                            <label class="label-control" for="address">Address <input type="text" id="address "
+                                                                                      name="address"
+                                                                                      value={{ user.address }}>
+                            </label>
+                        </li>
+                        <br>
 
-       <li>
-         <label class="label-control" for="userAddress">Address  <input type="text" id="userAddress " name="userAddress">
-         </label>
-       </li>
-       <br>
+                        <li>
+                            <label class="label-control" for="phone">Phone Number <input type="tel" id="phone "
+                                                                                         name="phone"
+                                                                                         value={{ user.phone }}>
+                            </label>
+                        </li>
+                        <br>
 
-        <li>
-         <label class="label-control" for="userContact">Phone Number <input type="text" id="userContact " name="userContact">
-         </label>
-       </li>
-       <br>
+                        <li>
+                            <label class="label-control" for="email">E-Mail <input type="email" id="email " name="email"
+                                                                                   value={{ user.email }}>
+                            </label>
+                        </li>
+                        <br>
+                        <td>
+                            <button name="submit" type="submit" value={{ user.username }}>Submit</button>
+                        </td>
 
-       <li>
-         <label class="label-control" for="userEmail">E-Mail <input type="text" id="userEmail " name="userEmail">
-         </label>
-       </li>
-       <br>
+                    {% else %}
+                        <li>
+                            <label class="label-control" for="userID">User ID
+                                <input type="number" id="userID" name="userID"
+                                       value={{ user.userID }} readonly="readonly">
+                            </label>
+                        </li>
+                        <br>
 
+                        <li>
+                            <label class="label-control" for="userType"> User Type
+                                <input type="text" id="userType" name="userType"
+                                       value={{ user.userType }} readonly="readonly">
+                            </label>
+                        </li>
+                        <br>
 
-       <button class="btn btn-hero" id="btn">Save Edits</button>
-     </ul>
-     </form>
-     </div>
-   </main>
-       <div class="container">
-        <div class="row">
-            <div class="column">
+                        <li>
+                            <label class="label-control" for="username">Username <input type="text" id="username "
+                                                                                        name="username"
+                                                                                        value={{ user.username }} readonly="readonly">
+                            </label>
+                        </li>
+                        <br>
+
+                        <li>
+                            <label class="label-control" for="password">Password <input type="password" id="password "
+                                                                                        name="password"
+                                                                                        value={{ user.password }} readonly="readonly">
+                            </label>
+                        </li>
+                        <br>
+
+                        <li>
+
+                            <label class="label-control" for="name">Full Name <input type="text" id="name " name="name"
+                                                                                     value={{ user.name }} readonly="readonly">
+                            </label>
+                        </li>
+                        <br>
+
+                        <li>
+                            <label class="label-control" for="address">Address <input type="text" id="address "
+                                                                                      name="address"
+                                                                                      value={{ user.address }} readonly="readonly">
+                            </label>
+                        </li>
+                        <br>
+
+                        <li>
+                            <label class="label-control" for="phone">Phone Number <input type="tel" id="phone "
+                                                                                         name="phone"
+                                                                                         value={{ user.phone }} readonly="readonly">
+                            </label>
+                        </li>
+                        <br>
+
+                        <li>
+                            <label class="label-control" for="email">E-Mail <input type="email" id="email " name="email"
+                                                                                   value={{ user.email }} readonly="readonly">
+                            </label>
+                        </li>
+                        <br>
+                        {% if change_user.username == null %}
+                            <td>
+                                <button name="edit" type="submit" value={{ user.username }}>Edit</button>
+                            </td>
+                        {% endif %}
+                        {#                <button class="btn btn-hero" id="btn" type="submit" value={{ UserProfile.username }}>edit</button>#}
+                        {#                <button class="btn btn-hero" id="btn" type="submit" value={{ UserProfile.username }}>submit</button>#}
+                    {% endif %}
+                </tr>
+            </ul>
+        </form>
+    </div>
+</main>
+<div class="container">
+    <div class="row">
+        <div class="column">
             <!--Context variables if there was an unsuccessful login, the 'error' & 'success' variable needs to be used in the CreateCourse.post() method-->
-                {% if success %}
+            {% if success %}
                 {{ success }}
-                {% endif %}
+            {% endif %}
 
-                {% if error %}
+            {% if error %}
                 {{ error }}
-                {% endif %}
-            </div>
+            {% endif %}
         </div>
     </div>
+</div>
 </body>
 
 
