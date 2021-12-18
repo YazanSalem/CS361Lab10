@@ -19,6 +19,7 @@
                 <li><a href="../edituser/">Edit</a></li>
                 <li><a href="../deleteuser/">Delete</a></li>
             {% endif %}
+            <li><a href="../login/">Log Out</a></li>
         </ul>
     </div>
 </nav>
@@ -42,21 +43,21 @@
                         <li>
                             <label class="label-control" for="userType"> User Type
                                 <select name="userType" id="userType">
-                                    {%if request.session.user_type == "SUPERVISOR" %}
-                                    <option value="SUPERVISOR"selected>Supervisor</option>
-                                    <option value="INSTRUCTOR">Instructor</option>
-                                    <option value="TA" >TA</option>
-                                    {%endif %}
+                                    {% if request.session.user_type == "SUPERVISOR" %}
+                                        <option value="SUPERVISOR" selected>Supervisor</option>
+                                        <option value="INSTRUCTOR">Instructor</option>
+                                        <option value="TA">TA</option>
+                                    {% endif %}
                                     {% if request.session.user_type == "INSTRUCTOR" %}
-                                    <option value="SUPERVISOR">Supervisor</option>
-                                    <option value="INSTRUCTOR"selected>Instructor</option>
-                                    <option value="TA" >TA</option>
-                                    {%endif %}
+                                        <option value="SUPERVISOR">Supervisor</option>
+                                        <option value="INSTRUCTOR" selected>Instructor</option>
+                                        <option value="TA">TA</option>
+                                    {% endif %}
                                     {% if request.session.user_type == "TA" %}
-                                    <option value="SUPERVISOR">Supervisor</option>
-                                    <option value="INSTRUCTOR">Instructor</option>
-                                    <option value="TA" selected>TA</option>
-                                    {%endif %}
+                                        <option value="SUPERVISOR">Supervisor</option>
+                                        <option value="INSTRUCTOR">Instructor</option>
+                                        <option value="TA" selected>TA</option>
+                                    {% endif %}
                                 </select>
                             </label>
                         </li>
