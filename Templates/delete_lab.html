@@ -12,10 +12,10 @@
             <div class="nav-center">
                 <h4>Delete Lab</h4>
                 <ul class="nav-links">
-                    <li><a href="/view_labs/">View Labs</a></li>
-                    <li><a href="/create_lab/">Create Lab</a></li>
-                    <li><a href="/edit_lab/">Edit Lab</a></li>
-                    <li><a href="/account_settings/">Account Settings</a></li>
+                    <li><a href="/view_labs/">View</a></li>
+                    <li><a href="/create_lab/">Create</a></li>
+                    <li><a href="/edit_lab/">Edit</a></li>
+                    <li><a href="/account_settings/">Account</a></li>
                     <li><a href="/home/">Dashboard</a></li>
                     <li><a href="/">Log Out</a></li>
                 </ul>
@@ -28,26 +28,27 @@
                     {% csrf_token %}
                     <table border="1">
                         <tr>
-                            <th>ID</th>
-                            <th>Name</th>
-                            <th>Location</th>
-                            <th>Hours</th>
-                            <th>Days</th>
-                            <th>Course</th>
-                            <th>TA</th>
+                            <th STYLE="padding:5px 10px;">ID</th>
+                            <th STYLE="padding:5px 10px;">Name</th>
+                            <th STYLE="padding:5px 10px;">Location</th>
+                            <th STYLE="padding:5px 10px;">Hours</th>
+                            <th STYLE="padding:5px 10px;">Days</th>
+                            <th STYLE="padding:5px 10px;">Course</th>
+                            <th STYLE="padding:5px 10px;">TA</th>
                         </tr>
                         {% for Lab in lab_list %}
                             <tr>
-                                <td>{{ Lab.labID }}</td>
-                                <td>{{ Lab.name }}</td>
-                                <td>{{ Lab.location }}</td>
-                                <td>{{ Lab.hours }}</td>
-                                <td>{{ Lab.days }}</td>
-                                <td>{{ Lab.course }}</td>
-                                <td>{{ Lab.TA }}</td>
+                                <td STYLE="padding:5px 10px;">{{ Lab.labID }}</td>
+                                <td STYLE="padding:5px 10px;">{{ Lab.name }}</td>
+                                <td STYLE="padding:5px 10px;">{{ Lab.location }}</td>
+                                <td STYLE="padding:5px 10px;">{{ Lab.hours }}</td>
+                                <td STYLE="padding:5px 10px;">{{ Lab.days }}</td>
+                                <td STYLE="padding:5px 10px;">{{ Lab.course }}</td>
+                                <td STYLE="padding:5px 10px;">{{ Lab.TA }}</td>
                                 {% if deleted_lab.labID == null %}
                                     <td>
-                                        <button name="delete" type="submit" value={{ Lab.labID }}>Delete</button>
+                                        <button STYLE="background-color: #FF0000;color: #FFFFFF; font-size:16px;
+                                        padding: 5px 10px" name="delete" type="submit" value={{ Lab.labID }}>X</button>
                                     </td>
                                 {% endif %}
                             </tr>
