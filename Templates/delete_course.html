@@ -13,10 +13,10 @@
             <div class="nav-center">
                 <h4>Delete Course</h4>
                 <ul class="nav-links">
-                    <li><a href="/view_courses/">View Courses</a></li>
-                    <li><a href="/create_course/">Create Course</a></li>
-                    <li><a href="/edit_course/">Edit Course</a></li>
-                    <li><a href="/account_settings/">Account Settings</a></li>
+                    <li><a href="/view_courses/">View</a></li>
+                    <li><a href="/create_course/">Create</a></li>
+                    <li><a href="/edit_course/">Edit</a></li>
+                    <li><a href="/account_settings/">Account</a></li>
                     <li><a href="/home/">Dashboard</a></li>
                     <li><a href="/">Log Out</a></li>
                 </ul>
@@ -29,30 +29,31 @@
                     {% csrf_token %}
                     <table border="1">
                         <tr>
-                            <th>ID</th>
-                            <th>Name</th>
-                            <th>Location</th>
-                            <th>Hours</th>
-                            <th>Days</th>
-                            <th>Instructor</th>
-                            <th>TAs</th>
+                            <th STYLE="padding:5px 10px;">ID</th>
+                            <th STYLE="padding:5px 10px;">Name</th>
+                            <th STYLE="padding:5px 10px;">Location</th>
+                            <th STYLE="padding:5px 10px;">Hours</th>
+                            <th STYLE="padding:5px 10px;">Days</th>
+                            <th STYLE="padding:5px 10px;">Instructor</th>
+                            <th STYLE="padding:5px 10px;">TAs</th>
                         </tr>
                         {% for Course in course_list %}
                             <tr>
-                                <td>{{ Course.courseID }}</td>
-                                <td>{{ Course.name }}</td>
-                                <td>{{ Course.location }}</td>
-                                <td>{{ Course.hours }}</td>
-                                <td>{{ Course.days }}</td>
-                                <td>{{ Course.instructor }}</td>
-                                <td>
+                                <td STYLE="padding:5px 10px;">{{ Course.courseID }}</td>
+                                <td STYLE="padding:5px 10px;">{{ Course.name }}</td>
+                                <td STYLE="padding:5px 10px;">{{ Course.location }}</td>
+                                <td STYLE="padding:5px 10px;">{{ Course.hours }}</td>
+                                <td STYLE="padding:5px 10px;">{{ Course.days }}</td>
+                                <td STYLE="padding:5px 10px;">{{ Course.instructor }}</td>
+                                <td STYLE="padding:5px 10px;">
                                     {% for ta in Course.TAs.all %}
                                         {{ ta.username }}
                                     {% endfor %}
                                 </td>
                                 {% if deleted_course.courseID == null %}
                                     <td>
-                                        <button name="delete" type="submit" value={{ Course.courseID }}>Delete</button>
+                                        <button STYLE="background-color: #FF0000;color: #FFFFFF; font-size:16px;
+                                        padding: 5px 10px"   name="delete" type="submit" value={{ Course.courseID }}>X</button>
                                     </td>
                                 {% endif %}
                             </tr>

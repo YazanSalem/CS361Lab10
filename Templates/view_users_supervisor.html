@@ -17,10 +17,10 @@
             <div class="nav-center">
                 <h4>View Users</h4>
                 <ul class="nav-links">
-                    <li><a href="/create_user/">Create User</a></li>
-                    <li><a href="/edit_user/">Edit User</a></li>
-                    <li><a href="/delete_user/">Delete User</a></li>
-                    <li><a href="/account_settings/">Account Settings</a></li>
+                    <li><a href="/create_user/">Create</a></li>
+                    <li><a href="/edit_user/">Edit</a></li>
+                    <li><a href="/delete_user/">Delete</a></li>
+                    <li><a href="/account_settings/">Account</a></li>
                     <li><a href="/home/">Dashboard</a></li>
                     <li><a href="/">Log Out</a></li>
                 </ul>
@@ -34,22 +34,22 @@
                     <b>{{ user.userType }}: {{ user.username }}</b>
                     <table border>
                         <tr>
-                            <th>ID</th>
-                            <th>Type</th>
-                            <th>Username</th>
-                            <th>Name</th>
-                            <th>Address</th>
-                            <th>Phone</th>
-                            <th>Email</th>
+                            <th STYLE="padding:5px 10px;">ID</th>
+                            <th STYLE="padding:5px 10px;">Type</th>
+                            <th STYLE="padding:5px 10px;">Username</th>
+                            <th STYLE="padding:5px 10px;">Name</th>
+                            <th STYLE="padding:5px 10px;">Address</th>
+                            <th STYLE="padding:5px 10px;">Phone</th>
+                            <th STYLE="padding:5px 10px;">Email</th>
                         </tr>
                         <tr>
-                            <td>{{ user.userID }}</td>
-                            <td>{{ user.userType }}</td>
-                            <td>{{ user.username }}</td>
-                            <td>{{ user.name }}</td>
-                            <td>{{ user.address }}</td>
-                            <td>{{ user.phone }}</td>
-                            <td>{{ user.email }}</td>
+                            <td STYLE="padding:5px 10px;">{{ user.userID }}</td>
+                            <td STYLE="padding:5px 10px;">{{ user.userType }}</td>
+                            <td STYLE="padding:5px 10px;">{{ user.username }}</td>
+                            <td STYLE="padding:5px 10px;">{{ user.name }}</td>
+                            <td STYLE="padding:5px 10px;">{{ user.address }}</td>
+                            <td STYLE="padding:5px 10px;">{{ user.phone }}</td>
+                            <td STYLE="padding:5px 10px;">{{ user.email }}</td>
                         </tr>
                     </table>
                     <br>
@@ -57,43 +57,43 @@
                         <b>{{ user.username }} Schedule</b>
                         <table border>
                             <tr>
-                                <th>Monday</th>
-                                <th>Tuesday</th>
-                                <th>Wednesday</th>
-                                <th>Thursday</th>
-                                <th>Friday</th>
+                                <th STYLE="padding:5px 10px;">Monday</th>
+                                <th STYLE="padding:5px 10px;">Tuesday</th>
+                                <th STYLE="padding:5px 10px;">Wednesday</th>
+                                <th STYLE="padding:5px 10px;">Thursday</th>
+                                <th STYLE="padding:5px 10px;">Friday</th>
                             </tr>
                             {% for course_lab in user.getCourseLabList %}
                                 <tr>
-                                    <td>
+                                    <td STYLE="padding:5px 10px;">
                                         {% if "M" in course_lab.getDays %}
                                             {{ course_lab.name }} -- {{ course_lab.hours }}
                                         {% else %}
                                             -
                                         {% endif %}
                                     </td>
-                                    <td>
+                                    <td STYLE="padding:5px 10px;">
                                         {% if "T" in course_lab.getDays %}
                                             {{ course_lab.name }} -- {{ course_lab.hours }}</td>
                                         {% else %}
                                             -
                                         {% endif %}
                                     </td>
-                                    <td>
+                                    <td STYLE="padding:5px 10px;">
                                         {% if "W" in course_lab.getDays %}
                                             {{ course_lab.name }} -- {{ course_lab.hours }}</td>
                                         {% else %}
                                             -
                                         {% endif %}
                                     </td>
-                                    <td>
+                                    <td STYLE="padding:5px 10px;">
                                         {% if "Th" in course_lab.getDays %}
                                             {{ course_lab.name }} -- {{ course_lab.hours }}</td>
                                         {% else %}
                                             -
                                         {% endif %}
                                     </td>
-                                    <td>
+                                    <td STYLE="padding:5px 10px;">
                                         {% if "F" in course_lab.getDays %}
                                             {{ course_lab.name }} -- {{ course_lab.hours }}</td>
                                         {% else %}
