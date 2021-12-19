@@ -52,6 +52,15 @@ class UserManagement(object):
         except TypeError:
             raise TypeError("This user does not exist (editUser): ")
         if not(user_type is None):
+            if not(user_type == change_user.userType):
+                if change_user.userType == "INSTRUCTOR" and len(change_user.course_set.all()) > 0:
+                    raise ValueError("An instructor's type cannot be changed while they have courses assigned to them")
+                if change_user.userType == "TA" and len(change_user.TAToCourse.all()) > 0:
+                    raise ValueError(
+                        "An TA's type cannot be changed while they are assigned as a TA of a course")
+                if change_user.userType == "TA" and len(change_user.TAToLab.all()):
+                    raise ValueError(
+                        "An TA's type cannot be changed while they have lab sections assigned to them")
             change_user.userType = user_type
         if not (username is None):
             change_user.username = username
@@ -102,7 +111,7 @@ class UserManagement(object):
     # UserId(in) - Id of the user
     @staticmethod
     def deleteUser(user_id):
-        UserManagement.findUser(user_id).delete()
+        UserManagement.findUser(user_id=user_id).delete()
 
     # Preconditions: The user has to have been instantiated
     # There are accounts to display
@@ -145,6 +154,8 @@ class UserManagement(object):
         if not (phone is None):
             if not (isinstance(int(phone), int)):
                 raise TypeError("Contact entered is not of type str")
+            if not (1000000000 < phone < 9999999999):
+                raise ValueError("A phone number needs to be 10 digits")
         if not (email is None):
             if not (isinstance(email, str)):
                 raise TypeError("Email entered is not of type str")
