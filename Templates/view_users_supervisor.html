@@ -65,21 +65,41 @@
                             </tr>
                             {% for course_lab in user.getCourseLabList %}
                                 <tr>
-                                {% if "M" in course_lab.getDays %}
-                                    <td>{{ course_lab.name }} -- {{ course_lab.hours }}</td>
-                                {% endif %}
-                                {% if "T" in course_lab.getDays %}
-                                    <td>{{ course_lab.name }} -- {{ course_lab.hours }}</td>
-                                {% endif %}
-                                {% if "W" in course_lab.getDays %}
-                                    <td>{{ course_lab.name }} -- {{ course_lab.hours }}</td>
-                                {% endif %}
-                                {% if "Th" in course_lab.getDays %}
-                                    <td>{{ course_lab.name }} -- {{ course_lab.hours }}</td>
-                                {% endif %}
-                                {% if "F" in course_lab.getDays %}
-                                    <td>{{ course_lab.name }} -- {{ course_lab.hours }}</td>
-                                {% endif %}
+                                    <td>
+                                        {% if "M" in course_lab.getDays %}
+                                            {{ course_lab.name }} -- {{ course_lab.hours }}
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if "T" in course_lab.getDays %}
+                                            {{ course_lab.name }} -- {{ course_lab.hours }}</td>
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if "W" in course_lab.getDays %}
+                                            {{ course_lab.name }} -- {{ course_lab.hours }}</td>
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if "Th" in course_lab.getDays %}
+                                            {{ course_lab.name }} -- {{ course_lab.hours }}</td>
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if "F" in course_lab.getDays %}
+                                            {{ course_lab.name }} -- {{ course_lab.hours }}</td>
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
                                 </tr>
                             {% endfor %}
                         </table>
