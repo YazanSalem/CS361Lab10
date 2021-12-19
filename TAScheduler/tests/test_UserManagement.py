@@ -1,31 +1,11 @@
-import unittest
-from TAScheduler.User.User import User
-
-# NEED MORE FUNCTIONS! Specifically getters and setters.
-
-
-'''
-setId()
-setName()
-setContact()
-setSSN()
-setAddress()
-setPassword()
-setType()
-getType()
-getId()
-getName()
-getContact()
-getSSN()
-getAddress()
-getPassword()
-'''
+from django.test import TestCase
+from TAScheduler.Management.UserManagement import UserManagement
+from TAScheduler.models import *
 
 
-class TestMyUser(unittest.TestCase):
+class TestMyUser(TestCase):
 
-    def SetUp(self):
-
+    def setUp(self):
         '''
         testusr0: to be empty at all times.
         testusr1: has every field filled off the bat.
@@ -33,95 +13,153 @@ class TestMyUser(unittest.TestCase):
         testusr2: to be used for all of the "set" functions.
         '''
 
-        testusr0 = User()
-        testusr1 = User(1000, "John Wick", 4142542688, 101001001, "894 Lake Street, Milwaukee, Wisconsin 99999",
-                        "thisismypassword", 2)
-        testusr2 = User()
+        testusr0 = UserProfile.objects.create()
+        testusr1 = UserManagement.createUser(user_id=1000, user_type="SUPERVISOR", username="mrwick123",
+                                             password="password",
+                                             name="John Wick", address="894 Lake Street, Milwaukee, Wisconsin 99999",
+                                             phone=4142542688,
+                                             email="johnwick123@uwm.edu")
+        testusr2 = UserManagement.createUser(user_id=1001, user_type="INSTRUCTOR", username="mrbond123",
+                                             password="password",
+                                             name="James Bond", address="123 Kenwood Ave, Milwaukee, Wisconsin 99999",
+                                             phone=4144567890,
+                                             email="jamesbond123@uwm.edu")
 
-    def test_getType(self):
-        # This user's UserType is 2: Supervisor.
-        self.assertEqual(2, self.testusr1.getType())
-        self.assertFalse(1, self.testusr1.getType())
+        self.testUser = UserProfile.objects.get(userID=1000, userType="SUPERVISOR", username="mrwick123",
+                                                password="password",
+                                                name="John Wick", address="894 Lake Street, Milwaukee, Wisconsin 99999",
+                                                phone=4142542688,
+                                                email="johnwick123@uwm.edu")
 
-        # If a user class is created and a user type is not specified, we should have some sort of negative flag
-        # to identify that the user doesn't have a type yet
-        self.assertEqual(-1, self.testusr0.getType())
+        # Course.objects.create(courseID=1001, name="System Programming", location="EMS 180", days="T, Th",
+        #                       hours="10:00 AM - 10:50 AM", instructor=self.instructor)
+        # self.testCourse = Course.objects.get(courseID=1000)
+        # self.testCourse = Course.objects.get(courseID=1000)
 
-    def test_getId(self):
-        # User id is 0001
-        self.assertEqual(1000, self.testusr1.getId())
-        self.assertFalse(0000, self.testusr1.getId())
+    def test_invalid_login(self):
+        response = self.client.post('/', {'username': 'Superman', 'password': '24680'})
+        self.assertEqual(response.url, 'invalid_login_response')
+        # print(response.context['error_messages'])
+        self.assertEqual(response.context['error'], 'username or password are incorrect')
 
-        # Similar concept in the test_getType() function, we should have a flag for no id assigned
-        self.assertEqual(-1, self.testusr0.getId())
-        self.assertFalse(1000, self.testusr0.getId())
+    def test_valid_login(self):
+        response = self.client.post('/', {'username': 'Samuel', 'password': '12345'})
+        self.assertEqual(response.url, '/valid_login_response/')
+        # print(response.context['error_messages'])
+        self.assertEqual(response.context['Validation'], 'username or password are correct')
 
-    def test_getName(self):
-        self.assertEqual("John Wick", self.testusr1.getName())
-        self.assertFalse("Tony Danza", self.testusr1.getName())
+    def test_UserID(self):
+        self.assertEqual(1000, self.testUser.userID, "User ID was not set correctly when creating a User.")
 
-        self.assertEqual("NA", self.testusr0.getName())
-        self.assertFalse("John Wick", self.testusr0.getName())
+    def test_InvalidUserID(self):
+        # self.assertEqual(1000, self.testUser.UserID, "User ID was not set correctly when creating a User.")
+        with self.assertRaises(TypeError,
+                               msg="An exception was not raised when createUser was passed a courseID with an "
+                                   "invalid type"):
+            UserManagement.createUser(user_id=1001, user_type="SUPERVISOR", username="johndoe", password="john123",
+                                      name="John Doe",
+                                      address="3400 N Maryland Ave, Milwaukee, Wisconsin 53211",
+                                      phone=4142340987, email="johndoe123@uwm.edu")
 
-    def test_getContact(self):
-        self.assertEqual(4142542688, self.testusr1.getContact())
-        self.assertFalse(9875471111, self.testusr1.getContact())
+    def test_UserType(self):
+        self.assertEqual("SUPERVISOR", self.testUser.userType, "User type was not set correctly when creating a User.")
 
-        self.assertEqual(0000000000, self.testusr0.getContact())
-        self.assertFalse(4142542688, self.testusr0.getContact())
+    def test_InvalidUserType(self):
+        with self.assertRaises(TypeError,
+                               msg="An exception was not raised when createUser was passed a user type with an "
+                                   "invalid type"):
+            UserManagement.createUser(user_id=1001, user_type=123, username="johndoe", password="john123",
+                                      name="John Doe",
+                                      address="3400 N Maryland Ave, Milwaukee, Wisconsin 53211",
+                                      phone=4142340987, email="johndoe123@uwm.edu")
 
-    def test_getSSN(self):
-        self.assertEqual(101001001, self.testusr1.getSSN())
-        self.assertFalse(000000000, self.testusr1.getSSN())
+    def test_UserUsername(self):
+        self.assertEqual("mrwick123", self.testUser.username, "User username was not set correctly when "
+                                                                    "creating a User.")
 
-        self.assertEqual(000000000, self.testusr0.getSSN())
-        self.assertFalse(101001001, self.testusr0.getSSN())
+    def test_InvalidUsername(self):
+        # self.assertEqual("not johnwick", self.testUser.UserUsername, "User username was not set correctly when "
+        #                                                              "creating a User.")
+        with self.assertRaises(TypeError,
+                               msg="An exception was not raised when createUser was passed a Username with an "
+                                   "invalid type"):
+            UserManagement.createUser(user_id=1001, user_type="SUPERVISOR", username=123, password="john123",
+                                      name="John Doe",
+                                      address="3400 N Maryland Ave, Milwaukee, Wisconsin 53211",
+                                      phone=4142340987, email="johndoe123@uwm.edu")
 
-    def test_getAddress(self):
-        self.assertEqual("894 Lake Street, Milwaukee, Wisconsin 99999", self.testusr1.getAddress())
-        self.assertFalse("203948203948230jsdlkfjsdlkfjsd", self.testusr1.getAddress())
+    def test_UserPassword(self):
+        self.assertEqual("password", self.testUser.password, "User Password was not set correctly when creating a "
+                                                                 "User.")
 
-        self.assertEqual("No Address", self.testusr0.getAddress())
-        self.assertFalse("894 Lake Street, Milwaukee, Wisconsin 99999", self.testusr0.getAddress())
+    def test_InvalidUserPassword(self):
+        # self.assertEqual("incorrectPassword", self.testUser.UserPassword, "User Password was not set correctly when "
+        #                                                                   "creating a User.")
+        with self.assertRaises(TypeError,
+                               msg="An exception was not raised when createUser was passed a password with an "
+                                   "invalid type"):
+            UserManagement.createUser(user_id=1001, user_type="SUPERVISOR", username="johndoe", password=5432345,
+                                      name="John Doe",
+                                      address="3400 N Maryland Ave, Milwaukee, Wisconsin 53211",
+                                      phone=4142340987, email="johndoe123@uwm.edu")
 
-    def test_getPassword(self):
-        self.assertEqual("thisismypassword", self.testusr1.getPassword())
-        self.assertFalse("thisisnotmypassword", self.testusr1.getPassword())
+    def test_UserName(self):
+        self.assertEqual("John Wick", self.testUser.name, "User Name was not set correctly when creating a User.")
 
-        self.assertEqual("newuser1", self.testusr0.getPassword())
-        self.assertFalse("thisismypassword", self.testusr0.getPassword())
+    def test_InvalidUserName(self):
+        # self.assertEqual("notmrwick123", self.testUser.UserName, "User Name was not set correctly when creating a
+        # User.")
+        with self.assertRaises(TypeError,
+                               msg="An exception was not raised when createUser was passed a Name with an "
+                                   "invalid type"):
+            UserManagement.createUser(user_id=1001, user_type=123, username="johndoe", password="john123",
+                                      name="John Doe",
+                                      address="3400 N Maryland Ave, Milwaukee, Wisconsin 53211",
+                                      phone=4142340987, email="johndoe123@uwm.edu")
 
-    def test_setId(self):
-        self.assertEqual(-1, self.testusr2.getId())
-        self.testusr2.setId(2000)
-        self.assertEqual(2000, self.testusr2.getId())
+    def test_UserAddress(self):
+        self.assertEqual("894 Lake Street, Milwaukee, Wisconsin 99999", self.testUser.address, "User Address was "
+                                                                                                   "not set correctly"
+                                                                                                   " when creating a "
+                                                                                                   "User.")
 
-    def test_setName(self):
-        self.assertEqual("No Name", self.testusr2.getName())
-        self.testusr2.setName("Gabe Newell")
-        self.assertEqual("Gabe Newell", self.testusr2.getName())
+    def test_InvalidUserAddress(self):
+        # self.assertEqual("123 Kenwood Ave, Milwaukee, Wisconsin 53211", self.testUser.UserAddress, "User Address was "
+        #                                                                                            "not set correctly"
+        #                                                                                            " when creating a "
+        #                                                                                            "User.")
+        with self.assertRaises(TypeError,
+                               msg="An exception was not raised when createUser was passed an address with an "
+                                   "invalid type"):
+            UserManagement.createUser(user_id=1001, user_type=123, username="johndoe", password="john123",
+                                      name="John Doe",
+                                      address=123, phone=4142340987, email="johndoe123@uwm.edu")
 
-    def test_setContact(self):
-        self.assertEqual(0000000000, self.testusr2.getContact())
-        self.testusr2.setContact(4148675309)
-        self.assertEqual(4148675309, self.testusr2.getContact())
+    def test_UserPhone(self):
+        self.assertEqual(4142542688, self.testUser.phone, "User Phone was not set correctly when creating a User.")
 
-    def test_setSSN(self):
-        self.assertEqual(000000000, self.testusr2.getSSN())
-        self.testusr2.setSSN(1111111111)
-        self.assertEqual(111111111, self.testusr2.getSSN())
+    def test_InvalidUserPhone(self):
+        # self.assertEqual(4141245944, self.testUser.UserPhone, "User Phone was not set correctly when creating a
+        # User.")
+        with self.assertRaises(TypeError,
+                               msg="An exception was not raised when createUser was passed a phone number with an "
+                                   "invalid type"):
+            UserManagement.createUser(user_id=1001, user_type=123, username="johndoe", password="john123",
+                                      name="John Doe",
+                                      address="3400 N Maryland Ave, Milwaukee, Wisconsin 53211",
+                                      phone="4142340987", email="johndoe123@uwm.edu")
 
-    def test_setAddress(self):
-        self.assertEqual("No Address", self.testusr2.getAddress())
-        self.testusr2.setAddress("Fun Land")
-        self.assertEqual("Fun Land", self.testusr2.getAddress())
+    def test_UserEmail(self):
+        self.assertEqual("johnwick123@uwm.edu", self.testUser.email, "User Email was not set correctly when "
+                                                                         "creating a User.")
 
-    def test_setPassword(self):
-        self.assertEqual("newuser1", self.testusr2.getPassword())
-        self.testusr2.setPassword("supersecretpw")
-        self.assertEqual("supersecretpw", self.testusr2.getPassword())
-
-    def test_setType(self):
-        self.assertEqual(-1, self.testusr2.getType())
-        self.testusr2.setType(2)
-        self.assertEqual(2, self.testusr2.getType())
+    def test_InvalidUserEmail(self):
+        # self.assertEqual("notjohnwick123@uwm.edu", self.testUser.UserEmail, "User Email was not set correctly when "
+        #                                                                     "creating a User.")
+        with self.assertRaises(TypeError,
+                               msg="An exception was not raised when createUser was passed a courseID with an "
+                                   "invalid type"):
+            UserManagement.createUser(user_id=1001, user_type=123, username="johndoe", password="john123",
+                                      name="John Doe",
+                                      address="3400 N Maryland Ave, Milwaukee, Wisconsin 53211",
+                                      phone=4142340987, email=123456)
