@@ -4,25 +4,18 @@ import re
 
 class LabManagement(object):
 
-    # class Lab(models.Model):
-    #    labID = models.IntegerField()
-    #    name = models.CharField(max_length=20)
-    #    location = models.CharField(max_length=20)
-    #    hours = models.CharField(max_length=20)
-    #    days = models.CharField(max_length=20)
-    #    course = models.ForeignKey(Course, on_delete=models.CASCADE
-    #    TA = models.ForeignKey(UserProfile, on_delete=models.PROTECT, related_name="TAToLab")
-
-    # Preconditions: The user has to have been instantiated.
-    # Postconditions: The lab is now created
-    # Side-effects: Lab is created and added inside the database
-    # lab_id(in) - Id of the lab
-    # lab_name(in) - Name of the lab
-    # lab_location(in) - Location of the lab
-    # lab_hours(in) - Hours of the lab
-    # lab_days(in) - Days of the lab
-    # course(in) - Instructor of the lab
-    # ta(in) -TA of the lab
+	# Preconditions: The user has to have been instantiated.
+    #                The user must be of type administrator
+    # Postconditions: Creates a lab
+	#	              The lab must be connected to an already instantiated course
+	# Side-effects: Lab is created and added inside the database
+	# Lab ID(in) - ID of the lab
+	# Lab Name(in) - Name of the lab
+	# Lab Hours(in) - Hours of the lab
+	# Lab Location(in) - Location of the lab
+	# Lab Days(in) - Days of the lab
+	# Lab Course(in) - Course associated with the lab
+	# Lab TA(in) -TA of the lab
     @staticmethod
     def createLab(lab_id, lab_name, lab_location, lab_hours, lab_days, course, ta):
         LabManagement.__inputErrorCheck(lab_id, lab_name, lab_location, lab_hours, lab_days, course, ta)
@@ -33,10 +26,11 @@ class LabManagement(object):
 
         return "Lab was created"
 
-    # Preconditions: Both the lab and the TA must exist in the database
-    # Postconditions: The TA for the lab is updated to the given TA
-    # Lab id(in) - ID of the lab
-    # Lab ta(in) - Profile of the TA to be assigned to the lab
+	# Preconditions: Both the lab and the TA must exist in the database
+	# Postconditions: The TA for the lab is updated to the given TA
+	# Side-Effects: TA is assigned to the lab
+	# Lab ID(in) - ID of the lab
+	# User TA(in) - TA of the lab
     @staticmethod
     def addTA(lab_id, lab_ta):
         LabManagement.__inputErrorCheck(lab_id=lab_id, ta=lab_ta)
@@ -48,16 +42,18 @@ class LabManagement(object):
 
         return "TA was assigned to the lab"
 
-    # Preconditions: The user has to have been instantiated.
-    # Postconditions: The lab is now edited
-    # Side-effects: Lab is edited inside the database
-    # lab_id(in) - Id of the lab
-    # lab_name(in) - Name of the lab
-    # lab_hours(in) - Hours of the lab
-    # lab_location(in) - Location of the lab
-    # lab_days(in) - Days of the lab
-    # course(in) - course of the lab
-    # ta(in) -TA of the lab
+	# Preconditions: The user has to have been instantiated.
+    #                The user must be of type administrator
+    # Postconditions:Edits a lab
+	#	             The lab must be connected to an already instantiated course
+	# Side-effects: Lab is edited inside the database
+	# Lab ID(in) - ID of the lab
+	# Lab Name(in) - Name of the lab
+	# Lab Hours(in) - Hours of the lab
+	# Lab Location(in) - Location of the lab
+	# Lab Days(in) - Days of the lab
+	# Lab Course(in) - Course associated with the lab
+	# Lab TA(in) -TA of the lab
     @staticmethod
     def editLab(lab_id=None, lab_name=None, lab_location=None, lab_hours=None, lab_days=None, course=None, ta=None):
         LabManagement.__inputErrorCheck(lab_id=lab_id, name=lab_name, hours=lab_hours, location=lab_location, days=lab_days, course=course, ta=ta)
@@ -81,11 +77,11 @@ class LabManagement(object):
 
         return "The lab was successfully edited"
 
-    # Preconditions: The user has to have been instantiated.
+	# Preconditions: The user has to have been instantiated.
     # The user must be of type administrator
     # Postconditions:Deletes a lab
-    # Side-effects: Lab is deleted and removed from the database
-    # Lab Name(in) - Name of the course
+	# Side-effects: Lab is deleted and removed from the database
+	# Lab ID(in) - ID of the lab
     @staticmethod
     def deleteLab(lab_id):
         LabManagement.__inputErrorCheck(lab_id=lab_id)
