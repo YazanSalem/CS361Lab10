@@ -48,7 +48,7 @@ class UserManagement(object):
 	# User Address(in) - Address of the user
 	# User Password(in) - Password of the user
 	# User Type(in) - Type of the user
-    # User Email(in) - Email of the user
+        # User Email(in) - Email of the user
     @staticmethod
     def editUser(user_id=None, user_type=None, username=None, password=None, name=None, address=None, phone=None,
                  email=None):
