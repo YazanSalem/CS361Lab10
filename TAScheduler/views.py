@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.views import View
-from .models import UserProfile, Course, Lab
+from .models import *
 from TAScheduler.Management.UserManagement import UserManagement
 from TAScheduler.Management.CourseManagement import CourseManagement
 from TAScheduler.Management.LabManagement import LabManagement
@@ -27,6 +27,7 @@ class Login(View):
     def get(request):
         request.session["username"] = ""
         request.session["user_type"] = ""
+        request.session["user_id"] = None
         return render(request, "login.html")
 
     @staticmethod
@@ -57,6 +58,7 @@ class Login(View):
             # username of the user
             request.session["username"] = checkUser.username
             request.session["user_type"] = checkUser.userType
+            request.session["user_id"] = checkUser.userID
             return redirect("/home/")
 
 
@@ -78,10 +80,12 @@ class ViewSchedule(View):
         # If the user does not have a valid name, I.E. if they try to manually enter /home in the search bar,
         # they will fail the userAllowed test and be redirected back to the login page
         # If the user is allowed then home is rendered like normal
-        if userAllowed(request, ["SUPERVISOR", "INSTRUCTOR", "TA"]):
-            return render(request, "schedule.html", {"request.session.username": request.session["username"]})
+        if userAllowed(request, ["INSTRUCTOR", "TA"]):
+
+            return render(request, "schedule.html", {"object_list": UserProfile.objects.get(userID=request.session["user_id"]).getCourseLabList()})
+
         else:
-            return redirect("/../")
+            return redirect("/../home")
 
 
 class SendMsg(View):
@@ -130,12 +134,20 @@ class CreateCourse(View):
     def post(request):
         # Takes user input of all parameters and creates a new course.
         gottenTAs = request.POST.getlist("TAs")
+
         for i in range(len(gottenTAs)):
             gottenTAs[i] = int(gottenTAs[i])
             gottenTAs[i] = UserProfile.objects.get(userID=gottenTAs[i])
+        gottenDays = request.POST.getlist("days")
+        days = ""
+        for i in range(len(gottenDays)):
+            if i < len(gottenDays) - 1:
+                days = days + gottenDays[i] + ', '
+            else:
+                days = days + gottenDays[i]
         CourseManagement.createCourse(course_id=int(request.POST['ID']), name=request.POST['name'],
                                       location=request.POST['location'], hours=request.POST['hours'],
-                                      days=request.POST['days'],
+                                      days=days,
                                       instructor=UserProfile.objects.get(userID=int(request.POST['instructor'])),
                                       tas=gottenTAs)
         return render(request, "createcourse.html", {"UserProfile_list": UserProfile.objects.all()})
@@ -240,10 +252,16 @@ class EditCourse(View):
             for i in range(len(gottenTAs)):
                 gottenTAs[i] = int(gottenTAs[i])
                 gottenTAs[i] = UserProfile.objects.get(userID=gottenTAs[i])
-
+            gottenDays = request.POST.getlist("days")
+            days = ""
+            for i in range(len(gottenDays)):
+                if i < len(gottenDays) - 1:
+                    days = days + gottenDays[i] + ', '
+                else:
+                    days = days + gottenDays[i]
             change_course = CourseManagement.findCourse(courseID=int(edit_or_submit))
             CourseManagement.editCourse(int(change_course.courseID), name=request.POST["name"],
-                                        location=request.POST["location"], days=request.POST["days"],
+                                        location=request.POST["location"], days=days,
                                         hours=request.POST["hours"],
                                         instructor=UserProfile.objects.get(userID=int(request.POST["instructor"])),
                                         tas=gottenTAs)
@@ -316,8 +334,15 @@ class CreateLab(View):
 
     @staticmethod
     def post(request):
+        gottenDays = request.POST.getlist("labDays")
+        days = ""
+        for i in range(len(gottenDays)):
+            if i < len(gottenDays) - 1:
+                days = days + gottenDays[i] + ', '
+            else:
+                days = days + gottenDays[i]
         LabManagement.createLab(int(request.POST['labID']), request.POST['labName'],
-                                request.POST['labHours'], request.POST['labLocation'], request.POST['labDays'],
+                                request.POST['labHours'], request.POST['labLocation'], days,
                                 Course.objects.get(courseID=request.POST['course']),
                                 UserProfile.objects.get(userID=request.POST['labTA']))
         return render(request, "createlab.html",
@@ -349,12 +374,54 @@ class EditLab(View):
                           {"object_list": Lab.objects.all(), "Course_list": Course.objects.all(),
                            "UserProfile_list": UserProfile.objects.all(), "change_lab": change_lab})
         else:
+            gottenDays = request.POST.getlist("days")
+            days = ""
+            for i in range(len(gottenDays)):
+                if i < len(gottenDays) - 1:
+                    days = days + gottenDays[i] + ', '
+                else:
+                    days = days + gottenDays[i]
             LabManagement.editLab(lab_id=int(Lab.objects.get(labID=edit_or_submit).labID),
                                   lab_name=request.POST["name"], lab_location=request.POST["location"],
-                                  lab_hours=request.POST["hours"], lab_days=request.POST["days"],
+                                  lab_hours=request.POST["hours"], lab_days=days,
                                   course=Course.objects.get(courseID=request.POST["course"]),
                                   ta=UserManagement.findUser(user_id=request.POST["TA"]))
             return render(request, "editlab.html", {"object_list": Lab.objects.all()})
+
+
+class EditLabForInstructors(View):
+    @staticmethod
+    def get(request):
+        if userAllowed(request, ["INSTRUCTOR"]):
+            instructor_labs = []
+            for lab in Lab.objects.all():
+                if lab.course.instructor.userID == int(request.session["user_id"]):
+                    instructor_labs.append(lab)
+            return render(request, "editlab_forinstructors.html", {"object_list": instructor_labs})
+        else:
+            return redirect("/../home")
+
+    @staticmethod
+    def post(request):
+        instructor_labs = []
+        instructor_tas = []
+        for lab in Lab.objects.all():
+            if lab.course.instructor.userID == int(request.session["user_id"]):
+                instructor_labs.append(lab)
+        for user in UserProfile.objects.all():
+            for course in user.TAToCourse.all():
+                if course.instructor.userID == request.session["user_id"]:
+                    instructor_tas.append(user)
+                    break
+        try:
+            this_lab_id = int(request.POST["edit"])
+        except MultiValueDictKeyError:
+            this_lab_id = int(request.POST["submit"])
+            LabManagement.editLab(lab_id=this_lab_id, ta=UserManagement.findUser(user_id=int(request.POST["TA"])))
+            return render(request, "editlab_forinstructors.html", {"object_list": instructor_labs})
+        change_lab = Lab.objects.get(labID=this_lab_id)
+        return render(request, "editlab_forinstructors.html",
+                      {"object_list": instructor_labs, "UserProfile_list": instructor_tas, "change_lab": change_lab})
 
 
 class ViewUser(View):

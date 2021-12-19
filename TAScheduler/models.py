@@ -1,6 +1,5 @@
 from django.db import models
 
-
 # Create your models here.
 
 
@@ -20,6 +19,35 @@ class UserProfile(models.Model):
     def __str__(self):
         return self.username
 
+    def getCourseLabList(self):
+        course_lab_list = []
+        if self.userType == "INSTRUCTOR":
+            for course in self.course_set.all():
+                course_lab_list.append(course)
+                for lab in course.lab_set.all():
+                    course_lab_list.append(lab)
+        elif self.userType == "TA":
+            for course in self.TAToCourse.all():
+                course_lab_list.append(course)
+            for lab in self.TAToLab.all():
+                course_lab_list.append(lab)
+        course_lab_list.sort(key=UserProfile.mySort)
+        return course_lab_list
+
+    @staticmethod
+    def mySort(lab_or_course):
+        hours = lab_or_course.hours[: lab_or_course.hours.find(':')]
+        if hours == "12":
+            hours = "0"
+        minutes = lab_or_course.hours[lab_or_course.hours.find(':') + 1: lab_or_course.hours.find(':') + 2]
+        hours_and_minutes = hours + "." + minutes
+        if lab_or_course.hours[lab_or_course.hours.find(':') + 4: lab_or_course.hours.find(':') + 6] == "AM":
+            return -float(hours_and_minutes)
+        elif lab_or_course.hours[lab_or_course.hours.find(':') + 4: lab_or_course.hours.find(':') + 6] == "PM":
+            return float(hours_and_minutes)
+        else:
+            raise Exception("Formatting error with time of " + lab_or_course.name)
+
 
 # The Course class keeps track of lecture sections and stores the TAs, instructors, and labs associated with it.
 class Course(models.Model):
@@ -33,6 +61,25 @@ class Course(models.Model):
 
     def __str__(self):
         return self.name
+
+    def getDays(self):
+        day_list = []
+        for i in range(len(self.days)):
+            if self.days[i] == 'M':
+                day_list.append('M')
+            if self.days[i] == 'T':
+                try:
+                    if self.days[i + 1] == 'h':
+                        day_list.append('Th')
+                    else:
+                        day_list.append('T')
+                except IndexError:
+                    day_list.append('T')
+            if self.days[i] == 'W':
+                day_list.append('W')
+            if self.days[i] == 'F':
+                day_list.append('F')
+        return day_list
 
     # class Meta:
     #     db_table = "CourseList"
@@ -50,11 +97,8 @@ class Lab(models.Model):
     TA = models.ForeignKey(UserProfile, on_delete=models.PROTECT, related_name="TAToLab")
 
     def __str__(self):
-        return self.name
+        return self.course.name + ": " + self.name
 
-
-# Schedule is a tool to be used by users to display the events they have going on in a week, be that Labs or courses.
-class Schedule(models.Model):
-    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
-    courses = models.ManyToManyField(Course)
-    labs = models.ManyToManyField(Lab)
+    @property
+    def getDays(self):
+        return Course.getDays(self)

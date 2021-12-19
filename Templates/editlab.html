@@ -39,27 +39,38 @@
                         {% if change_lab.labID == Lab.labID %}
                             <td>{{ Lab.labID }}</td>
                             <td>
+                                <label for="course"></label>
                                 <select name="course" id="course">
                                     {% for Course in Course_list %}
-                                        <option value={{ Course.courseID }}>{{ Course.name }}</option>
+                                        <option value="{{ Course.courseID }}" {% if Lab in Course.lab_set.all %} selected {% endif %}>{{ Course.name }}</option>
                                     {% endfor %}
                                 </select>
                             </td>
-                            <td><input type="text" id=name name=name value={{ Lab.name }}></td>
-                            <td><input type="text" id=location name=location value={{ Lab.location }}></td>
-                            <td><input type="text" id=hours name=hours value={{ Lab.hours }}></td>
-                            <td><input type="text" id=days name=days value={{ Lab.days }}></td>
+                            <td><label for=name></label><input type="text" id=name name=name value="{{ Lab.name }}"></td>
+                            <td><label for=location></label><input type="text" id=location name=location value="{{ Lab.location }}"></td>
+                            <td><label for=hours></label><input type="text" id=hours name=hours value="{{ Lab.hours }}"></td>
                             <td>
+                                <label for="days"></label>
+                                <select multiple name="days" id="days">
+                                    <option value="M" {% if "M" in Lab.getDays %} selected {% endif %}>Monday</option>
+                                    <option value="T" {% if "T" in Lab.getDays %} selected {% endif %}>Tuesday</option>
+                                    <option value="W" {% if "W" in Lab.getDays %} selected {% endif %}>Wednesday</option>
+                                    <option value="Th" {% if "Th" in Lab.getDays %} selected {% endif %}>Thursday</option>
+                                    <option value="F" {% if "F" in Lab.getDays %} selected {% endif %}>Friday</option>
+                                </select>
+                            </td>
+                            <td>
+                                <label for="TA"></label>
                                 <select name="TA" id="TA">
                                     {% for UserProfile in UserProfile_list %}
                                         {% if UserProfile.userType == "TA" %}
-                                            <option value={{ UserProfile.userID }}>{{ UserProfile.username }}</option>
+                                            <option value="{{ UserProfile.userID }}" {% if Lab in UserProfile.TAToLab.all %} selected {% endif %}>{{ UserProfile.username }}</option>
                                         {% endif %}
                                     {% endfor %}
                                 </select>
                             </td>
                             <td>
-                                <button name="submit" type="submit" value={{ Lab.labID }}>Submit</button>
+                                <button name="submit" type="submit" value="{{ Lab.labID }}">Submit</button>
                             </td>
                         {% else %}
                             <td>{{ Lab.labID }}</td>
@@ -71,7 +82,7 @@
                             <td>{{ Lab.TA }}</td>
                             {% if change_lab.labID == null %}
                                 <td>
-                                    <button name="edit" type="submit" value={{ Lab.labID }}>Edit</button>
+                                    <button name="edit" type="submit" value="{{ Lab.labID }}">Edit</button>
                                 </td>
                             {% endif %}
                         {% endif %}

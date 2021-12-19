@@ -8,59 +8,49 @@
     <meta charset="UTF-8">
 </head>
 
-<body>
-<nav>
-    <div class="nav-center">
+    <body>
+      <nav>
+        <div class = "nav-center">
         <h4>Schedule</h4>
-        <ul class="nav-links">
+          <ul class="nav-links">
             <li><a href="../home/">Dashboard</a></li>
             <li><a href="../viewuser/">Users</a></li>
             <li><a href="../assignTA/">TAs</a></li>
             <li><a href="../login/">Log Out</a></li>
-
         </ul>
-    </div>
-</nav>
-
-<main>
-    <div class="container">
-        <ul>
-            <li>
-                <label class="label-control">Monday: Placeholder Text</label>
-            </li>
-            <br>
-            <li>
-                <label class="label-control">Tuesday: Placeholder Text</label>
-            </li>
-            <br>
-            <li>
-                <label class="label-control">Wednesday: Placeholder Text</label>
-            </li>
-            <br>
-            <li>
-                <label class="label-control">Thursday: Placeholder Text</label>
-            </li>
-            <br>
-            <li>
-                <label class="label-control">Friday: Placeholder Text</label>
-            </li>
-            <br>
-        </ul>
-</main>
-<div class="container">
-    <div class="row">
-        <div class="column">
-            <!--Context variables if there was an unsuccesful login, the 'error' & 'success' variable needs to be used in the CreateCourse.post() method-->
-            {% if success %}
-                {{ success }}
-            {% endif %}
-
-            {% if error %}
-                {{ error }}
-            {% endif %}
         </div>
-    </div>
-</div>
-</body>
-
+      </nav>
+        <main>
+            <div class="container">
+                <table border="1">
+                    <tr>
+                        <th>Monday</th>
+                        <th>Tuesday</th>
+                        <th>Wednesday</th>
+                        <th>Thursday</th>
+                        <th>Friday</th>
+                    </tr>
+                    {% for object in object_list %}
+                        <tr>
+                        {% if "M" in object.getDays %}
+                            <td>{{ object.name }} -- {{ object.hours }}</td>
+                        {% endif %}
+                        {% if "T" in object.getDays %}
+                            <td>{{ object.name }} -- {{ object.hours }}</td>
+                        {% endif %}
+                        {% if "W" in object.getDays %}
+                            <td>{{ object.name }} -- {{ object.hours }}</td>
+                        {% endif %}
+                        {% if "Th" in object.getDays %}
+                            <td>{{ object.name }} -- {{ object.hours }}</td>
+                        {% endif %}
+                        {% if "F" in object.getDays %}
+                            <td>{{ object.name }} -- {{ object.hours }}</td>
+                        {% endif %}
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </main>
+    </body>
 </html>
