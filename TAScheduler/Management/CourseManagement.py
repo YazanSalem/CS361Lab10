@@ -9,16 +9,17 @@ import re
 
 class CourseManagement(object):
 
-    # Preconditions: The user has to have been instantiated.
-    # The user must be of type administrator
+	# Preconditions: The user has to have been instantiated.
+    #                The user must be of type administrator
     # Postconditions:Creates a course
-    # Side-effects: Course is created and added inside the database
-    # Course Name(in) - Name of the course
-    # Course Time(in) - Time of the course
-    # Course Days(in) - Days of the course
-    # Course Hours(in) - Hours of the course
-    # Course Instructor(in) - Instructor of the course
-    # Course TA(in) -TA of the course
+	# Side-effects: Course is created and added inside the database
+	# Course ID(in) - Id of the courses
+	# Course Name(in) - Name of the course
+	# Course Location(in) - Location of the course
+	# Course Days(in) - Days of the course
+	# Course Hours(in) - Hours of the course
+	# Course Instructor(in) - Instructor of the course
+	# Course TAs(in) -TAs of the course
     @staticmethod
     def createCourse(course_id, name, location, days, hours, instructor, tas=None):
         CourseManagement.inputErrorChecker(course_id, name, location, days, hours, instructor, tas)
@@ -34,16 +35,17 @@ class CourseManagement(object):
             return "Course was created"
         raise TypeError("The course_id entered already exists")
 
+		
     # Preconditions: The user has to have been instantiated.
     # The user must be of type administrator
     # Postconditions:Edits a course
-    # Side-effects: Course is edited inside the database
-    # Course Name(in) - Name of the course
-    # Course Time(in) - Time of the course
-    # Course Days(in) - Days of the course
-    # Course Hours(in) - Hours of the course
-    # Course Instructor(in) - Instructor of the course
-    # Course TA(in) -TA of the course
+	# Side-effects: Course is edited inside the database
+	# Course ID(in) - Id of the courses
+	# Course Name(in) - Name of the course
+	# Course Location(in) - Location of the course
+	# Course Days(in) - Days of the course
+	# Course Hours(in) - Hours of the course
+	# Course Instructor(in) - Instructor of the Course
     @staticmethod
     def editCourse(course_id, name=None, location=None, days=None, hours=None, instructor=None, tas=None):
         CourseManagement.inputErrorChecker(course_id, name, location, days, hours, instructor, tas)
@@ -68,7 +70,12 @@ class CourseManagement(object):
         editedCourse.save()
         return "The course was successfully edited"
 
-    # Find course method for editing courses
+    # Preconditions: The user has to have been instantiated.
+    #                The user must be of type administrator
+    # Postconditions:Finds a course
+	# Side-effects: None
+	# CourseID(in) - ID of the course
+	# Course(out) - Course Found
     @staticmethod
     def findCourse(course_id):
         if not (course_id == 0):
@@ -83,7 +90,7 @@ class CourseManagement(object):
     # The user must be of type administrator
     # Postconditions:Deletes a course
     # Side-effects: Course is deleted and removed from the database
-    # Course Name(in) - Name of the course
+    # Course ID(in) - ID of the course
     @staticmethod
     def deleteCourse(course_id):
         CourseManagement.inputErrorChecker(course_id=course_id)
@@ -96,7 +103,8 @@ class CourseManagement(object):
     # The searchPrompt is an existing course assignment name
     # Postconditions: Course assignments are populated
     # Side-effects: None
-    # Search Prompt(in): Course Name you are searching for
+	# Search Prompt(in): Course Name you are searching for
+	# AllCourse(out): List of all Courses
     @staticmethod
     def populateSearchClass(course_id):
         CourseManagement.inputErrorChecker(course_id=course_id)
@@ -113,6 +121,7 @@ class CourseManagement(object):
     # There are courses to display
     # Postconditions: All courses are displayed
     # Side-effects: None
+    # Courses(out): All Courses 
     @staticmethod
     def displayAllCourse():
         allCourses = Course.objects.all()

@@ -3,14 +3,18 @@ from TAScheduler.models import UserProfile
 
 class UserManagement(object):
 
-    # Preconditions: The user has to have been instantiated.
-    # The user must be of type administrator
-    # Postconditions: Creates a user
-    # Side-effects: User is created and added into the database
-    # UserId(in) - Id of the user
-    # User Name(in) - Name of the user
-    # User Contact(in) - Contact of the user
-    # User Type(in) - Type of the user
+	# Preconditions: The user has to have been instantiated.
+    #                 The user must be of type administrator
+	# Postconditions: Creates a user
+	# Side-effects: User is created and added into the database
+	# UserId(in) - Id of the user
+	# User UserName(in) -  User name of the user
+	# User Name(in) - Name of the user
+	# User PhoneNumber(in) - Phone Number of the user
+	# User Address(in) - Address of the user
+	# User Password(in) - Password of the user
+	# User Type(in) - Type of the user
+	# User Email(in) - Email of the user
     @staticmethod
     def createUser(user_id, user_type, username, password, name, address, phone, email):
         if user_id is None or user_type is None or username is None or password is None or name is None or address is None or phone is None or email is None:
@@ -33,15 +37,18 @@ class UserManagement(object):
             return
         raise TypeError("This user already exists: ")
 
-    # Preconditions: The user has to have been instantiated.
-    # The user must be of type administrator
-    # Postconditions: Edits a user
-    # Side-effects: User is edited inside the database
-    # UserId(in) - Id of the user
-    # User Name(in) - Name of the user
-    # User Contact(in) - Contact of the user
-
-    # User Type(in) - Type of the user
+	# Preconditions: The user has to have been instantiated.
+    #                The user must be of type administrator
+	# Postconditions: Edits a user
+	# Side-effects: User is edited inside the database
+	# UserId(in) - Id of the user
+	# User  UserName(in) -  User name of the user
+	# User Name(in) - Name of the user
+	# User PhoneNumber(in) - Phone Number of the user
+	# User Address(in) - Address of the user
+	# User Password(in) - Password of the user
+	# User Type(in) - Type of the user
+    # User Email(in) - Email of the user
     @staticmethod
     def editUser(user_id=None, user_type=None, username=None, password=None, name=None, address=None, phone=None,
                  email=None):
@@ -67,11 +74,12 @@ class UserManagement(object):
             change_user.email = email
         change_user.save()
 
-    # Preconditions: The user has to have been instantiated
-    # There are accounts to display
-    # Postconditions: Displays the user
-    # Side-effects: None
-    # UserId(in) - Id of the user
+	# Preconditions: The user has to have been instantiated
+	#				 There are accounts to display
+	# Postconditions: Displays the user
+	# Side-effects: None
+	# UserId(in) - Id of the user
+	# UserProfile(out) - Returns the user found
     @staticmethod
     def findUser(user_id=None, username=None):
         if not (user_id is None):
@@ -104,13 +112,6 @@ class UserManagement(object):
     def deleteUser(user_id):
         UserManagement.findUser(user_id).delete()
 
-    # Preconditions: The user has to have been instantiated
-    # There are accounts to display
-    # Postconditions: All accounts are displayed
-    # Side-effects: None
-    @staticmethod
-    def populateList():
-        pass
 
     @staticmethod
     def __inputErrorCheck(user_id=None, user_type=None, username=None, password=None, name=None, address=None, phone=None, email=None):
