@@ -156,19 +156,9 @@ class TestMyUser(TestCase):
         UserManagement.editUser(user_id=1000)
         self.assertTrue(UserProfile.objects.filter(userID=1000).exists())
 
-    def test_editInvalidUser(self):
-        with self.assertRaises(ValueError, msg="An exception was not raised when edit was passed a user_id that "
-                                               "does not exist"):
-            UserManagement.editUser(user_id=1000)
-
     def test_deleteUser(self):
         UserManagement.deleteUser(user_id=1000)
         self.assertFalse(UserProfile.objects.filter(userID=1000).exists())
-
-    def test_deleteInvalidUser(self):
-        with self.assertRaises(ValueError, msg="An exception was not raised when delete was passed a user_id that "
-                                               "does not exist"):
-            UserManagement.deleteUser(user_id=1000)
 
 
 class TestEditUser(TestCase):
@@ -270,8 +260,3 @@ class TestDeleteUser(TestCase):
     def test_delete(self):
         UserManagement.deleteUser(user_id=1)
         self.assertFalse(UserProfile.objects.filter(userID=1).exists())
-
-    def test_deleteInvalid(self):
-        with self.assertRaises(ValueError, msg="An exception was not raised when delete was passed a user_id that "
-                                               "does not exist"):
-            UserManagement.deleteUser(user_id=1)
