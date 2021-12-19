@@ -1,7 +1,6 @@
 from TAScheduler.models import UserProfile
 
 
-# test
 class UserManagement(object):
 
     # Preconditions: The user has to have been instantiated.
@@ -14,6 +13,8 @@ class UserManagement(object):
     # User Type(in) - Type of the user
     @staticmethod
     def createUser(user_id, user_type, username, password, name, address, phone, email):
+        if user_id is None or user_type is None or username is None or password is None or name is None or address is None or phone is None or email is None:
+            raise ValueError("Every input is required")
         UserManagement.__inputErrorCheck(user_id, user_type, username, password, name, address, phone, email)
 
         try:
@@ -30,7 +31,6 @@ class UserManagement(object):
                 email=email
             )
             return
-
         raise TypeError("This user already exists: ")
 
     # Preconditions: The user has to have been instantiated.
@@ -43,21 +43,28 @@ class UserManagement(object):
 
     # User Type(in) - Type of the user
     @staticmethod
-    def editUser(user_id, user_type, username, password, name, address, phone, email):
+    def editUser(user_id=None, user_type=None, username=None, password=None, name=None, address=None, phone=None,
+                 email=None):
         UserManagement.__inputErrorCheck(user_id, user_type, username, password, name, address, phone, email)
 
         try:
             change_user = UserManagement.findUser(user_id)
         except TypeError:
             raise TypeError("This user does not exist (editUser): ")
-        change_user.userID = user_id
-        change_user.userType = user_type
-        change_user.username = username
-        change_user.password = password
-        change_user.name = name
-        change_user.address = address
-        change_user.phone = phone
-        change_user.email = email
+        if not(user_type is None):
+            change_user.userType = user_type
+        if not (username is None):
+            change_user.username = username
+        if not (password is None):
+            change_user.password = password
+        if not (name is None):
+            change_user.name = name
+        if not (address is None):
+            change_user.address = address
+        if not (phone is None):
+            change_user.phone = phone
+        if not (email is None):
+            change_user.email = email
         change_user.save()
 
     # Preconditions: The user has to have been instantiated
@@ -66,8 +73,8 @@ class UserManagement(object):
     # Side-effects: None
     # UserId(in) - Id of the user
     @staticmethod
-    def findUser(user_id=0, username=""):
-        if not (user_id == 0):
+    def findUser(user_id=None, username=None):
+        if not (user_id is None):
             UserManagement.__inputErrorCheck(user_id=user_id, username=username)
             try:
                 profile = UserProfile.objects.get(userID=user_id)
@@ -76,7 +83,7 @@ class UserManagement(object):
 
             if profile is None:
                 raise TypeError("This ID does not exist")
-        elif not (username == ""):
+        elif not (username is None):
             try:
                 profile = UserProfile.objects.get(username=username)
             except UserProfile.DoesNotExist:
@@ -106,22 +113,40 @@ class UserManagement(object):
         pass
 
     @staticmethod
-    def __inputErrorCheck(user_id=0, user_type="TA", username="", password="", name="", address="", phone=0, email=""):
-        if not (isinstance(int(user_id), int)):
-            raise TypeError("Id entered is not of type int")
-        if not (isinstance(user_type, str)):
-            raise TypeError("userType entered is not of type str")
-        if not (user_type in ["SUPERVISOR", "INSTRUCTOR", "TA"]):
-            raise ValueError("userType entered is not a valid userType")
-        if not (isinstance(username, str)):
-            raise TypeError("Username entered is not of type str")
-        if not (isinstance(password, str)):
-            raise TypeError("Password entered is not of type str")
-        if not (isinstance(name, str)):
-            raise TypeError("Name entered is not of type str")
-        if not (isinstance(address, str)):
-            raise TypeError("Address entered is not of type str")
-        if not (isinstance(int(phone), int)):
-            raise TypeError("Contact entered is not of type str")
-        if not (isinstance(email, str)):
-            raise TypeError("Email entered is not of type str")
+    def __inputErrorCheck(user_id=None, user_type=None, username=None, password=None, name=None, address=None, phone=None, email=None):
+        if not (user_id is None):
+            if not (isinstance(user_id, int)):
+                raise TypeError("Id entered is not of type int")
+        if not (user_type is None):
+            if not (isinstance(user_type, str)):
+                raise TypeError("userType entered is not of type str")
+            if not (user_type in ["SUPERVISOR", "INSTRUCTOR", "TA"]):
+                raise ValueError("userType entered is not a valid userType")
+        if not (username is None):
+            if not (isinstance(username, str)):
+                raise TypeError("Username entered is not of type str")
+            if not(len(username)) > 0:
+                raise ValueError("Username should not be left blank")
+        if not (password is None):
+            if not (isinstance(password, str)):
+                raise TypeError("Password entered is not of type str")
+            if not(len(password)) > 0:
+                raise ValueError("Password should not be left blank")
+        if not (name is None):
+            if not (isinstance(name, str)):
+                raise TypeError("Name entered is not of type str")
+            if not(len(name)) > 0:
+                raise ValueError("Name should not be left blank")
+        if not (address is None):
+            if not (isinstance(address, str)):
+                raise TypeError("Address entered is not of type str")
+            if not(len(address)) > 0:
+                raise ValueError("Address should not be left blank")
+        if not (phone is None):
+            if not (isinstance(int(phone), int)):
+                raise TypeError("Contact entered is not of type str")
+        if not (email is None):
+            if not (isinstance(email, str)):
+                raise TypeError("Email entered is not of type str")
+            if not(len(email)) > 0:
+                raise ValueError("Email should not be left blank")

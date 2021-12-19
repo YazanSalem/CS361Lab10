@@ -4,6 +4,7 @@
 # populateSearchClass(searchPromp)  should change class to course
 # displayAllCourse()
 from TAScheduler.models import *
+import re
 
 
 class CourseManagement(object):
@@ -44,19 +45,19 @@ class CourseManagement(object):
     # Course Instructor(in) - Instructor of the course
     # Course TA(in) -TA of the course
     @staticmethod
-    def editCourse(course_id, name="", location="", days="", hours="", instructor=None, tas=None):
+    def editCourse(course_id, name=None, location=None, days=None, hours=None, instructor=None, tas=None):
         CourseManagement.inputErrorChecker(course_id, name, location, days, hours, instructor, tas)
         if not (Course.objects.filter(courseID=course_id).exists()):
             raise TypeError("This course does not exist")
 
         editedCourse = Course.objects.get(courseID=course_id)
-        if not (name == ""):
+        if not (name is None):
             editedCourse.name = name
-        if not (location == ""):
+        if not (location is None):
             editedCourse.location = location
-        if not (hours == ""):
+        if not (hours is None):
             editedCourse.hours = hours
-        if not (days == ""):
+        if not (days is None):
             editedCourse.days = days
         if not (instructor is None):
             editedCourse.instructor = instructor
@@ -69,11 +70,11 @@ class CourseManagement(object):
 
     # Find course method for editing courses
     @staticmethod
-    def findCourse(courseID):
-        if not (courseID == 0):
-            CourseManagement.inputErrorChecker(course_id=courseID)
+    def findCourse(course_id):
+        if not (course_id == 0):
+            CourseManagement.inputErrorChecker(course_id=course_id)
             try:
-                course = Course.objects.get(courseID=courseID)
+                course = Course.objects.get(courseID=course_id)
             except Course.DoesNotExist:
                 raise TypeError("This ID does not exist")
         return course
@@ -123,17 +124,36 @@ class CourseManagement(object):
         return allCourses
 
     @staticmethod
-    def inputErrorChecker(course_id=0, name="", location="", days="", hours="", instructor=None, tas=None):
-        if not (isinstance(course_id, int)):
-            raise TypeError("course_id entered is not of type int")
-        if not (isinstance(name, str)):
-            raise TypeError("Course name entered is not of type str")
-        if not (isinstance(location, str)):
-            raise TypeError("Course location entered is not of type str")
-        if not (isinstance(days, str)):
-            raise TypeError("Course hours entered is not of type str")
-        if not (isinstance(hours, str)):
-            raise TypeError("Course days entered is not of type str")
+    def inputErrorChecker(course_id=None, name=None, location=None, days=None, hours=None, instructor=None, tas=None):
+        if not (course_id is None):
+            if not (isinstance(course_id, int)):
+                raise TypeError("course_id entered is not of type int")
+        if not (name is None):
+            if not (isinstance(name, str)):
+                raise TypeError("Course name entered is not of type str")
+            if not (len(name) > 0):
+                raise ValueError("Name should not be left blank")
+        if not (location is None):
+            if not (isinstance(location, str)):
+                raise TypeError("Course location entered is not of type str")
+            if not (len(location) > 0):
+                raise ValueError("Location should not be left blank")
+        if not (days is None):
+            if not (isinstance(days, str)):
+                raise TypeError("Course hours entered is not of type str")
+            if not (len(days) > 0):
+                raise ValueError("At least one day must be selected")
+            if not (bool(re.match("[MTW(Th)F],*", days))):
+                raise ValueError("Wrong format for days. Format should be first letters of days separated by commas "
+                                 "with Th for Thursday")
+        if not (hours is None):
+            if not (isinstance(hours, str)):
+                raise TypeError("Course days entered is not of type str")
+            if not (len(hours) > 0):
+                raise ValueError("Hours should not be left blank")
+            if not (bool(re.match("([1][0-2]|[0][1-9]):([0-5][0-9]) ([AP])M - ([1][0-2]|[0][1-9]):([0-5][0-9]) ([AP])M",
+                                  hours))):
+                raise ValueError("Wrong format for hours. Format should be HH:MM AM/PM - HH:MM AM/PM")
         if not (instructor is None):
             if not (isinstance(instructor, UserProfile)):
                 raise TypeError("Course instructor entered is not of type User")

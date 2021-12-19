@@ -5,4 +5,3 @@ from TAScheduler.models import UserProfile, Course, Lab
 admin.site.register(UserProfile)
 admin.site.register(Course)
 admin.site.register(Lab)
-

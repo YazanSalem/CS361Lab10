@@ -9,44 +9,35 @@
     <link rel="stylesheet" href ="{% static 'styles.css'%}">
 </head>
 
-<body>
-  <nav>
-    <div class = "nav-center">
-    <h4>TA Scheduler Login</h4>
-    </div>
-  </nav>
-<main>
-     <div class="container">
-     <form class="form-control" action="/" method="post">
-       {%  csrf_token %}
-     <ul>
-       <li>
-         <label class="label-control" for="useraccount">Username
-          <input type="text" id="useraccount" name="useraccount">
-          </label>
-       </li>
-       <br>
-       
-       <li>
-         <label class="label-control" for="password">Password <input type="password" id="password " name="password">
-         </label>
-       </li>
-       <br>  
-       
-       <button class="btn btn-hero" id="btn">Login</button>
-     </ul>
-     </form>
-     </div>
-   </main>
-    <div class="container">
-        <div class="row">
-            <div class="column">
-            <!--Context variables if there was an unsuccesful login, the 'error' variable needs to be used in the Login.post() method-->
-                {% if error %}
-                {{ error }}
-                {% endif %}
-            </div>
+    <body>
+      <nav>
+        <div class = "nav-center">
+        <h4>TA Scheduler Login</h4>
         </div>
-    </div>
-</body>
+      </nav>
+        <main>
+            <div class="container">
+                <form class="form-control" action="/" method="post">
+                {%  csrf_token %}
+                    <ul>
+                        <li>
+                        <label class="label-control" for="useraccount">Username</label>
+                        <input type="text" id="useraccount" name="useraccount">
+                        </li>
+                        <br>
+
+                        <li>
+                            <label class="label-control" for="password">Password</label>
+                            <input type="password" id="password " name="password">
+                        </li>
+                        <li>
+                            {{ error }}
+                        </li>
+                        <br>
+                        <button class="btn btn-hero" id="btn">Login</button>
+                    </ul>
+                </form>
+            </div>
+        </main>
+    </body>
 </html>

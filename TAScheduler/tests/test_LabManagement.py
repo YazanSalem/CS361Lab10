@@ -140,8 +140,8 @@ class EditLabTests(TestCase):
         self.assertEqual("Physics 120", Lab.objects.get(labID=100).location, "Location was not edited correctly.")
 
     def test_editHours(self):
-        LabManagement.editLab(lab_id=self.testLab.labID, lab_hours="7:00 PM - 8:00 PM")
-        self.assertEqual("7:00 PM - 8:00 PM", Lab.objects.get(labID=100).hours, "Hours were not edited correctly.")
+        LabManagement.editLab(lab_id=self.testLab.labID, lab_hours="07:00 PM - 08:00 PM")
+        self.assertEqual("07:00 PM - 08:00 PM", Lab.objects.get(labID=100).hours, "Hours were not edited correctly.")
 
     def test_editDays(self):
         LabManagement.editLab(lab_id=self.testLab.labID, lab_days="T, Th")
@@ -152,6 +152,8 @@ class EditLabTests(TestCase):
         self.assertEqual(self.course2, Lab.objects.get(labID=100).course, "Course was not edited correctly")
 
     def test_editTA(self):
+        self.course1.TAs.add(self.TA2)
+        self.course1.save()
         LabManagement.editLab(lab_id=self.testLab.labID, ta=self.TA2)
         self.assertEqual(self.TA2, Lab.objects.get(labID=100).TA, "TA was not edited correctly.")
 

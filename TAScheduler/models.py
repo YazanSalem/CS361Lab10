@@ -17,6 +17,8 @@ class UserProfile(models.Model):
     email = models.EmailField(max_length=30)
 
     def __str__(self):
+        if len(self.username) == 0:
+            return "Blank"
         return self.username
 
     def getCourseLabList(self):
@@ -34,6 +36,17 @@ class UserProfile(models.Model):
         course_lab_list.sort(key=UserProfile.mySort)
         return course_lab_list
 
+    def getLabList(self):
+        lab_list = []
+        if self.userType == "INSTRUCTOR":
+            for course in self.course_set.all():
+                for lab in course.lab_set.all():
+                    lab_list.append(lab)
+        elif self.userType == "TA":
+            for lab in self.TAToLab.all():
+                lab_list.append(lab)
+        return lab_list
+
     @staticmethod
     def mySort(lab_or_course):
         hours = lab_or_course.hours[: lab_or_course.hours.find(':')]
@@ -41,8 +54,9 @@ class UserProfile(models.Model):
             hours = "0"
         minutes = lab_or_course.hours[lab_or_course.hours.find(':') + 1: lab_or_course.hours.find(':') + 2]
         hours_and_minutes = hours + "." + minutes
+        print(float(hours_and_minutes))
         if lab_or_course.hours[lab_or_course.hours.find(':') + 4: lab_or_course.hours.find(':') + 6] == "AM":
-            return -float(hours_and_minutes)
+            return float(hours_and_minutes) - 12
         elif lab_or_course.hours[lab_or_course.hours.find(':') + 4: lab_or_course.hours.find(':') + 6] == "PM":
             return float(hours_and_minutes)
         else:
@@ -99,6 +113,5 @@ class Lab(models.Model):
     def __str__(self):
         return self.course.name + ": " + self.name
 
-    @property
     def getDays(self):
         return Course.getDays(self)

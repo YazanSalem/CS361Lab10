@@ -73,13 +73,13 @@ class TestCreateCourse(TestCase):
         with self.assertRaises(ValueError,
                                msg="An exception was not raised when createCourse was passed invalid days."):
             CourseManagement.createCourse(course_id=11, name="Course", location="location", days="invalid input",
-                                          hours="1:00 PM - 8:00 PM", instructor=self.instructor)
+                                          hours="01:00 PM - 08:00 PM", instructor=self.instructor)
 
     def test_invalidDaysType(self):
         with self.assertRaises(TypeError,
                                msg="An exception was not raised when createCourse was passed invalid type for days."):
             CourseManagement.createCourse(course_id=12, name="Course", location="location", days=20,
-                                          hours="1:00 PM - 8:00 PM", instructor=self.instructor)
+                                          hours="01:00 PM - 08:00 PM", instructor=self.instructor)
 
     def test_courseHours(self):
         self.assertEqual("12:00 PM - 12:50 PM", self.testCourse.hours,
@@ -171,8 +171,8 @@ class TestEditCourse(TestCase):
         self.assertEqual("Physics 120", Course.objects.get(courseID=10).location, "Location was not edited correctly.")
 
     def test_editHours(self):
-        CourseManagement.editCourse(course_id=self.testCourse.courseID, hours="7:00 PM - 8:00 PM")
-        self.assertEqual("7:00 PM - 8:00 PM", Course.objects.get(courseID=10).hours, "Hours were not edited correctly.")
+        CourseManagement.editCourse(course_id=self.testCourse.courseID, hours="07:00 PM - 08:00 PM")
+        self.assertEqual("07:00 PM - 08:00 PM", Course.objects.get(courseID=10).hours, "Hours were not edited correctly.")
 
     def test_editDays(self):
         CourseManagement.editCourse(course_id=self.testCourse.courseID, days="T, Th")
