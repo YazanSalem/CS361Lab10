@@ -13,10 +13,10 @@
             <div class="nav-center">
                 <h4>Delete User</h4>
                 <ul class="nav-links">
-                    <li><a href="/view_user/">View Users</a></li>
-                    <li><a href="/create_user/">Create User</a></li>
-                    <li><a href="/edit_user/">Edit User</a></li>
-                    <li><a href="/account_settings/">Account Settings</a></li>
+                    <li><a href="/view_user/">View</a></li>
+                    <li><a href="/create_user/">Create</a></li>
+                    <li><a href="/edit_user/">Edit</a></li>
+                    <li><a href="/account_settings/">Account</a></li>
                     <li><a href="/home/">Dashboard</a></li>
                     <li><a href="/">Log Out</a></li>
                 </ul>
@@ -29,26 +29,27 @@
                     {% csrf_token %}
                     <table border="1">
                         <tr>
-                            <th>ID</th>
-                            <th>Type</th>
-                            <th>User Name</th>
-                            <th>Name</th>
-                            <th>Address</th>
-                            <th>Contact</th>
-                            <th>Email</th>
+                            <th STYLE="padding:5px 10px;">ID</th>
+                            <th STYLE="padding:5px 10px;">Type</th>
+                            <th STYLE="padding:5px 10px;">User Name</th>
+                            <th STYLE="padding:5px 10px;">Name</th>
+                            <th STYLE="padding:5px 10px;">Address</th>
+                            <th STYLE="padding:5px 10px;">Contact</th>
+                            <th STYLE="padding:5px 10px;">Email</th>
                         </tr>
                         {% for User in user_list %}
                             <tr>
-                                <td>{{ User.userID }}</td>
-                                <td>{{ User.userType }}</td>
-                                <td>{{ User.username }}</td>
-                                <td>{{ User.name }}</td>
-                                <td>{{ User.address }}</td>
-                                <td>{{ User.phone }}</td>
-                                <td>{{ User.email }}</td>
+                                <td STYLE="padding:5px 10px;">{{ User.userID }}</td>
+                                <td STYLE="padding:5px 10px;">{{ User.userType }}</td>
+                                <td STYLE="padding:5px 10px;">{{ User.username }}</td>
+                                <td STYLE="padding:5px 10px;">{{ User.name }}</td>
+                                <td STYLE="padding:5px 10px;">{{ User.address }}</td>
+                                <td STYLE="padding:5px 10px;">{{ User.phone }}</td>
+                                <td STYLE="padding:5px 10px;">{{ User.email }}</td>
                                 {% if deleted_user.userID == null %}
                                     <td>
-                                        <button name="delete" type="submit" value={{ User.userID }}>Delete</button>
+                                        <button STYLE="background-color: #FF0000;color: #FFFFFF; font-size:16px;
+                                        padding: 5px 10px"  name="delete" type="submit" value={{ User.userID }}>X</button>
                                     </td>
                                 {% endif %}
                             </tr>

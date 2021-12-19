@@ -30,12 +30,9 @@
                             <label class="label-control" for="password">Password</label>
                             <input type="password" id="password " name="password">
                         </li>
-
-                        {% if error|length > 0 %}
-                            <li>
-                                {{ error }}
-                            </li>
-                        {% endif %}
+                        <li>
+                            {{ error }}
+                        </li>
                         <br>
                         <button class="btn btn-hero" id="btn">Login</button>
                     </ul>

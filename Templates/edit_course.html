@@ -17,10 +17,10 @@
             <div class="nav-center">
                 <h4>Edit Course</h4>
                 <ul class="nav-links">
-                    <li><a href="/view_courses/">View Courses</a></li>
-                    <li><a href="/create_course/">Create Courses</a></li>
-                    <li><a href="/delete_course/">Delete Courses</a></li>
-                    <li><a href="/account_settings/">Account Settings</a></li>
+                    <li><a href="/view_courses/">View</a></li>
+                    <li><a href="/create_course/">Create</a></li>
+                    <li><a href="/delete_course/">Delete</a></li>
+                    <li><a href="/account_settings/">Account</a></li>
                     <li><a href="/home/">Dashboard</a></li>
                     <li><a href="/">Log Out</a></li>
                 </ul>
@@ -33,13 +33,13 @@
                     {% csrf_token %}
                     <table border>
                         <tr>
-                            <th>ID</th>
-                            <th>Name</th>
-                            <th>Location</th>
-                            <th>Hours</th>
-                            <th>Days</th>
-                            <th>Instructor</th>
-                            <th>TAs</th>
+                            <th STYLE="padding:5px 10px;">ID</th>
+                            <th STYLE="padding:5px 10px;">Name</th>
+                            <th STYLE="padding:5px 10px;">Location</th>
+                            <th STYLE="padding:5px 10px;">Hours</th>
+                            <th STYLE="padding:5px 10px;">Days</th>
+                            <th STYLE="padding:5px 10px;">Instructor</th>
+                            <th STYLE="padding:5px 10px;">TAs</th>
                         </tr>
                         {% for Course in Course_list %}
                             <tr>
@@ -81,17 +81,21 @@
                                     </select>
                                     </td>
                                     <td>
-                                        <button name="submit" type="submit" value="{{ Course.courseID }}">Submit</button>
+                                        <button 
+                                        STYLE="background-color: #008000;color: #FFFFFF; 
+                                        font-weight: 700;font-size:14px;
+                                    padding: 4px 8px;" 
+                                        name="submit" type="submit" value="{{ Course.courseID }}">Submit</button>
                                     </td>
                                 {% else %}
 
-                                    <td>{{ Course.courseID }}</td>
-                                    <td>{{ Course.name }}</td>
-                                    <td>{{ Course.location }}</td>
-                                    <td>{{ Course.hours }}</td>
-                                    <td>{{ Course.days }}</td>
-                                    <td>{{ Course.instructor }}</td>
-                                    <td>
+                                    <td STYLE="padding:5px 10px;">{{ Course.courseID }}</td>
+                                    <td STYLE="padding:5px 10px;">{{ Course.name }}</td>
+                                    <td STYLE="padding:5px 10px;">{{ Course.location }}</td>
+                                    <td STYLE="padding:5px 10px;">{{ Course.hours }}</td>
+                                    <td STYLE="padding:5px 10px;">{{ Course.days }}</td>
+                                    <td STYLE="padding:5px 10px;">{{ Course.instructor }}</td>
+                                    <td STYLE="padding:5px 10px;">
                                         <ul>
                                             {% for i in Course.TAs.all %}
                                                 <li style="display: inline">{{ i }}</li>
@@ -100,7 +104,11 @@
                                     </td>
                                     {% if change_course == null %}
                                         <td>
-                                            <button name="edit" type="submit" value="{{ Course.courseID }}">Edit</button>
+                                            <button
+                                            STYLE="background-color: #000000;color: #FFFFFF; 
+                                            font-weight: 700;font-size:14px;
+                                        padding: 4px 8px;" 
+                                            name="edit" type="submit" value="{{ Course.courseID }}">Edit</button>
                                         </td>
                                     {% endif %}
                                 {% endif %}
@@ -113,9 +121,7 @@
                         {#       <button class="btn btn-hero" id="btn">Edit Course</button>#}
                     </ul>
                 </form>
-                {% if error %}
-                    {{ error }}
-                {% endif %}
+                {{ error }}
             </div>
         </main>
     </body>

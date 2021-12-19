@@ -12,10 +12,10 @@
             <div class="nav-center">
                 <h4>Edit Lab</h4>
                 <ul class="nav-links">
-                    <li><a href="/view_labs/">View Labs</a></li>
-                    <li><a href="/create_lab/">Create Lab</a></li>
-                    <li><a href="/delete_lab/">Delete Lab</a></li>
-                    <li><a href="/account_settings/">Account Settings</a></li>
+                    <li><a href="/view_labs/">View</a></li>
+                    <li><a href="/create_lab/">Create</a></li>
+                    <li><a href="/delete_lab/">Delete</a></li>
+                    <li><a href="/account_settings/">Account</a></li>
                     <li><a href="/home/">Dashboard</a></li>
                     <li><a href="/">Log Out</a></li>
                 </ul>
@@ -28,13 +28,13 @@
                     {% csrf_token %}
                     <table border="1">
                         <tr>
-                            <th>ID</th>
-                            <th>Course</th>
-                            <th>Name</th>
-                            <th>Location</th>
-                            <th>Hours</th>
-                            <th>Days</th>
-                            <th>TA</th>
+                            <th STYLE="padding:5px 10px;">ID</th>
+                            <th STYLE="padding:5px 10px;">Course</th>
+                            <th STYLE="padding:5px 10px;">Name</th>
+                            <th STYLE="padding:5px 10px;">Location</th>
+                            <th STYLE="padding:5px 10px;">Hours</th>
+                            <th STYLE="padding:5px 10px;">Days</th>
+                            <th STYLE="padding:5px 10px;">TA</th>
                         </tr>
                         {% for Lab in object_list %}
                             <tr>
@@ -72,19 +72,27 @@
                                         </select>
                                     </td>
                                     <td>
-                                        <button name="submit" type="submit" value="{{ Lab.labID }}">Submit</button>
+                                        <button 
+                                        STYLE="background-color: #008000;color: #FFFFFF; 
+                                        font-weight: 700;font-size:14px;
+                                    padding: 4px 8px;"                      
+                                        name="submit" type="submit" value="{{ Lab.labID }}">Submit</button>
                                     </td>
                                 {% else %}
-                                    <td>{{ Lab.labID }}</td>
-                                    <td>{{ Lab.course }}</td>
-                                    <td>{{ Lab.name }}</td>
-                                    <td>{{ Lab.location }}</td>
-                                    <td>{{ Lab.hours }}</td>
-                                    <td>{{ Lab.days }}</td>
-                                    <td>{{ Lab.TA }}</td>
+                                    <td STYLE="padding:5px 10px;">{{ Lab.labID }}</td>
+                                    <td STYLE="padding:5px 10px;">{{ Lab.course }}</td>
+                                    <td STYLE="padding:5px 10px;">{{ Lab.name }}</td>
+                                    <td STYLE="padding:5px 10px;">{{ Lab.location }}</td>
+                                    <td STYLE="padding:5px 10px;">{{ Lab.hours }}</td>
+                                    <td STYLE="padding:5px 10px;">{{ Lab.days }}</td>
+                                    <td STYLE="padding:5px 10px;">{{ Lab.TA }}</td>
                                     {% if change_lab.labID == null %}
                                         <td>
-                                            <button name="edit" type="submit" value="{{ Lab.labID }}">Edit</button>
+                                            <button 
+                                            STYLE="background-color: #000000;color: #FFFFFF; 
+                                            font-weight: 700;font-size:14px;
+                                        padding: 4px 8px;" 
+                                            name="edit" type="submit" value="{{ Lab.labID }}">Edit</button>
                                         </td>
                                     {% endif %}
                                 {% endif %}
@@ -92,9 +100,7 @@
                         {% endfor %}
                     </table>
                 </form>
-                {% if error %}
-                    {{ error }}
-                {% endif %}
+                {{ error }}
             </div>
         </main>
     </body>

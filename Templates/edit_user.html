@@ -17,10 +17,10 @@
             <div class="nav-center">
                 <h4>Edit User</h4>
                 <ul class="nav-links">
-                    <li><a href="/view_users/">View Users</a></li>
-                    <li><a href="/create_user/">Create User</a></li>
-                    <li><a href="/delete_user/">Delete User</a></li>
-                    <li><a href="/account_settings/">Account Settings</a></li>
+                    <li><a href="/view_users/">View</a></li>
+                    <li><a href="/create_user/">Create</a></li>
+                    <li><a href="/delete_user/">Delete</a></li>
+                    <li><a href="/account_settings/">Account</a></li>
                     <li><a href="/home/">Dashboard</a></li>
                     <li><a href="/">Log Out</a></li>
                 </ul>
@@ -33,13 +33,13 @@
                     {% csrf_token %}
                     <table border="1">
                         <tr>
-                            <th>ID</th>
-                            <th>Type</th>
-                            <th>Username</th>
-                            <th>Name</th>
-                            <th>Address</th>
-                            <th>Phone</th>
-                            <th>Email</th>
+                            <th STYLE="padding:5px 10px;">ID</th>
+                            <th STYLE="padding:5px 10px;">Type</th>
+                            <th STYLE="padding:5px 10px;">Username</th>
+                            <th STYLE="padding:5px 10px;">Name</th>
+                            <th STYLE="padding:5px 10px;">Address</th>
+                            <th STYLE="padding:5px 10px;">Phone</th>
+                            <th STYLE="padding:5px 10px;">Email</th>
                         </tr>
                         {% for UserProfile in object_list %}
                             <tr>
@@ -58,19 +58,27 @@
                                     <td><input type="number" id=phone name=phone value="{{ UserProfile.phone }}"></td>
                                     <td><input type="email" id=email name=email value="{{ UserProfile.email }}"></td>
                                     <td>
-                                        <button name="submit" type="submit" value={{ UserProfile.userID }}>Submit</button>
+                                        <button
+                                        STYLE="background-color: #008000;color: #FFFFFF; 
+                                        font-weight: 700;font-size:14px;
+                                    padding: 5px 10px;" 
+                                        name="submit" type="submit" value={{ UserProfile.userID }}>Submit</button>
                                     </td>
                                 {% else %}
-                                    <td>{{ UserProfile.userID }}</td>
-                                    <td>{{ UserProfile.userType }}</td>
-                                    <td>{{ UserProfile.username }}</td>
-                                    <td>{{ UserProfile.name }}</td>
-                                    <td>{{ UserProfile.address }}</td>
-                                    <td>{{ UserProfile.phone }}</td>
-                                    <td>{{ UserProfile.email }}</td>
+                                    <td STYLE="padding:5px 10px;"  >{{ UserProfile.userID }}</td>
+                                    <td STYLE="padding:5px 10px;">{{ UserProfile.userType }}</td>
+                                    <td STYLE="padding:5px 10px;">{{ UserProfile.username }}</td>
+                                    <td STYLE="padding:5px 10px;">{{ UserProfile.name }}</td>
+                                    <td STYLE="padding:5px 10px;">{{ UserProfile.address }}</td>
+                                    <td STYLE="padding:5px 10px;">{{ UserProfile.phone }}</td>
+                                    <td STYLE="padding:5px 10px;">{{ UserProfile.email }}</td>
                                     {% if change_user.username == null %}
                                         <td>
-                                            <button name="edit" type="submit" value="{{ UserProfile.userID }}">Edit</button>
+                                            <button
+                                            STYLE="background-color: #000000;color: #FFFFFF; 
+                                            font-weight: 700;font-size:14px;
+                                        padding: 5px 10px;" 
+                                            name="edit" type="submit" value="{{ UserProfile.userID }}">Edit</button>
                                         </td>
                                     {% endif %}
                                 {% endif %}
@@ -78,9 +86,7 @@
                         {% endfor %}
                     </table>
                 </form>
-                {% if error|length > 0 %}
-                    {{ error }}
-                {% endif %}
+                {{ error }}
             </div>
         </main>
     </body>

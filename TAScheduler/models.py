@@ -54,7 +54,6 @@ class UserProfile(models.Model):
             hours = "0"
         minutes = lab_or_course.hours[lab_or_course.hours.find(':') + 1: lab_or_course.hours.find(':') + 2]
         hours_and_minutes = hours + "." + minutes
-        print(float(hours_and_minutes))
         if lab_or_course.hours[lab_or_course.hours.find(':') + 4: lab_or_course.hours.find(':') + 6] == "AM":
             return float(hours_and_minutes) - 12
         elif lab_or_course.hours[lab_or_course.hours.find(':') + 4: lab_or_course.hours.find(':') + 6] == "PM":
@@ -81,7 +80,7 @@ class Course(models.Model):
         for i in range(len(self.days)):
             if self.days[i] == 'M':
                 day_list.append('M')
-            if self.days[i] == 'T':
+            elif self.days[i] == 'T':
                 try:
                     if self.days[i + 1] == 'h':
                         day_list.append('Th')
@@ -89,10 +88,12 @@ class Course(models.Model):
                         day_list.append('T')
                 except IndexError:
                     day_list.append('T')
-            if self.days[i] == 'W':
+            elif self.days[i] == 'W':
                 day_list.append('W')
-            if self.days[i] == 'F':
+            elif self.days[i] == 'F':
                 day_list.append('F')
+            else:
+                pass
         return day_list
 
     # class Meta:

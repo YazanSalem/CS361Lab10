@@ -17,10 +17,10 @@
             <div class="nav-center">
                 <h4>View Courses</h4>
                 <ul class="nav-links">
-                    <li><a href="/create_course/">Create Course</a></li>
-                    <li><a href="/edit_course/">Edit Course</a></li>
-                    <li><a href="/delete_course/">Delete Course</a></li>
-                    <li><a href="/account_settings/">Account Settings</a></li>
+                    <li><a href="/create_course/">Create</a></li>
+                    <li><a href="/edit_course/">Edit</a></li>
+                    <li><a href="/delete_course/">Delete</a></li>
+                    <li><a href="/account_settings/">Account</a></li>
                     <li><a href="/home/">Dashboard</a></li>
                     <li><a href="/">Log Out</a></li>
                 </ul>
@@ -34,28 +34,28 @@
                     <b>{{ course.name }}</b>
                     <table border>
                         <tr>
-                            <th>ID</th>
-                            <th>Name</th>
-                            <th>Location</th>
-                            <th>Hours</th>
-                            <th>Days</th>
-                            <th>Instructor</th>
-                            <th>TAs</th>
-                            <th>Lab Sections</th>
+                            <th STYLE="padding:5px 10px;">ID</th>
+                            <th STYLE="padding:5px 10px;">Name</th>
+                            <th STYLE="padding:5px 10px;">Location</th>
+                            <th STYLE="padding:5px 10px;">Hours</th>
+                            <th STYLE="padding:5px 10px;">Days</th>
+                            <th STYLE="padding:5px 10px;">Instructor</th>
+                            <th STYLE="padding:5px 10px;">TAs</th>
+                            <th STYLE="padding:5px 10px;">Lab Sections</th>
                         </tr>
                         <tr>
-                            <td>{{ course.courseID }}</td>
-                            <td>{{ course.name }}</td>
-                            <td>{{ course.location }}</td>
-                            <td>{{ course.hours }}</td>
-                            <td>{{ course.days }}</td>
-                            <td>{{ course.instructor }}</td>
-                            <td>
+                            <td STYLE="padding:5px 10px;">{{ course.courseID }}</td>
+                            <td STYLE="padding:5px 10px;">{{ course.name }}</td>
+                            <td STYLE="padding:5px 10px;">{{ course.location }}</td>
+                            <td STYLE="padding:5px 10px;">{{ course.hours }}</td>
+                            <td STYLE="padding:5px 10px;">{{ course.days }}</td>
+                            <td STYLE="padding:5px 10px;">{{ course.instructor }}</td>
+                            <td STYLE="padding:5px 10px;">
                                 {% for ta in course.TAs.all %}
                                     {{ ta.username }}
                                 {% endfor %}
                             </td>
-                            <td>
+                            <td STYLE="padding:5px 10px;">
                                 {% for lab in course.lab_set.all %}
                                     {{ lab.name }}
                                 {% endfor %}
