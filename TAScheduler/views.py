@@ -134,7 +134,6 @@ class CreateCourse(View):
                     days = days + gottenDays[i] + ', '
                 else:
                     days = days + gottenDays[i]
-            print(days)
             CourseManagement.createCourse(course_id=int(request.POST['ID']), name=request.POST['name'],
                                           location=request.POST['location'], hours=request.POST['hours'],
                                           days=days,
@@ -162,7 +161,6 @@ class AccountSettings(View):
     def post(request):
         try:
             edit = bool(request.POST["edit"])
-            print(edit)
             if edit:
                 return render(request, "account_settings.html",
                               {"user": UserManagement.findUser(user_id=request.session["user_id"]), "edit": edit})
