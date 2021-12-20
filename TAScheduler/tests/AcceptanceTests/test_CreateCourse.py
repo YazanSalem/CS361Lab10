@@ -103,7 +103,10 @@ class TestCreateCourse(TestCase):
                                                       "location": "EMS 180", "hours": "12:00 PM - 01:00 PM",
                                                       "days": "M, W", "instructor": self.instructor})
 
-        self.assertEqual(Course.objects.get(courseID=2).name, "Systems Programming", "Course was created successfully")
+        self.assertEqual(Course.objects.get(courseID=1),
+                         Course(courseID=99, name="Software Engineering", location="EMS 180",
+                                hours="12:00 PM - 01:00 PM", days="M, W", instructor=self.instructor),
+                         "Course was not created successfully")
         course = Course.objects.get(courseID=2)
         course.TAs.add(self.TA)
         course.save()
