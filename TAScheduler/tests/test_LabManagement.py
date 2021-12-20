@@ -127,7 +127,8 @@ class EditLabTests(TestCase):
 
     def test_invalidID(self):
         with self.assertRaises(TypeError,
-                               msg="editLab does not raise an error when passed a labID that doesn't correspond to a lab"):
+                               msg="editLab does not raise an error when passed a labID that doesn't correspond to a "
+                                   "lab"):
             LabManagement.editLab(lab_id=787, lab_name="Chemistry lab", lab_location="Location",
                                   lab_hours="12:00 PM - 12:50 PM", lab_days="M, W, F", course=self.course1, ta=self.TA1)
 

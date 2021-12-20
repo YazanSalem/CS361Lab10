@@ -6,14 +6,14 @@ from django.db import models
 # UserProfile acts as the class that will be used for all users with the userType variable determining whether they
 # are an instructor, TA, or Administrator
 class UserProfile(models.Model):
-    userID = models.IntegerField()
+    userID = models.IntegerField(default=0)
     userType = models.CharField(max_length=20,
                                 choices=[('SUPERVISOR', 'Supervisor'), ('INSTRUCTOR', 'Instructor'), ('TA', 'TA')])
     username = models.CharField(max_length=20, default="")
     password = models.CharField(max_length=20)
     name = models.CharField(max_length=20)
     address = models.CharField(max_length=20)
-    phone = models.IntegerField()
+    phone = models.IntegerField(default=0)
     email = models.EmailField(max_length=30)
 
     def __str__(self):
