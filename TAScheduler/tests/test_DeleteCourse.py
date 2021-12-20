@@ -26,6 +26,8 @@ class SuccessfulDeleteCourse(TestCase):
         location="EMS 180", hours = "12:00PM - 01:00PM", days ="M, W", instructor = self.instructor,
          TAs = [self.TA])
 
+        self.dummyClient.post("/", {"useraccount": self.admin.username, "password": self.admin.password})
+
     def test_deleteCourse(self):
         resp = self.dummyClient.post('/delete_course/', {'courseID' : 1}, follow= True)
         var = Course.objects.count()
@@ -60,5 +62,9 @@ class DeleteCourseHasLab(TestCase):
         self.lab = Lab.objects.create(labID = 1, name = "Lab", location ="EMS 280",
             hours = "03:00PM - 04:00PM", days="M, W", course = self.course, TA = self.TA)
         
-        def test_deleteCourseHasLab(self):
-            pass
+        self.dummyClient.post("/", {"useraccount": self.admin.username, "password": self.admin.password})
+
+    def test_deleteCourseHasLab(self):
+        resp = self.dummyClient.post('/delete_course/', {'courseID' : 1}, follow= True)
+        self.assertEquals(Course.objects.get(courseID = self.course.ID), self.course, 
+        "Did not delete because lab associated with this class must be deleted")
