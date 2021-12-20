@@ -74,8 +74,8 @@ class LabManagement(object):
             if not (ta is None):
                 if not (course in editedLab.TA.TAToCourse.all()):
                     raise ValueError("A lab's course cannot be changed if the lab TA is not assigned to that course")
-            elif not (course in ta.TAToCourse.all()):
-                raise ValueError("A lab's course cannot be changed if the lab TA is not assigned to that course")
+                elif not (course in ta.TAToCourse.all()):
+                    raise ValueError("A lab's course cannot be changed if the lab TA is not assigned to that course")
             editedLab.course = course
         if not (ta is None):
             editedLab.TA = ta
