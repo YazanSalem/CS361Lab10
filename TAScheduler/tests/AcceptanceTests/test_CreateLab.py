@@ -115,4 +115,8 @@ class TestCreateLab(TestCase):
         r = self.dummyClient.post('/create_lab/', {"labID": 10, "labName": "Lab2", "labLocation": "EMS 280",
                                                    "labHours": "03:00 PM - 04:00 PM", "days": "M, W",
                                                    "course": self.course2, "TA": self.TA})
-        self.assertEqual(Lab.objects.get(labID=1), Lab(labID=10, name="Lab2", location="EMS 280", hours=03:00 PM - 04:00 PM", days="M, W", course=self.course2, TA=self.TA, "Lab was not created successfully")
+
+        self.assertNotEqual(Lab.objects.get(labID=1), {"labID": 10, "labName": "Lab2", "labLocation": "EMS 280",
+                                                       "labHours": "03:00 PM - 04:00 PM", "days": "M, W",
+                                                       "course": self.course2, "TA": self.TA},
+                            "Lab was not created successfully")
