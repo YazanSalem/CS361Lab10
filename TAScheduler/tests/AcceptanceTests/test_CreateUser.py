@@ -163,4 +163,4 @@ class TestCreateUser(TestCase):
                               "phone": 1234567891,
                               "email": "t@t.com"}, follow=True)
 
-        self.assertEqual(UserProfile.objects.get(userID=100).userType, "TA", "TA was created successfully")
+        self.assertEqual(UserProfile.objects.get(userID=100), UserProfile(userID=100, userType="TA", username="taTest", password="taTest", name="Test Ta", address="address", phone=1234567891, email="t@t.com"), "TA was not created successfully")
