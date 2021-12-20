@@ -143,6 +143,10 @@ class CreateCourse(View):
         except (TypeError, ValueError) as e:
             return render(request, "create_course.html", {"UserProfile_list": UserProfile.objects.all(),
                                                           "error": "Course was not created. " + str(e)})
+        except MultiValueDictKeyError:
+            return render(request, "create_course.html", {"UserProfile_list": UserProfile.objects.all(),
+                                                          "error": "Course was not created. An instructor must be "
+                                                                   "chosen"})
 
 
 class AccountSettings(View):
@@ -167,7 +171,7 @@ class AccountSettings(View):
             else:
                 UserManagement.editUser(user_id=int(request.POST["userID"]), username=request.POST["username"],
                                         password=request.POST["password"], name=request.POST["name"],
-                                        address=request.POST["address"], phone=request.POST["phone"],
+                                        address=request.POST["address"], phone=int(request.POST["phone"]),
                                         email=request.POST["email"])
                 return render(request, "account_settings.html",
                               {"user": UserProfile.objects.get(userID=request.session["user_id"]), "edit": edit})
@@ -258,6 +262,10 @@ class EditCourse(View):
         except (TypeError, ValueError) as e:
             return render(request, "edit_course.html",
                           {"Course_list": Course.objects.all(), "error": "Course was not edited. " + str(e)})
+        except MultiValueDictKeyError:
+            return render(request, "create_course.html", {"UserProfile_list": UserProfile.objects.all(),
+                                                          "error": "Course was not created. An instructor must be "
+                                                                   "chosen"})
 
 
 class DeleteLab(View):
@@ -372,7 +380,7 @@ class CreateLab(View):
             elif currentUser.userType == "INSTRUCTOR":
                 return render(request, "create_lab.html",
                               {"Course_list": course_choices, "UserProfile_list": ta_choices})
-        except (TypeError, ValueError) as e:
+        except (TypeError, ValueError, MultiValueDictKeyError) as e:
             if currentUser.userType == "SUPERVISOR":
                 return render(request, "create_lab.html",
                               {"Course_list": Course.objects.all(), "UserProfile_list": UserProfile.objects.all(),
@@ -381,6 +389,7 @@ class CreateLab(View):
                 return render(request, "create_lab.html",
                               {"Course_list": course_choices, "UserProfile_list": ta_choices,
                                "error": "Lab section was not created " + str(e)})
+
 
 
 class EditLab(View):
@@ -403,7 +412,6 @@ class EditLab(View):
         ta_choices = []
         course_choices = []
         if currentUser.userType == "INSTRUCTOR":
-
             for course in UserManagement.findUser(user_id=int(request.session["user_id"])).course_set.all():
                 course_choices.append(course)
                 for ta in course.TAs.all():
@@ -443,7 +451,7 @@ class EditLab(View):
                 elif currentUser.userType == "INSTRUCTOR":
                     return render(request, "edit_lab.html", {
                         "object_list": currentUser.getLabList()})
-        except (TypeError, ValueError) as e:
+        except (TypeError, ValueError, MultiValueDictKeyError) as e:
             if currentUser.userType == "SUPERVISOR":
                 return render(request, "edit_lab.html",
                               {"object_list": Lab.objects.all(), "error": "Lab section was not changed. " + str(e)})

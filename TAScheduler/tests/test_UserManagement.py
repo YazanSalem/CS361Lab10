@@ -250,7 +250,7 @@ class TestEditUser(TestCase):
 class TestDeleteUser(TestCase):
     def setUp(self):
         UserManagement.createUser(user_id=1, user_type="INSTRUCTOR", username="instructor", password="password",
-                                  name="Professor Layton", address="3400 N Maryland Ave", phone="6085555432",
+                                  name="Professor Layton", address="3400 N Maryland Ave", phone=6085555432,
                                   email="layton@gmail.com")
         self.instructor = UserProfile.objects.get(userID=1)
         UserProfile.objects.create(userID=10, userType="SUPERVISOR", username="WillFerrell", password="comedy",
