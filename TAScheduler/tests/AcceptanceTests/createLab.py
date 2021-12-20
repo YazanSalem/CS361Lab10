@@ -26,16 +26,45 @@ class TestCreateLab(TestCase):
                                                 phone=3234452176, email="AdminEmail@email.com")
 
         self.course = Course.objects.create(courseID=1, name="Software Engineering",
-                                            location="EMS 180", hours="12:00PM - 01:00PM", days="M, W",
+                                            location="EMS 180", hours="12:00 PM - 01:00 PM", days="M, W",
                                             instructor=self.instructor)
+        self.course2 = Course.objects.create(courseID=2, name="Systems Programming",
+                                             location="Chem 180", hours="12:00 PM - 01:00 PM", days="T, Th",
+                                             instructor=self.instructor)
+
         self.course.TAs.add(self.TA)
-        # self.lab = Lab.objects.create(labID=1, name="Lab", location="EMS 280",
-        #                               hours="03:00PM - 04:00PM", days="M, W", course=self.course, TA=self.TA)
+        self.course2.TAs.add(self.TA)
+        self.lab = Lab.objects.create(labID=1, name="Lab", location="EMS 280",
+                                      hours="03:00 PM - 04:00 PM", days="M, W", course=self.course, TA=self.TA)
 
         self.dummyClient.post("/", {"useraccount": self.admin.username, "password": self.admin.password})
 
-    def createLab(self):
-        r = self.dummyClient.post('/create_lab/', {"labID": 1, "name": "Lab", "location": "EMS 280",
-                                                   "hours": "03:00PM - 04:00PM", "days": "M, W",
+    def test_duplicateLab(self):
+        r = self.dummyClient.post('/create_lab/', {"labID": 1, "labName": "Lab", "labLocation": "EMS 280",
+                                                   "labHours": "03:00 PM - 04:00 PM", "days": "M, W",
                                                    "course": self.course, "TA": self.TA})
-        self.assertEqual(Course.objects.get(labID=1).name, "Lab", "Lab was created successfully")
+        self.assertEqual(r.context["error"],
+                         "Lab section was not created. invalid literal for int() with base 10: 'Software Engineering'",
+                         "An error message was not displayed when duplicate Lab was created")
+
+    def test_blankID(self):
+        r = self.dummyClient.post('/create_lab/', {"labID": "", "labName": "Lab", "labLocation": "EMS 280",
+                                                   "labHours": "03:00 PM - 04:00 PM", "days": "M, W",
+                                                   "course": self.course, "TA": self.TA})
+        self.assertEqual(r.context["error"],
+                         "Lab section was not created. invalid literal for int() with base 10: 'Software Engineering'",
+                         "An error message was not displayed when duplicate Lab was created")
+
+    def test_blank(self):
+        r = self.dummyClient.post('/create_lab/', {"labID": 1, "labName": "Lab", "labLocation": "EMS 280",
+                                                   "labHours": "03:00 PM - 04:00 PM", "days": "M, W",
+                                                   "course": self.course, "TA": self.TA})
+        self.assertEqual(r.context["error"],
+                         "Lab section was not created. invalid literal for int() with base 10: 'Software Engineering'",
+                         "An error message was not displayed when duplicate Lab was created")
+
+    def test_createLab(self):
+        r = self.dummyClient.post('/create_lab/', {"labID": 10, "labName": "Lab2", "labLocation": "EMS 280",
+                                                   "labHours": "03:00 PM - 04:00 PM", "days": "M, W",
+                                                   "course": self.course2, "TA": self.TA})
+        self.assertEqual(Lab.objects.get(labID=1).name, "Lab", "Lab was created successfully")
