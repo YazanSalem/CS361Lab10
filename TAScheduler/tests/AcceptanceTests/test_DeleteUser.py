@@ -34,19 +34,19 @@ class SuccessfulDeleteUser(TestCase):
         self.dummyClient.post("/", {"useraccount": self.admin.username, "password": self.admin.password})
 
     def test_deleteUser(self):
-        resp = self.dummyClient.post('/delete_user/', {'userID': 1}, follow=True)
+        resp = self.dummyClient.post('/delete_user/', {'delete': 1}, follow=True)
         var = UserProfile.objects.count()
         self.assertEquals(var, 3, "TA has been successfully deleted")
-        allUsers = list(UserProfile.objects.all(), "Instructor, Admin, and Admin2 still exist")
-        self.assertEquals(allUsers, [self.instructor, self.admin, self.admin2])
+        allUsers = list(UserProfile.objects.all())
+        self.assertEquals(allUsers, [self.instructor, self.admin, self.admin2], "Instructor, Admin, and Admin2 still exist")
 
-        resp = self.dummyClient.post('/delete_user/', {'userID': 2}, follow=True)
+        resp = self.dummyClient.post('/delete_user/', {'delete': 2}, follow=True)
         var = UserProfile.objects.count()
         self.assertEquals(var, 2, "Instructor has been successfully deleted")
         allUsers = list(UserProfile.objects.all())
         self.assertEquals(allUsers, [self.admin, self.admin2], "Admin2 and Admin has not been deleted")
 
-        resp = self.dummyClient.post('/delete_user/', {'userID': 4}, follow=True)
+        resp = self.dummyClient.post('/delete_user/', {'delete': 4}, follow=True)
         var = UserProfile.objects.count()
         self.assertEquals(var, 1, "Admin2 was successfully deleted")
         allUsers = list(UserProfile.objects.all())
