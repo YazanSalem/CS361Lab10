@@ -6,14 +6,14 @@ from django.db import models
 # UserProfile acts as the class that will be used for all users with the userType variable determining whether they
 # are an instructor, TA, or Administrator
 class UserProfile(models.Model):
-    userID = models.IntegerField(default=0)
+    userID = models.IntegerField()
     userType = models.CharField(max_length=20,
                                 choices=[('SUPERVISOR', 'Supervisor'), ('INSTRUCTOR', 'Instructor'), ('TA', 'TA')])
     username = models.CharField(max_length=20, default="")
     password = models.CharField(max_length=20)
     name = models.CharField(max_length=20)
     address = models.CharField(max_length=20)
-    phone = models.IntegerField(default=0)
+    phone = models.IntegerField()
     email = models.EmailField(max_length=30)
 
     def __str__(self):
@@ -103,7 +103,7 @@ class Course(models.Model):
 # The Lab class keeps track of the information for a particular lab section and references the instructor of the
 # course to keep track of which course it relates to.
 class Lab(models.Model):
-    labID = models.IntegerField(default=0)
+    labID = models.IntegerField()
     name = models.CharField(max_length=20)
     location = models.CharField(max_length=20)
     hours = models.CharField(max_length=20)
