@@ -23,17 +23,18 @@ class SuccessfulDeleteCourse(TestCase):
         , password = "Admin123", name = "Admin Dummy", address = "Admin Address", phone = 3234452176, email ="AdminEmail@email.com")
 
         self.course = Course.objects.create(courseID = 1, name = "Software Engineering",
-        location="EMS 180", hours = "12:00PM - 01:00PM", days ="M, W", instructor = self.instructor,
-         TAs = [self.TA])
+        location="EMS 180", hours = "12:00PM - 01:00PM", days ="M, W", instructor = self.instructor)
+
+        self.course.TAs.add(self.TA)
 
         self.dummyClient.post("/", {"useraccount": self.admin.username, "password": self.admin.password})
 
     def test_deleteCourse(self):
         resp = self.dummyClient.post('/delete_course/', {'courseID' : 1}, follow= True)
         var = Course.objects.count()
-        self.assertEquals(var, 0)
+        self.assertEquals(var, 0, "Course was succesfully deleted")
         allCourses = list(Course.objects.filter(courseID = 1))
-        self.assertEquals(allCourses, [])
+        self.assertEquals(allCourses, [], "No courses remain")
 
 class DeleteCourseHasLab(TestCase):
     
@@ -56,8 +57,9 @@ class DeleteCourseHasLab(TestCase):
         , password = "Admin123", name = "Admin Dummy", address = "Admin Address", phone = 3234452176, email ="AdminEmail@email.com")
 
         self.course = Course.objects.create(courseID = 1, name = "Software Engineering",
-        location="EMS 180", hours = "12:00PM - 01:00PM", days ="M, W", instructor = self.instructor,
-         TAs = [self.TA])
+        location="EMS 180", hours = "12:00PM - 01:00PM", days ="M, W", instructor = self.instructor)
+
+        self.course.TAs.add(self.TA)
 
         self.lab = Lab.objects.create(labID = 1, name = "Lab", location ="EMS 280",
             hours = "03:00PM - 04:00PM", days="M, W", course = self.course, TA = self.TA)
