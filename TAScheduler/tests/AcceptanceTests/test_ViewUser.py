@@ -14,6 +14,7 @@ class TestViewSupervisorUsers(TestCase):
         response = self.client.post("/", {"useraccount": "Samuel", "password": "Samuel12345"})
         self.assertEqual(response.url, "/home/", msg="Valid login redirects to home")
 
+<<<<<<< Updated upstream
         response = self.client.post("account_settings/", {"useraccount": "Samuel", "password": "Samuel12345"})
         self.assertEqual(response.url, "/account_settings", msg="Moves to account settings page")
 
@@ -21,6 +22,17 @@ class TestViewSupervisorUsers(TestCase):
     def test_view_InstructorTA_to_home(self):
         response = self.client.post("/", {"useraccount": "Samuel", "password": "Samuel12345"})
         self.assertEqual(response.url, "/home/", msg="Valid login redirects to home")
+=======
+    def test_userType(self):
+        for user in self.resp.context["user_list"]:
+            self.assertIn(str(user.userType), str(self.resp.content))
+        pass
+
+    def test_username(self):
+        for user in self.resp.context["user_list"]:
+            self.assertIn(str(user.username), str(self.resp.content))
+        pass
+>>>>>>> Stashed changes
 
         response = self.client.post("home/", {"useraccount": "Samuel", "password": "Samuel12345"})
         self.assertEqual(response.url, "/home", msg="Moves to Home page")
@@ -36,6 +48,7 @@ class TestViewSupervisorUsers(TestCase):
 
 class TestViewInstructorAndTAUsers(TestCase):
     def setUp(self):
+<<<<<<< Updated upstream
         self.client = Client()
         self.user1 = UserProfile.objects.create(name='Samuel', password='Samuel12345')
         self.user2 = UserProfile.objects.create(name='John', password='John12345')
@@ -115,3 +128,42 @@ class TestViewInstructorAndTAUsers(TestCase):
         # post is when we want to do something in the database, need some validation, creation, updating from the database
         # # print(response.context['things'])
         # self.assertEqual(response.context['things'], [self.stuff1.name, self.stuff2.name])
+=======
+        TestViewUsersSupervisor.setUp(self)
+        response = self.client.get("/view_users/")
+
+    def test_userID(self):
+        # for user in self.resp.context["user_list"]:
+        for user in self.resp.context["user_list"]:
+            self.assertIn(str(user.userID), str(self.resp.content), "User " + user.username + " 's userID did not display")
+
+    def test_userType(self):
+        for user in self.resp.context["user_list"]:
+            self.assertIn(str(user.userType), str(self.resp.content), "User " + user.username + " 's userType did not display")
+
+    def test_username(self):
+        for user in self.resp.context["user_list"]:
+            self.assertIn(str(user.username), str(self.resp.content), "User " + user.username + " 's username did not display")
+
+    def test_password(self):
+        # Should assert false
+        for user in self.resp.context["user_list"]:
+            if str(self.resp.content).find(user.password) == -1:
+                self.assertNotIn(str(user.password), str(self.resp.content), "User " + user.username + " 's password did not display")
+
+    def test_name(self):
+        for user in self.resp.context["user_list"]:
+            self.assertIn(str(user.name), str(self.resp.content), "User " + user.username + " 's name did not display")
+
+    def test_address(self):
+        for user in self.resp.context["user_list"]:
+            self.assertIn(str(user.address), str(self.resp.content), "User " + user.username + " 's address did not display")
+
+    def test_phone(self):
+        for user in self.resp.context["user_list"]:
+            self.assertIn(str(user.phone), str(self.resp.content), "User " + user.username + " 's phone did not display")
+
+    def test_email(self):
+        for user in self.resp.context["user_list"]:
+            self.assertIn(str(user.email), str(self.resp.content), "User " + user.username + " 's email did not display")
+>>>>>>> Stashed changes
