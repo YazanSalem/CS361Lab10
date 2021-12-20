@@ -4,18 +4,18 @@ import re
 
 class LabManagement(object):
 
-	# Preconditions: The user has to have been instantiated.
+    # Preconditions: The user has to have been instantiated.
     #                The user must be of type administrator
     # Postconditions: Creates a lab
-	#	              The lab must be connected to an already instantiated course
-	# Side-effects: Lab is created and added inside the database
-	# Lab ID(in) - ID of the lab
-	# Lab Name(in) - Name of the lab
-	# Lab Hours(in) - Hours of the lab
-	# Lab Location(in) - Location of the lab
-	# Lab Days(in) - Days of the lab
-	# Lab Course(in) - Course associated with the lab
-	# Lab TA(in) -TA of the lab
+    #	              The lab must be connected to an already instantiated course
+    # Side-effects: Lab is created and added inside the database
+    # Lab ID(in) - ID of the lab
+    # Lab Name(in) - Name of the lab
+    # Lab Hours(in) - Hours of the lab
+    # Lab Location(in) - Location of the lab
+    # Lab Days(in) - Days of the lab
+    # Lab Course(in) - Course associated with the lab
+    # Lab TA(in) -TA of the lab
     @staticmethod
     def createLab(lab_id, lab_name, lab_location, lab_hours, lab_days, course, ta):
         LabManagement.__inputErrorCheck(lab_id, lab_name, lab_location, lab_hours, lab_days, course, ta)
@@ -26,11 +26,11 @@ class LabManagement(object):
 
         return "Lab was created"
 
-	# Preconditions: Both the lab and the TA must exist in the database
-	# Postconditions: The TA for the lab is updated to the given TA
-	# Side-Effects: TA is assigned to the lab
-	# Lab ID(in) - ID of the lab
-	# User TA(in) - TA of the lab
+    # Preconditions: Both the lab and the TA must exist in the database
+    # Postconditions: The TA for the lab is updated to the given TA
+    # Side-Effects: TA is assigned to the lab
+    # Lab ID(in) - ID of the lab
+    # User TA(in) - TA of the lab
     @staticmethod
     def addTA(lab_id, lab_ta):
         LabManagement.__inputErrorCheck(lab_id=lab_id, ta=lab_ta)
@@ -42,21 +42,22 @@ class LabManagement(object):
 
         return "TA was assigned to the lab"
 
-	# Preconditions: The user has to have been instantiated.
+    # Preconditions: The user has to have been instantiated.
     #                The user must be of type administrator
     # Postconditions:Edits a lab
-	#	             The lab must be connected to an already instantiated course
-	# Side-effects: Lab is edited inside the database
-	# Lab ID(in) - ID of the lab
-	# Lab Name(in) - Name of the lab
-	# Lab Hours(in) - Hours of the lab
-	# Lab Location(in) - Location of the lab
-	# Lab Days(in) - Days of the lab
-	# Lab Course(in) - Course associated with the lab
-	# Lab TA(in) -TA of the lab
+    #	             The lab must be connected to an already instantiated course
+    # Side-effects: Lab is edited inside the database
+    # Lab ID(in) - ID of the lab
+    # Lab Name(in) - Name of the lab
+    # Lab Hours(in) - Hours of the lab
+    # Lab Location(in) - Location of the lab
+    # Lab Days(in) - Days of the lab
+    # Lab Course(in) - Course associated with the lab
+    # Lab TA(in) -TA of the lab
     @staticmethod
     def editLab(lab_id=None, lab_name=None, lab_location=None, lab_hours=None, lab_days=None, course=None, ta=None):
-        LabManagement.__inputErrorCheck(lab_id=lab_id, name=lab_name, hours=lab_hours, location=lab_location, days=lab_days, course=course, ta=ta)
+        LabManagement.__inputErrorCheck(lab_id=lab_id, name=lab_name, hours=lab_hours, location=lab_location,
+                                        days=lab_days, course=course, ta=ta)
         if not (Lab.objects.filter(labID=lab_id).exists()):
             raise TypeError("This Lab does not exist")
 
@@ -70,6 +71,11 @@ class LabManagement(object):
         if not (lab_days is None):
             editedLab.days = lab_days
         if not (course is None):
+            if not (ta is None):
+                if not (course in editedLab.TA.TAToCourse.all()):
+                    raise ValueError("A lab's course cannot be changed if the lab TA is not assigned to that course")
+            elif not (course in ta.TAToCourse.all()):
+                raise ValueError("A lab's course cannot be changed if the lab TA is not assigned to that course")
             editedLab.course = course
         if not (ta is None):
             editedLab.TA = ta
@@ -77,11 +83,11 @@ class LabManagement(object):
 
         return "The lab was successfully edited"
 
-	# Preconditions: The user has to have been instantiated.
+    # Preconditions: The user has to have been instantiated.
     # The user must be of type administrator
     # Postconditions:Deletes a lab
-	# Side-effects: Lab is deleted and removed from the database
-	# Lab ID(in) - ID of the lab
+    # Side-effects: Lab is deleted and removed from the database
+    # Lab ID(in) - ID of the lab
     @staticmethod
     def deleteLab(lab_id):
         LabManagement.__inputErrorCheck(lab_id=lab_id)
@@ -137,7 +143,8 @@ class LabManagement(object):
                 raise TypeError("Lab Hours entered is not of type str")
             if not (len(hours) > 0):
                 raise ValueError("Hours should not be left blank")
-            if not (bool(re.match("([1][0-2]|[0][1-9]):([0-5][0-9]) ([AP])M - ([1][0-2]|[0][1-9]):([0-5][0-9]) ([AP])M", hours))):
+            if not (bool(re.match("([1][0-2]|[0][1-9]):([0-5][0-9]) ([AP])M - ([1][0-2]|[0][1-9]):([0-5][0-9]) ([AP])M",
+                                  hours))):
                 raise ValueError("Wrong format for hours. Format should be HH:MM AM/PM - HH:MM AM/PM")
         if not (days is None):
             if not (isinstance(days, str)):
