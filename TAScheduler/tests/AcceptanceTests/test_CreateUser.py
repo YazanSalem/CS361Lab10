@@ -141,8 +141,8 @@ class TestCreateUser(TestCase):
                               "phone": 1234567891,
                               "email": "s@s.com"}, follow=True)
 
-        self.assertEqual(UserProfile.objects.get(userID=98).userType, "SUPERVISOR",
-                         "Supervisor was created successfully")
+        self.assertEqual(UserProfile.objects.get(userID=98), UserProfile(userID=98, userType="SUPERVISOR", username="supervisorTest", password="supervisorTest", name="Test Supervisor", address="address", phone=1234567891, email="s@s.com"),
+                         "Supervisor was not created successfully")
 
     def test_createInstructor(self):
         r = self.client.post("/create_user/",
@@ -152,8 +152,8 @@ class TestCreateUser(TestCase):
                               "phone": 1234567891,
                               "email": "i@i.com"}, follow=True)
 
-        self.assertEqual(UserProfile.objects.get(userID=99).userType, "INSTRUCTOR",
-                         "Instructor was created successfully")
+        self.assertEqual(UserProfile.objects.get(userID=99), UserProfile(userID=99, userType="INSTRUCTOR", username="InstructorTest", password="InstructorTest", name="Test Instructor", address="address", phone=1234567891, email="i@i.com"),
+                         "Instructor was not created successfully")
 
     def test_createTA(self):
         r = self.client.post("/create_user/",
@@ -163,4 +163,4 @@ class TestCreateUser(TestCase):
                               "phone": 1234567891,
                               "email": "t@t.com"}, follow=True)
 
-        self.assertEqual(UserProfile.objects.get(userID=100).userType, "TA", "TA was created successfully")
+        self.assertEqual(UserProfile.objects.get(userID=100), UserProfile(userID=100, userType="TA", username="taTest", password="taTest", name="Test Ta", address="address", phone=1234567891, email="t@t.com"), "TA was not created successfully")
