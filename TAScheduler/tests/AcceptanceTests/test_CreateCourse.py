@@ -75,7 +75,7 @@ class TestCreateCourse(TestCase):
 
     def test_invalidHours(self):
         r = self.dummyClient.post('/create_course/', {"ID": 2, "name": "Systems Programming",
-                                                      "location": "EMS 180", "hours": "2:00PM-1:00PM",
+                                                      "location": "EMS 180", "hours": "invalid input",
                                                       "days": "M, W", "instructor": self.instructor})
 
         self.assertEqual(r.context["error"],

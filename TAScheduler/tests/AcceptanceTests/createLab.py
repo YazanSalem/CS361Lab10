@@ -52,15 +52,63 @@ class TestCreateLab(TestCase):
                                                    "labHours": "03:00 PM - 04:00 PM", "days": "M, W",
                                                    "course": self.course, "TA": self.TA})
         self.assertEqual(r.context["error"],
-                         "Lab section was not created. invalid literal for int() with base 10: 'Software Engineering'",
+                         "Lab section was not created. invalid literal for int() with base 10: ''",
                          "An error message was not displayed when duplicate Lab was created")
 
-    def test_blank(self):
-        r = self.dummyClient.post('/create_lab/', {"labID": 1, "labName": "Lab", "labLocation": "EMS 280",
+    def test_blankName(self):
+        r = self.dummyClient.post('/create_lab/', {"labID": 2, "labName": "", "labLocation": "EMS 280",
                                                    "labHours": "03:00 PM - 04:00 PM", "days": "M, W",
                                                    "course": self.course, "TA": self.TA})
         self.assertEqual(r.context["error"],
                          "Lab section was not created. invalid literal for int() with base 10: 'Software Engineering'",
+                         "An error message was not displayed when duplicate Lab was created")
+
+    def test_blankLocation(self):
+        r = self.dummyClient.post('/create_lab/', {"labID": 2, "labName": "Lab", "labLocation": "",
+                                                   "labHours": "03:00 PM - 04:00 PM", "days": "M, W",
+                                                   "course": self.course, "TA": self.TA})
+        self.assertEqual(r.context["error"],
+                         "Lab section was not created. invalid literal for int() with base 10: 'Software Engineering'",
+                         "An error message was not displayed when duplicate Lab was created")
+
+    def test_blankHours(self):
+        r = self.dummyClient.post('/create_lab/', {"labID": 2, "labName": "Lab", "labLocation": "EMS 280",
+                                                   "labHours": "", "days": "M, W",
+                                                   "course": self.course, "TA": self.TA})
+        self.assertEqual(r.context["error"],
+                         "Lab section was not created. invalid literal for int() with base 10: 'Software Engineering'",
+                         "An error message was not displayed when duplicate Lab was created")
+
+    def test_invalidHours(self):
+        r = self.dummyClient.post('/create_lab/', {"labID": 2, "labName": "Lab", "labLocation": "EMS 280",
+                                                   "labHours": "invalid input", "days": "M, W",
+                                                   "course": self.course, "TA": self.TA})
+        self.assertEqual(r.context["error"],
+                         "Lab section was not created. invalid literal for int() with base 10: 'Software Engineering'",
+                         "An error message was not displayed when duplicate Lab was created")
+
+    def test_blankDays(self):
+        r = self.dummyClient.post('/create_lab/', {"labID": 2, "labName": "Lab", "labLocation": "EMS 280",
+                                                   "labHours": "03:00 PM - 04:00 PM", "days": "",
+                                                   "course": self.course, "TA": self.TA})
+        self.assertEqual(r.context["error"],
+                         "Lab section was not created. invalid literal for int() with base 10: 'Software Engineering'",
+                         "An error message was not displayed when duplicate Lab was created")
+
+    def test_invalidDays(self):
+        r = self.dummyClient.post('/create_lab/', {"labID": 2, "labName": "Lab", "labLocation": "EMS 280",
+                                                   "labHours": "03:00 PM - 04:00 PM", "days": "invalid input",
+                                                   "course": self.course, "TA": self.TA})
+        self.assertEqual(r.context["error"],
+                         "Lab section was not created. invalid literal for int() with base 10: 'Software Engineering'",
+                         "An error message was not displayed when duplicate Lab was created")
+
+    def test_courseNotExisting(self):
+        r = self.dummyClient.post('/create_lab/', {"labID": 2, "labName": "Lab", "labLocation": "EMS 280",
+                                                   "labHours": "03:00 PM - 04:00 PM", "days": "M, W",
+                                                   "course": "", "TA": self.TA})
+        self.assertEqual(r.context["error"],
+                         "Lab section was not created. invalid literal for int() with base 10: ''",
                          "An error message was not displayed when duplicate Lab was created")
 
     def test_createLab(self):
