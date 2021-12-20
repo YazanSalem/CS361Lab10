@@ -96,7 +96,8 @@ class TestCreateCourse(TestCase):
                                                       "location": "EMS 180", "hours": "12:00 PM - 01:00 PM",
                                                       "days": "M, W", "instructor": self.instructor})
 
-        self.assertEqual(Course.objects.get(courseID=1).name, "Software Engineering", "Course was created successfully")
+        self.assertEqual(Course.objects.get(courseID=99).name, "Software Engineering",
+                         "Course was created successfully")
 
     def createCourseWTA(self):
         r = self.dummyClient.post('/create_course/', {"courseID": 100, "name": "Systems Programming",
