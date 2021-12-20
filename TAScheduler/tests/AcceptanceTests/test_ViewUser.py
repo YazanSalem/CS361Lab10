@@ -19,31 +19,45 @@ class TestViewUsersSupervisor(TestCase):
 
     def test_userID(self):
         for user in self.resp.context["user_list"]:
-            self.assertIn(str(user.userID), str(self.resp.content))
+            self.assertIn(str(user.userID), str(self.resp.content),
+                          "User " + user.username + "'s userID did not display")
 
     def test_userType(self):
-        pass
+        for user in self.resp.context["user_list"]:
+            self.assertIn(user.userType, str(self.resp.content),
+                          "User " + user.username + "'s userType did not display")
 
     def test_username(self):
-        pass
+        for user in self.resp.context["user_list"]:
+            self.assertIn(user.username, str(self.resp.content),
+                          "User " + user.username + "'s username did not display")
 
     def test_password(self):
-        # Should assert false
-        pass
+        # Should not be displayed
+        for user in self.resp.context["user_list"]:
+            self.assertNotIn(user.password, str(self.resp.content),
+                             "User " + user.username + "'s password displayed when it shouldn't have")
 
     def test_name(self):
-        pass
+        for user in self.resp.context["user_list"]:
+            self.assertIn(user.name, str(self.resp.content),
+                          "User " + user.username + "'s name did not display")
 
     def test_address(self):
-        # Should assert false
-        pass
+        for user in self.resp.context["user_list"]:
+            self.assertIn(user.address, str(self.resp.content),
+                             "User " + user.username + "'s address did not display")
 
     def test_phone(self):
-        # Should assert false
-        pass
+        for user in self.resp.context["user_list"]:
+            self.assertIn(str(user.phone), str(self.resp.content),
+                          "User " + user.username + "'s phone number did not display")
 
     def test_email(self):
-        pass
+        print(self.resp.content)
+        for user in self.resp.context["user_list"]:
+            self.assertIn(user.email, str(self.resp.content),
+                          "User " + user.username + "'s email did not display")
 
 
 class TestViewUsersInstructor(TestCase):
