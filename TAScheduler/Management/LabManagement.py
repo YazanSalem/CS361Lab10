@@ -5,9 +5,9 @@ import re
 class LabManagement(object):
 
     # Preconditions: The user has to have been instantiated.
-    #                The user must be of type administrator
+    #   The user must be of type administrator
     # Postconditions: Creates a lab
-    #	              The lab must be connected to an already instantiated course
+    #   The lab must be connected to an already instantiated course
     # Side-effects: Lab is created and added inside the database
     # Lab ID(in) - ID of the lab
     # Lab Name(in) - Name of the lab
@@ -24,28 +24,10 @@ class LabManagement(object):
         Lab.objects.create(labID=lab_id, name=lab_name, location=lab_location, hours=lab_hours, days=lab_days,
                            course=course, TA=ta)
 
-        return "Lab was created"
-
-    # Preconditions: Both the lab and the TA must exist in the database
-    # Postconditions: The TA for the lab is updated to the given TA
-    # Side-Effects: TA is assigned to the lab
-    # Lab ID(in) - ID of the lab
-    # User TA(in) - TA of the lab
-    @staticmethod
-    def addTA(lab_id, lab_ta):
-        LabManagement.__inputErrorCheck(lab_id=lab_id, ta=lab_ta)
-        if not (Lab.objects.filter(labID=lab_id).exists()):
-            raise TypeError("This Lab does not exist")
-
-        lab = Lab.objects.get(labID=lab_id)
-        lab.TA = lab_ta
-
-        return "TA was assigned to the lab"
-
     # Preconditions: The user has to have been instantiated.
-    #                The user must be of type administrator
+    #   The user must be of type administrator
     # Postconditions:Edits a lab
-    #	             The lab must be connected to an already instantiated course
+    #   The lab must be connected to an already instantiated course
     # Side-effects: Lab is edited inside the database
     # Lab ID(in) - ID of the lab
     # Lab Name(in) - Name of the lab
@@ -95,33 +77,6 @@ class LabManagement(object):
             Lab.objects.get(labID=lab_id).delete()
         except Lab.DoesNotExist:
             raise ValueError("The course_id provided does not exist")
-
-    # Preconditions: The user has to have been instantiated
-    # The LabID is an existing lab_id 
-    # Postconditions: Lab assignments are populated
-    # Side-effects: None
-    # Lab Id(in): Lab Id you are searching for
-    @staticmethod
-    def populateSearchLab(lab_id):
-        if not (isinstance(lab_id, int)):
-            raise TypeError("lab_id entered is not of type int")
-
-        if not (Lab.objects.filter(labID=lab_id).exists()):
-            retMsg = "This lab being deleted does not exist"
-        else:
-            retMsg = {
-                'Found Lab': Lab.objects.get(labID=lab_id)
-            }
-
-        return retMsg
-
-    # Preconditions: The user has to have been instantiated
-    # There are labs to display
-    # Postconditions: All labs are displayed
-    # Side-effects: None
-    @staticmethod
-    def displayAllLabs():
-        return Lab.objects.all()
 
     @staticmethod
     def __inputErrorCheck(lab_id=None, name=None, location=None, hours=None, days=None, course=None, ta=None):

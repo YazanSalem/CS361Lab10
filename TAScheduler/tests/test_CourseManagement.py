@@ -172,7 +172,8 @@ class TestEditCourse(TestCase):
 
     def test_editHours(self):
         CourseManagement.editCourse(course_id=self.testCourse.courseID, hours="07:00 PM - 08:00 PM")
-        self.assertEqual("07:00 PM - 08:00 PM", Course.objects.get(courseID=10).hours, "Hours were not edited correctly.")
+        self.assertEqual("07:00 PM - 08:00 PM", Course.objects.get(courseID=10).hours, "Hours were not edited "
+                                                                                       "correctly.")
 
     def test_editDays(self):
         CourseManagement.editCourse(course_id=self.testCourse.courseID, days="T, Th")

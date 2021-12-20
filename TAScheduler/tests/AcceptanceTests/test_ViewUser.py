@@ -1,8 +1,5 @@
 from django.test import TestCase, Client
-from TAScheduler.Management.UserManagement import UserManagement
-from TAScheduler.models import UserProfile
 
-from django.test import TestCase, Client
 from TAScheduler.models import UserProfile
 
 

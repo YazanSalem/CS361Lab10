@@ -6,24 +6,23 @@ from TAScheduler.models import *
 class TestMyUser(TestCase):
 
     def setUp(self):
-        '''
+        """
         testusr0: to be empty at all times.
         testusr1: has every field filled off the bat.
         #ID, name, contact, ssn, address, password, userType (we'll use numerical flags for this)
         testusr2: to be used for all of the "set" functions.
-        '''
+        """
 
-        testusr0 = UserProfile.objects.create()
-        testusr1 = UserManagement.createUser(user_id=1000, user_type="SUPERVISOR", username="mrwick123",
-                                             password="password",
-                                             name="John Wick", address="894 Lake Street, Milwaukee, Wisconsin 99999",
-                                             phone=4142542688,
-                                             email="johnwick123@uwm.edu")
-        testusr2 = UserManagement.createUser(user_id=1001, user_type="INSTRUCTOR", username="mrbond123",
-                                             password="password",
-                                             name="James Bond", address="123 Kenwood Ave, Milwaukee, Wisconsin 99999",
-                                             phone=4144567890,
-                                             email="jamesbond123@uwm.edu")
+        UserManagement.createUser(user_id=1000, user_type="SUPERVISOR", username="mrwick123",
+                                  password="password",
+                                  name="John Wick", address="894 Lake Street, Milwaukee, Wisconsin 99999",
+                                  phone=4142542688,
+                                  email="johnwick123@uwm.edu")
+        UserManagement.createUser(user_id=1001, user_type="INSTRUCTOR", username="mrbond123",
+                                  password="password",
+                                  name="James Bond", address="123 Kenwood Ave, Milwaukee, Wisconsin 99999",
+                                  phone=4144567890,
+                                  email="jamesbond123@uwm.edu")
 
         self.testUser = UserProfile.objects.get(userID=1000, userType="SUPERVISOR", username="mrwick123",
                                                 password="password",
@@ -163,25 +162,24 @@ class TestMyUser(TestCase):
 
 class TestEditUser(TestCase):
     def setUp(self):
-        testusr0 = UserProfile.objects.create()
-        testusr1 = UserManagement.createUser(user_id=1000, user_type="SUPERVISOR", username="mrwick123",
-                                             password="password",
-                                             name="John Wick", address="894 Lake Street, Milwaukee, Wisconsin 99999",
-                                             phone=4142542688,
-                                             email="johnwick123@uwm.edu")
+        UserManagement.createUser(user_id=1000, user_type="SUPERVISOR", username="mrwick123",
+                                  password="password",
+                                  name="John Wick", address="894 Lake Street, Milwaukee, Wisconsin 99999",
+                                  phone=4142542688,
+                                  email="johnwick123@uwm.edu")
         self.supervisor = UserProfile.objects.get(userID=1000)
-        testusr2 = UserManagement.createUser(user_id=1001, user_type="INSTRUCTOR", username="mrbond123",
-                                             password="password",
-                                             name="James Bond", address="123 Kenwood Ave, Milwaukee, Wisconsin 99999",
-                                             phone=4144567890,
-                                             email="jamesbond123@uwm.edu")
+        UserManagement.createUser(user_id=1001, user_type="INSTRUCTOR", username="mrbond123",
+                                  password="password",
+                                  name="James Bond", address="123 Kenwood Ave, Milwaukee, Wisconsin 99999",
+                                  phone=4144567890,
+                                  email="jamesbond123@uwm.edu")
         self.instructor = UserProfile.objects.get(userID=1001)
-        testusr3 = UserManagement.createUser(user_id=1002, user_type="TA", username="willferrell123",
-                                             password="password",
-                                             name="Will Ferrell",
-                                             address="123 Hollywood Blvd, Madison, Wisconsin 53207",
-                                             phone=4140394122,
-                                             email="willferrell123@uwm.edu")
+        UserManagement.createUser(user_id=1002, user_type="TA", username="willferrell123",
+                                  password="password",
+                                  name="Will Ferrell",
+                                  address="123 Hollywood Blvd, Madison, Wisconsin 53207",
+                                  phone=4140394122,
+                                  email="willferrell123@uwm.edu")
         self.TA = UserProfile.objects.get(userID=1002)
         self.testUser = UserProfile.objects.get(userID=1000, userType="SUPERVISOR", username="mrwick123",
                                                 password="password",
@@ -225,7 +223,7 @@ class TestEditUser(TestCase):
     def test_editPassword(self):
         UserManagement.editUser(user_id=1002, password="password")
         self.assertEqual("password", UserProfile.objects.get(userID=1002).password,
-                         "Passowrd was not edited correctly.")
+                         "Password was not edited correctly.")
 
     def test_editName(self):
         UserManagement.editUser(user_id=1002, name="John Wick")

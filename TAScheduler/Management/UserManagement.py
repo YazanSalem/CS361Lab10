@@ -84,7 +84,7 @@ class UserManagement(object):
         change_user.save()
 
     # Preconditions: The user has to have been instantiated
-    #				 There are accounts to display
+    #   There are accounts to display
     # Postconditions: Displays the user
     # Side-effects: None
     # UserId(in) - Id of the user

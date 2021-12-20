@@ -1,7 +1,6 @@
 from django.test import TestCase, Client
-from django.urls import reverse
+
 from TAScheduler.models import UserProfile
-from TAScheduler.Management import UserManagement
 
 '''
 As a user, I want to be able to navigate to the Account settings page
@@ -35,6 +34,7 @@ AND:They can click on "User"
 THEN: They will be navigated to the "User" page
 '''
 
+
 class Test(TestCase):
 
     def setUp(self):
@@ -44,7 +44,7 @@ class Test(TestCase):
 
     def test_home_to_account_settings(self):
 
-        r = self.client.post('/', {'useraccount' : 'testAdmin', 'password': 'testAdmin'})
+        r = self.client.post('/', {'useraccount': 'testAdmin', 'password': 'testAdmin'})
         self.assertTrue(r.context is None)
 
         try:
@@ -61,7 +61,7 @@ class Test(TestCase):
 
     def test_home_to_lab(self):
 
-        r = self.client.post('/', {'useraccount' : 'testAdmin', 'password': 'testAdmin'})
+        r = self.client.post('/', {'useraccount': 'testAdmin', 'password': 'testAdmin'})
         self.assertTrue(r.context is None)
 
         try:
@@ -78,7 +78,7 @@ class Test(TestCase):
 
     def test_home_to_course(self):
 
-        r = self.client.post('/', {'useraccount' : 'testAdmin', 'password': 'testAdmin'})
+        r = self.client.post('/', {'useraccount': 'testAdmin', 'password': 'testAdmin'})
         self.assertTrue(r.context is None)
 
         try:
@@ -95,7 +95,7 @@ class Test(TestCase):
 
     def test_home_to_user(self):
 
-        r = self.client.post('/', {'useraccount' : 'testAdmin', 'password': 'testAdmin'})
+        r = self.client.post('/', {'useraccount': 'testAdmin', 'password': 'testAdmin'})
         self.assertTrue(r.context is None)
 
         try:
@@ -112,7 +112,7 @@ class Test(TestCase):
 
     def test_home_to_send_notification(self):
 
-        r = self.client.post('/', {'useraccount' : 'testAdmin', 'password': 'testAdmin'})
+        r = self.client.post('/', {'useraccount': 'testAdmin', 'password': 'testAdmin'})
         self.assertTrue(r.context is None)
 
         try:
@@ -129,7 +129,7 @@ class Test(TestCase):
 
     def test_home_to_logout(self):
 
-        r = self.client.post('/', {'useraccount' : 'testAdmin', 'password': 'testAdmin'})
+        r = self.client.post('/', {'useraccount': 'testAdmin', 'password': 'testAdmin'})
         self.assertTrue(r.context is None)
 
         try:
@@ -143,4 +143,3 @@ class Test(TestCase):
             self.assertTrue(r.url, "/")
         except AssertionError as msg:
             print(msg)
-

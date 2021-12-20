@@ -9,17 +9,17 @@ import re
 
 class CourseManagement(object):
 
-	# Preconditions: The user has to have been instantiated.
+    # Preconditions: The user has to have been instantiated.
     #                The user must be of type administrator
     # Postconditions:Creates a course
-	# Side-effects: Course is created and added inside the database
-	# Course ID(in) - Id of the courses
-	# Course Name(in) - Name of the course
-	# Course Location(in) - Location of the course
-	# Course Days(in) - Days of the course
-	# Course Hours(in) - Hours of the course
-	# Course Instructor(in) - Instructor of the course
-	# Course TAs(in) -TAs of the course
+    # Side-effects: Course is created and added inside the database
+    # Course ID(in) - Id of the courses
+    # Course Name(in) - Name of the course
+    # Course Location(in) - Location of the course
+    # Course Days(in) - Days of the course
+    # Course Hours(in) - Hours of the course
+    # Course Instructor(in) - Instructor of the course
+    # Course TAs(in) -TAs of the course
     @staticmethod
     def createCourse(course_id, name, location, days, hours, instructor, tas=None):
         CourseManagement.inputErrorChecker(course_id, name, location, days, hours, instructor, tas)
@@ -32,20 +32,19 @@ class CourseManagement(object):
             if not (tas is None):
                 for ta in tas:
                     course.TAs.add(ta)
-            return "Course was created"
+            return
         raise TypeError("The course_id entered already exists")
 
-		
     # Preconditions: The user has to have been instantiated.
     # The user must be of type administrator
     # Postconditions:Edits a course
-	# Side-effects: Course is edited inside the database
-	# Course ID(in) - Id of the courses
-	# Course Name(in) - Name of the course
-	# Course Location(in) - Location of the course
-	# Course Days(in) - Days of the course
-	# Course Hours(in) - Hours of the course
-	# Course Instructor(in) - Instructor of the Course
+    # Side-effects: Course is edited inside the database
+    # Course ID(in) - Id of the courses
+    # Course Name(in) - Name of the course
+    # Course Location(in) - Location of the course
+    # Course Days(in) - Days of the course
+    # Course Hours(in) - Hours of the course
+    # Course Instructor(in) - Instructor of the Course
     @staticmethod
     def editCourse(course_id, name=None, location=None, days=None, hours=None, instructor=None, tas=None):
         CourseManagement.inputErrorChecker(course_id, name, location, days, hours, instructor, tas)
@@ -68,16 +67,16 @@ class CourseManagement(object):
             for i in tas:
                 editedCourse.TAs.add(i)
         editedCourse.save()
-        return "The course was successfully edited"
 
     # Preconditions: The user has to have been instantiated.
     #                The user must be of type administrator
     # Postconditions:Finds a course
-	# Side-effects: None
-	# CourseID(in) - ID of the course
-	# Course(out) - Course Found
+    # Side-effects: None
+    # CourseID(in) - ID of the course
+    # Course(out) - Course Found
     @staticmethod
     def findCourse(course_id):
+        course = Course
         if not (course_id == 0):
             CourseManagement.inputErrorChecker(course_id=course_id)
             try:
@@ -98,39 +97,6 @@ class CourseManagement(object):
             Course.objects.get(courseID=course_id).delete()
         except Course.DoesNotExist:
             raise ValueError("The course_id provided does not exist")
-
-    # Preconditions: The user has to have been instantiated
-    # The searchPrompt is an existing course assignment name
-    # Postconditions: Course assignments are populated
-    # Side-effects: None
-	# Search Prompt(in): Course Name you are searching for
-	# AllCourse(out): List of all Courses
-    @staticmethod
-    def populateSearchClass(course_id):
-        CourseManagement.inputErrorChecker(course_id=course_id)
-        if not (Course.objects.filter(courseID=course_id).exists()):
-            retMsg = "This course being deleted does not exist"
-        else:
-            retMsg = {
-                'Found Course': Course.objects.get(courseID=course_id)
-            }
-
-        return retMsg
-
-    # Preconditions: The user has to have been instantiated
-    # There are courses to display
-    # Postconditions: All courses are displayed
-    # Side-effects: None
-    # Courses(out): All Courses 
-    @staticmethod
-    def displayAllCourse():
-        allCourses = Course.objects.all()
-
-        data = {
-            'All Courses': allCourses
-        }
-
-        return allCourses
 
     @staticmethod
     def inputErrorChecker(course_id=None, name=None, location=None, days=None, hours=None, instructor=None, tas=None):

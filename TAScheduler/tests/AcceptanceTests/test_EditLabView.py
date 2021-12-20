@@ -4,7 +4,7 @@ from TAScheduler.models import *
 
 class test_editLab(TestCase):
     def setUp(self):
-        self.supervisor = UserProfile.objects.create(userID=1, userType="SUPERVISOR", username="supevisor",
+        self.supervisor = UserProfile.objects.create(userID=1, userType="SUPERVISOR", username="supervisor",
                                                      name="supervisor", address="address", phone=9876543212,
                                                      email="email@email.com")
         self.instructor = UserProfile.objects.create(userID=2, userType="INSTRUCTOR", username="instructor1",
@@ -26,11 +26,11 @@ class test_editLab(TestCase):
         self.client.post("/", {"useraccount": self.supervisor.username, "password": self.supervisor.password})
 
     def test_editName(self):
-        resp = self.client.post("/edit_lab/",
-                                {"name": "new name", "location": self.testLab.location, "hours": self.testLab.hours,
-                                 "days": self.testLab.days, "course": self.testLab.course.courseID,
-                                 "TA": self.testLab.TA.userID,
-                                 "submit": self.testLab.labID})
+        self.client.post("/edit_lab/",
+                         {"name": "new name", "location": self.testLab.location, "hours": self.testLab.hours,
+                          "days": self.testLab.days, "course": self.testLab.course.courseID,
+                          "TA": self.testLab.TA.userID,
+                          "submit": self.testLab.labID})
         self.assertEqual("new name", Lab.objects.get(labID=self.testLab.labID).name,
                          "Lab name was not set correctly")
 
@@ -135,7 +135,6 @@ class test_editLab(TestCase):
 
     def test_editInvalidCourse(self):
         self.testCourse2.TAs.remove(self.TA)
-        course = self.testLab.course
         resp = self.client.post("/edit_lab/", {"name": self.testLab.name, "location": self.testLab.location,
                                                "hours": self.testLab.hours,
                                                "days": self.testLab.days, "course": self.testCourse2.courseID,
