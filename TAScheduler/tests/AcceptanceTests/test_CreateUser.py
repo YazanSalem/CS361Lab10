@@ -141,8 +141,8 @@ class TestCreateUser(TestCase):
                               "phone": 1234567891,
                               "email": "s@s.com"}, follow=True)
 
-        self.assertEqual(UserProfile.objects.get(userID=98).userType, "SUPERVISOR",
-                         "Supervisor was created successfully")
+        self.assertEqual(UserProfile.objects.get(userID=98), UserProfile(userID=98, userType="SUPERVISOR", username="supervisorTest", password="supervisorTest", name="Test Supervisor", address="address", phone=1234567891, email="s@s.com"),
+                         "Supervisor was not created successfully")
 
     def test_createInstructor(self):
         r = self.client.post("/create_user/",
