@@ -33,6 +33,8 @@ class DeleteLab(TestCase):
         self.lab = Lab.objects.create(labID=1, name="Lab", location="EMS 280",
                                       hours="03:00PM - 04:00PM", days="M, W", course=self.course, TA=self.TA)
 
+        self.dummyClient.post("/", {"useraccount": self.instructor.userID, "password": self.instructor.password})
+
     def test_deleteLab(self):
         resp = self.dummyClient.post('/delete_lab/', {'delete': self.lab.labID}, follow=True)
         var = Lab.objects.count()
