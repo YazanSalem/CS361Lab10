@@ -33,11 +33,11 @@ class DeleteLab(TestCase):
         self.lab = Lab.objects.create(labID=1, name="Lab", location="EMS 280",
                                       hours="03:00PM - 04:00PM", days="M, W", course=self.course, TA=self.TA)
 
-        self.dummyClient.post("/", {"useraccount": self.instructor.userID, "password": self.instructor.password})
+        self.dummyClient.post("/", {"useraccount": self.admin.userID, "password": self.admin.password})
 
     def test_deleteLab(self):
         resp = self.dummyClient.post('/delete_lab/', {'delete': self.lab.labID}, follow=True)
         var = Lab.objects.count()
-        self.assertEquals(var, 0)
+        self.assertEquals(var, 0, "Lab was deleted successfully")
         allLabs = list(Lab.objects.filter(labID=1))
-        self.assertEquals([], allLabs)
+        self.assertEquals([], allLabs, "Lab was deleted succesfully")
