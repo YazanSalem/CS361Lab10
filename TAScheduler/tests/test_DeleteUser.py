@@ -23,7 +23,7 @@ class SuccessfulDeleteUser(TestCase):
         , password = "Admin123", name = "Admin Dummy", address = "Admin Address", phone = 3234452176, email ="AdminEmail@email.com")
 
     def test_deleteUser(self):
-        resp = self.dummyClient.post('/delete_course/', {'userID' : 1}, follow= True)
+        resp = self.dummyClient.post('/delete_user/', {'userID' : 1}, follow= True)
         var = UserProfile.objects.count()
         self.assertEquals(var, 2)
         allUsers = list(UserProfile.objects.filter(userID = 1))
