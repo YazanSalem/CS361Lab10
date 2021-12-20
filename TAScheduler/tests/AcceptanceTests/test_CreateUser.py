@@ -152,8 +152,8 @@ class TestCreateUser(TestCase):
                               "phone": 1234567891,
                               "email": "i@i.com"}, follow=True)
 
-        self.assertEqual(UserProfile.objects.get(userID=99).userType, "INSTRUCTOR",
-                         "Instructor was created successfully")
+        self.assertEqual(UserProfile.objects.get(userID=99), UserProfile(userID=99, userType="INSTRUCTOR", username="InstructorTest", password="InstructorTest", name="Test Instructor", address="address", phone=1234567891, email="i@i.com"),
+                         "Instructor was not created successfully")
 
     def test_createTA(self):
         r = self.client.post("/create_user/",
